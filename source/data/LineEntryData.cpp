@@ -524,8 +524,8 @@ LineDBEntry::dwgOutFields(AcDbDwgFiler* pFiler) const
 #ifdef DEBUG
 	acutPrintf(L"保存管线实体到数据库 ID【%d】名称【%s】类型【%s】\n",
 				pImplemention->m_LineID,
-				pImplemention->m_LineName,
-				pImplemention->m_LineKind);
+				pImplemention->m_LineName.c_str(),
+				pImplemention->m_LineKind.c_str());
 #endif
 
     pFiler->writeItem(Adesk::UInt32(pImplemention->m_LineID));
