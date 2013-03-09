@@ -82,16 +82,11 @@ mThroughDirection(rData.mThroughDirection)
 
 wstring LineCategoryItemData::toString() const
 {
-	CString ID;
-	ID.Format(L"%d",mID);
-
-	return wstring(ID.GetBuffer()) + L"\t" 
-			+ mCategory + L"\t"
-			+ mKind + L"\t"
+	return mCategory + L"\t"
 			+ mShape + L"\t"
 			+ mRadius + L"\t"
-			+ mHeight + L"\t"
 			+ mWidth + L"\t"
+			+ mHeight + L"\t"
 			+ mWallSize + L"\t"
 			+ mSafeSize + L"\t"
 			+ mPlaneMark + L"\t"

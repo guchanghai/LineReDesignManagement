@@ -94,6 +94,9 @@ protected:
 	//控件控制
 	void EnableDetailControl(bool enable);
 
+	//坐标点事件
+	static void LinePointModified(void* dialog);
+
 private:
 
 	//窗口类别
@@ -129,9 +132,6 @@ private:
 	//操作类型
 	OPER_TYPE m_OperType;
 
-	//数据是否有改变
-	BOOL m_bDataDirty;
-
 	//页面按钮
 	CButton m_ButtonAdd;
 	CButton m_ButtonDel;
@@ -143,9 +143,6 @@ private:
 
 	//实体文件管理器
 	LineEntryFile* m_EntryFile;
-
-	HTREEITEM m_lineRoot;
-	HTREEITEM m_blockRoot;
 };
 
 } // end of config

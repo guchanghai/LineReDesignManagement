@@ -134,27 +134,25 @@ const wstring LineEntry::LINE_ENTRY_LAYER = L"管线实体层";
  */
 
 LineEntry::LineEntry()
-	:m_LineName(L""),
+	:m_LineID(0),
+	m_LineName(L""),
 	m_LineKind(L""),
-	m_LineBasiInfo(NULL),
-	m_CurrentPointNO(0)
-{
-	m_LineID = 0;
-	m_PrePointList = NULL;
-	m_PointList = new PointList();
-}
+	m_LineBasiInfo(new LineCategoryItemData()),
+	m_CurrentPointNO(0),
+	m_PrePointList(NULL),
+	m_PointList(new PointList())
+{}
 
 LineEntry::LineEntry(const wstring& rLineName, const wstring& rLineKind,
 						LineCategoryItemData* lineInfo, PointList* pointList)
-	:m_LineName(rLineName),
+	:m_LineID(0),
+	m_LineName(rLineName),
 	m_LineKind(rLineKind),
 	m_LineBasiInfo(lineInfo),
 	m_PointList(pointList),
-	m_CurrentPointNO(0)
+	m_CurrentPointNO(0),
+	m_PrePointList(NULL)
 {
-	m_LineID = 0;
-	m_PrePointList = NULL;
-
 	//创建数据库代理对象
 	pDbEntry = new LineDBEntry( this );
 }
@@ -164,7 +162,6 @@ LineEntry::LineEntry( const wstring& data)
 	m_PointList = new PointList();
 
 	double temp;
-
 	int index = 0;
 
 	wstrVector* dataColumn = vectorContructor(data,L"\t");
@@ -174,11 +171,24 @@ LineEntry::LineEntry( const wstring& data)
 	acdbDisToF(column.c_str(), -1, &temp);
 	this->m_LineID = (UINT)temp;
 
-	//m_LineNO = (*dataColumn)[index++];
-
 	m_LineName = (*dataColumn)[index++];
 	m_LineKind = (*dataColumn)[index++];
 
+	//得到详细信息
+	m_LineBasiInfo = new LineCategoryItemData();
+	m_LineBasiInfo->mCategory = (*dataColumn)[index++];
+	m_LineBasiInfo->mShape = (*dataColumn)[index++];
+	m_LineBasiInfo->mRadius = (*dataColumn)[index++];
+	m_LineBasiInfo->mWidth = (*dataColumn)[index++];
+	m_LineBasiInfo->mHeight = (*dataColumn)[index++];
+	m_LineBasiInfo->mWallSize = (*dataColumn)[index++];
+	m_LineBasiInfo->mSafeSize = (*dataColumn)[index++];
+	m_LineBasiInfo->mPlaneMark = (*dataColumn)[index++];
+	m_LineBasiInfo->mCutMark = (*dataColumn)[index++];
+	m_LineBasiInfo->mCanThrough = (*dataColumn)[index++];
+	m_LineBasiInfo->mThroughDirection = (*dataColumn)[index++];
+
+	//编号在点左边前面
 	column = (*dataColumn)[index++];
 	acdbDisToF(column.c_str(), -1, &temp);
 	m_CurrentPointNO = (UINT)temp;
@@ -189,7 +199,6 @@ LineEntry::LineEntry( const wstring& data)
 	while( index < size )
 	{
 		column = (*dataColumn)[index++];
-
 		m_PointList->push_back(new PointEntry(column));
 	}
 
@@ -308,7 +317,9 @@ wstring LineEntry::toString()
 	wstring lineData;
 
 	CString temp;
-	temp.Format(L"%d\t%s\t%s\t%d",m_LineID,m_LineName,m_LineKind,m_CurrentPointNO);
+	temp.Format(L"%d\t%s\t%s\t%s\t%d",m_LineID,m_LineName,m_LineKind,
+					m_LineBasiInfo->toString().c_str(),
+					m_CurrentPointNO);
 
 #ifdef DEBUG
 	//acutPrintf(L"\n管线实体序列化为【%s】",temp.GetBuffer());
@@ -350,6 +361,19 @@ ACRX_DXF_DEFINE_MEMBERS(LineDBEntry, AcDbObject, AcDb::kDHL_CURRENT, AcDb::kMRel
 LineDBEntry::LineDBEntry()
 {
 	pImplemention = new LineEntry();
+
+	/*
+	//在打开DWG文件时，自动加入管理器
+	LineEntryFile* curEntryFile = LineEntryFileManager::GetCurrentLineEntryFile();
+	if( curEntryFile )
+	{
+		curEntryFile->InsertLine(pImplemention);
+	}
+	else
+	{
+		acutPrintf(L"\n出错了。打开文件时，找不到管线管理器！");
+	}
+	*/
 }
 
 LineDBEntry::LineDBEntry( LineEntry* implementation )
@@ -382,12 +406,6 @@ LineDBEntry::dwgInFields(AcDbDwgFiler* pFiler)
 
 		TCHAR* tmpStr = NULL;    // must explicitly set to NULL or readItem() crashes!
 
-		/*
-		pFiler->readItem(&tmpStr);
-		m_LineNO = wstring(tmpStr);
-		acutDelString(tmpStr);
-		*/
-
 		tmpStr = NULL;    // must explicitly set to NULL or readItem() crashes!
 		pFiler->readItem(&tmpStr);
 		pImplemention->m_LineName = wstring(tmpStr);
@@ -399,6 +417,10 @@ LineDBEntry::dwgInFields(AcDbDwgFiler* pFiler)
 		acutDelString(tmpStr);
 
 		{
+			tmpStr = NULL;    // must explicitly set to NULL or readItem() crashes!
+			pFiler->readItem(&tmpStr);
+			pImplemention->m_LineBasiInfo->mCategory = wstring(tmpStr);
+			acutDelString(tmpStr);
 
 			tmpStr = NULL;    // must explicitly set to NULL or readItem() crashes!
 			pFiler->readItem(&tmpStr);
@@ -510,7 +532,6 @@ LineDBEntry::dwgOutFields(AcDbDwgFiler* pFiler) const
 	pFiler->writeItem(pImplemention->m_LineName.c_str());
 	pFiler->writeItem(pImplemention->m_LineKind.c_str());
 
-	pFiler->writeItem(pImplemention->m_LineBasiInfo->mKind.c_str());
 	pFiler->writeItem(pImplemention->m_LineBasiInfo->mCategory.c_str());
 	pFiler->writeItem(pImplemention->m_LineBasiInfo->mShape.c_str());
 
@@ -609,7 +630,8 @@ LineEntryFile::~LineEntryFile()
 				iter != m_LineList->end();
 				iter++ )
 		{
-			//(*iter)->close();
+			if( (*iter) && (*iter)->pDbEntry )
+				(*iter)->pDbEntry->close();
 		}
 
 		delete m_LineList;
@@ -926,8 +948,8 @@ void LineEntryFileManager::RemoveEntryFileOnDWGUnLoad()
 		if( pEntryFileList )
 		{
 			for( EntryFileIter iter = pEntryFileList->begin();
-			iter != pEntryFileList->end();
-			iter++)
+					iter != pEntryFileList->end();
+					iter++)
 			{
 				delete (*iter);
 			}

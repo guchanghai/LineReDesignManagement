@@ -34,6 +34,10 @@ IMPLEMENT_DYNAMIC(EntryManageDialog, CDialog)
 EntryManageDialog::EntryManageDialog(CWnd* pParent /*=NULL*/)
 	: CDialog(EntryManageDialog::IDD, pParent)
 {
+	//坐标点控件需要回调
+	m_LineDetailList.m_Callback = EntryManageDialog::LinePointModified;
+	m_LineDetailList.m_ParentDialog = (void*)this;
+
 	//得到当前管理的文档
 	m_fileName = curDoc()->fileName();
 
@@ -261,9 +265,6 @@ BOOL EntryManageDialog::InsertLine( LineEntry* lineEntry, BOOL bInitialize )
 	//如果不是从数据文件初始化，则是用户手工新增
 	if( !bInitialize )
 	{		
-		//生成该项的ID
-		lineEntry->m_LineID = (UINT)GetTickCount();
-
 		//保存数据到管理器
 		m_EntryFile->InsertLine(lineEntry);
 
@@ -486,6 +487,8 @@ BEGIN_MESSAGE_MAP(EntryManageDialog, CDialog)
 	ON_EN_CHANGE(IDC_EDIT_PLANE_MARK,		OnControlValueChange)
 	ON_EN_CHANGE(IDC_EDIT_CUT_MARK,			OnControlValueChange)
 
+	ON_BN_DOUBLECLICKED(IDC_LIST_LINE_DETAIL ,		OnControlValueChange)
+
 END_MESSAGE_MAP()
 
 void EntryManageDialog::OnBnClickedButtonOK()
@@ -508,6 +511,9 @@ void EntryManageDialog::OnBnClickedButtonOK()
 		LineEntry* newLine = new LineEntry(pipeName,GlobalData::KIND_LINE,
 											detailInfo,NULL);
 
+		//生成该项的ID
+		newLine->m_LineID = (UINT)GetTickCount();
+
 		//设置折线段(在此进行重画)
 		newLine->SetPoints( pointList );
 
@@ -517,7 +523,7 @@ void EntryManageDialog::OnBnClickedButtonOK()
 		//设置操作类型为更新
 		SetOperType( OPER_UPDATE );
 	}
-	else if( m_OperType == OPER_UPDATE )
+	else /*if( m_OperType == OPER_UPDATE )*/
 	{
 		//得到当前编辑的直线
 		LineEntry* selectLine = GetSelectLine();
@@ -765,8 +771,8 @@ void EntryManageDialog::ClearLineData()
 	m_LineDetailList.DeleteAllItems();
 
 	//不可删除、更新
-	m_ButtonDel.EnableWindow(FALSE);
-	m_ButtonOK.EnableWindow(FALSE);
+	m_ButtonDel.EnableWindow(false);
+	m_ButtonOK.EnableWindow(false);
 
 	UpdateData(FALSE);
 }
@@ -838,6 +844,19 @@ void EntryManageDialog::CheckUIData()
 		{
 			OnBnClickedButtonOK();
 		}
+	}
+}
+
+void EntryManageDialog::LinePointModified(void* dialog)
+{
+	acutPrintf(L"\n管线管理器回调函数被调用");
+	EntryManageDialog* entryDlg(NULL);
+
+	if( entryDlg = static_cast<EntryManageDialog*>(dialog) )
+	{
+		acutPrintf(L"\n默认为有值发生了变化");
+		//控件发生了值变化
+		entryDlg->OnControlValueChange();
 	}
 }
 

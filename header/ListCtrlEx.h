@@ -4,6 +4,8 @@
 #include "afxcmn.h"
 #include "afxmt.h"
 
+typedef void (*DoubleClickCallback)(void* parent);
+
 // CListCtrlEx
 typedef BOOL (*PFNEDITORCALLBACK)(CWnd** pWnd, int nRow, int nColumn, CString& strSubItemText, DWORD_PTR dwItemData, void* pThis, BOOL bUpdate);
 class CListCtrlEx : public CListCtrl
@@ -207,7 +209,11 @@ protected:
 	virtual void ResetNumber();
 
 	BOOL m_bInvokeAddNew;
+
 public:
+
 	HACCEL m_hAccel;
 
+	void* m_ParentDialog;
+	DoubleClickCallback m_Callback; 
 };

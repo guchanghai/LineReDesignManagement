@@ -110,13 +110,15 @@ CListCtrlEx::CListCtrlEx()
 ,m_fnCompare(NULL)
 ,m_hAccel(NULL)
 ,m_dwSortData(NULL)
-, m_bInvokeAddNew(FALSE)
+,m_bInvokeAddNew(FALSE)
+,m_Callback(NULL)
+,m_ParentDialog(NULL)
 {
 #ifndef _WIN32_WCE
 	EnableActiveAccessibility();
 #endif
-	
 }
+
 #define ID_EDITOR_CTRL		5000
 CListCtrlEx::~CListCtrlEx()
 {
@@ -459,6 +461,10 @@ BOOL CListCtrlEx::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 		*pResult = DisplayEditor(nItem, nSubItem);
 	}
+
+	//回调父窗口进行处理
+	if( m_Callback != NULL );
+		m_Callback(m_ParentDialog);
 
 	return *pResult;
 }
@@ -805,6 +811,10 @@ LRESULT CListCtrlEx::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				this->DeleteItem(select);
 				ResetNumber();
+
+				//回调父窗口进行处理
+				if( m_Callback != NULL );
+					m_Callback(m_ParentDialog);
 			}
 		}
 	}
