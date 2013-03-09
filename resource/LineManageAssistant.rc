@@ -1,0 +1,306 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (Simplified, PRC) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU
+BEGIN
+    POPUP "管线改移设计"
+    BEGIN
+        POPUP "管线输入"
+        BEGIN
+            MENUITEM "管线数据导入",                      ID_LINE_CONFIG
+            MENUITEM "管线数据录入",                      ID_LINE_CONFIG_EXPORT
+            MENUITEM "管线数据导出",                      ID_LINE_CONFIG_IMPORT
+        END
+        POPUP "阻隔体输入"
+        BEGIN
+            MENUITEM "阻隔体数据导入",                     ID_INPUT_POINT
+            MENUITEM "阻隔体数据录入",                     ID_LINE_EXPORT
+            MENUITEM "阻隔体数据导出",                     ID_LINE_IMPORT
+        END
+        POPUP "切剖面图"
+        BEGIN
+            MENUITEM "生成切图",                        ID_GENERATE_CUT
+            MENUITEM "恢复视窗",                        ID_GENERATE_BACK
+        END
+        MENUITEM "功能测试",                        ID_MENU_TEST
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_ENTRY_MANAGE DIALOGEX 0, 0, 686, 345
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "管线数据录入"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "确认",IDOK,569,324,43,14
+    PUSHBUTTON      "关闭",IDCANCEL,621,324,50,14
+    PUSHBUTTON      "新增",IDC_BUTTON_ADD,22,324,50,14
+    PUSHBUTTON      "删除",IDC_BUTTON_DEL,94,324,50,14
+    CONTROL         "",IDC_TREE_LINES,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_SHOWSELALWAYS | WS_BORDER | WS_HSCROLL | WS_TABSTOP,22,22,209,284
+    CONTROL         "",IDC_LIST_LINE_DETAIL,"SysListView32",LVS_REPORT | LVS_EDITLABELS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,256,155,270,150
+    LTEXT           "管线剖面标注",IDC_STATIC,464,88,49,8
+    EDITTEXT        IDC_EDIT_CUT_MARK,517,88,143,33,ES_AUTOHSCROLL
+    LTEXT           "管线种类",IDC_STATIC,269,28,33,8
+    GROUPBOX        "基本信息",IDC_STATIC,247,10,421,119
+    GROUPBOX        "折线点坐标(m)",IDC_STATIC,247,141,424,174
+    GROUPBOX        "管线列表",IDC_STATIC,14,10,226,305
+    LTEXT           "2. 双击单元格更新坐标",IDC_STATIC,539,196,112,13
+    PUSHBUTTON      "删除选中的坐标",IDC_BUTTON_DEL_POINT,535,247,72,14,NOT WS_VISIBLE
+    GROUPBOX        "使用说明",IDC_STATIC,534,151,130,154
+    LTEXT           "3. 按“D”键可删除选中的折线点",IDC_STATIC,539,218,109,13
+    EDITTEXT        IDC_EDIT_POINT,613,247,49,14,ES_AUTOHSCROLL | NOT WS_VISIBLE
+    LTEXT           "1. 双击空白区域可增加新折线点",IDC_STATIC,539,175,118,13
+    LTEXT           "管线断面形状",IDC_STATIC,461,28,49,8
+    EDITTEXT        IDC_EDIT_LINE_RADIUS,309,44,50,14,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBO_SHAPE,515,24,143,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "壁厚(mm)",IDC_STATIC,269,69,33,8
+    EDITTEXT        IDC_EDIT_WALL_SIZE,309,66,50,14,ES_AUTOHSCROLL
+    LTEXT           "内径(mm)",IDC_STATIC_RADIUS,269,49,33,8
+    EDITTEXT        IDC_EDIT_WIDTH,515,44,50,14,ES_AUTOHSCROLL
+    LTEXT           "净宽(mm)",IDC_STATIC_WIDTH,477,49,33,8
+    LTEXT           "净高(mm)",IDC_STATIC_HEIGHT,570,49,34,8
+    EDITTEXT        IDC_EDIT_HEIGHT,607,45,50,14,ES_AUTOHSCROLL
+    LTEXT           "管线平面标注",IDC_STATIC,253,88,49,8
+    EDITTEXT        IDC_EDIT_PLANE_MARK,309,88,143,33,ES_MULTILINE | ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBO_CATEGORY,309,24,143,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "安全距离(mm)",IDC_STATIC,461,69,49,8
+    EDITTEXT        IDC_EDIT_SAFESIZE,516,66,50,14,ES_AUTOHSCROLL
+    LTEXT           "(字符串)",IDC_STATIC,271,100,30,8
+    LTEXT           "(字符串)",IDC_STATIC,479,100,30,8
+END
+
+IDD_DIALOG_CUT_POS DIALOGEX 0, 0, 187, 121
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_PALETTEWINDOW
+CAPTION "确定切面位置"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,47,100,50,14
+    PUSHBUTTON      "取消",IDCANCEL,119,100,50,14
+    GROUPBOX        "选择垂直轴方向",IDC_STATIC,14,11,67,78
+    CONTROL         "X轴",IDC_X,"Button",BS_AUTORADIOBUTTON | WS_GROUP,27,32,28,10
+    CONTROL         "Y轴",IDC_Y,"Button",BS_AUTORADIOBUTTON,27,49,28,10
+    CONTROL         "Z轴",IDC_Z,"Button",BS_AUTORADIOBUTTON,27,64,28,10
+    GROUPBOX        "输入偏移的距离",IDC_STATIC,103,51,67,36
+    EDITTEXT        IDC_OFFSET,113,66,40,14,ES_AUTOHSCROLL
+    GROUPBOX        "拾取切点",IDC_STATIC,102,11,67,36
+    CONTROL         "",IDC_BUTTON_PICKCUT,"Button",BS_OWNERDRAW | WS_TABSTOP,120,25,28,14
+END
+
+IDD_DIALOG1 DIALOGEX 0, 0, 273, 164
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Dialog"
+FONT 8, "Microsoft Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,216,7,50,14
+    CONTROL         "Select Point",IDC_BUTTON_POINT,"Button",BS_OWNERDRAW | WS_TABSTOP,12,17,16,16
+    EDITTEXT        IDC_EDIT_XPT,53,17,52,15,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_YPT,53,34,52,15,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_ZPT,53,51,52,15,ES_AUTOHSCROLL
+    CONTROL         "Select Angle",IDC_BUTTON_ANGLE,"Button",BS_OWNERDRAW | WS_TABSTOP,12,79,17,16
+    EDITTEXT        IDC_EDIT_ANGLE,53,79,52,15,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBO_REGAPPS,11,126,93,40,CBS_DROPDOWN | CBS_AUTOHSCROLL | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_LIST_BLOCKS,121,17,79,121,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Cancel",IDCANCEL,216,24,50,14
+    GROUPBOX        "AcUi Edit and Button Controls",IDC_STATIC_GROUP1,7,7,104,100
+    GROUPBOX        "AcUi Combo Box Control",IDC_STATIC_GROUP3,7,113,103,44
+    GROUPBOX        "AcUi List Control",IDC_STATIC_GROUP2,114,7,93,150
+    LTEXT           "(Registered App. Names)",IDC_STATIC_TEXT3,11,141,97,10
+    LTEXT           "(Current DB Block Names)",IDC_STATIC_TEXT2,120,141,85,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG_ENTRY_MANAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 679
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 338
+    END
+
+    IDD_DIALOG_CUT_POS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 114
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_TOOLBAR_LMA TOOLBAR 16, 15
+BEGIN
+    BUTTON      ID_BUTTON_CANCLE
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_TOOLBAR_LMA         BITMAP                  "toolbar_lma.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    ID_BUTTON_CANCLE        "删除切图"
+END
+
+#endif    // Chinese (Simplified, PRC) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif\r\n"
+    "#include ""res\\LineManageAssistant.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "FileDescription", "AsdkAcUiSample DLL"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "AsdkAcUiSample"
+            VALUE "LegalCopyright", "Copyright 2012 Autodesk, Inc.  All rights reserved."
+            VALUE "OriginalFilename", "AsdkAcUiSample.DLL"
+            VALUE "ProductName", "AsdkAcUiSample Dynamic Link Library"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif
+#include "res\LineManageAssistant.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

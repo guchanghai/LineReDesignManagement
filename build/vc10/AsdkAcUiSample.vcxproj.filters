@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\source\data\GlobalDataConfig.cpp">
+      <Filter>src\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\data\LineCategoryItemData.cpp">
+      <Filter>src\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\dialog\LineCutPosDialog.cpp">
+      <Filter>src\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\menu\MenuManager.cpp">
+      <Filter>src\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\menu\MenuLMAMain.cpp">
+      <Filter>src\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\exception\LMAException.cpp">
+      <Filter>src\Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\utils\LMAUtils.cpp">
+      <Filter>src\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\application\LineManageAssitant.cpp">
+      <Filter>src\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\command\CommandManager.cpp">
+      <Filter>src\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\application\StdAfx.cpp">
+      <Filter>src\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\dialog\AsdkAcUiDialogSample.cpp">
+      <Filter>src\sample</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\dialog\EntryManageDialog.cpp">
+      <Filter>src\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\data\LineEntryData.cpp">
+      <Filter>src\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\controls\ListCtrlEx.cpp">
+      <Filter>src\Control</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\controls\MsgHook.cpp">
+      <Filter>src\Control</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\ARX\ArxWrapper.cpp">
+      <Filter>src\ARX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\ARX\ArxCustomObject.cpp">
+      <Filter>src\ARX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\data\LineConfigDataManager.cpp">
+      <Filter>src\Data</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\header\AsdkAcUiDialogSample.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\StdAfx.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LineManageAssitant.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CommandManager.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadApplication.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadDocument.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadMenuBar.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadMenuGroup.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadMenuGroups.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadModelSpace.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadPopupMenu.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadPopupMenus.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\resource\resource.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\GlobalDataConfig.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LineCategoryItemData.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LineConfigDataManager.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LineCutPosDialog.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LineTypeConfigPropertySheet.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\MenuManager.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\MenuLMAMain.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LMAException.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LMAUtils.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\EntryManageDialog.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LineEntryData.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\ListCtrlEx.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\MsgHook.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\ArxWrapper.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\ArxCustomObject.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\doc\ReadMe.txt">
+      <Filter>doc</Filter>
+    </None>
+    <None Include="..\..\resource\res\LineManageAssistant.rc2">
+      <Filter>res</Filter>
+    </None>
+    <None Include="..\..\resource\toolbar_lma.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="inc">
+      <UniqueIdentifier>{a32bb2e4-15bb-4e5d-a61d-7ab092279f83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{074da1ff-56b0-452d-80cb-e0c752bbbd00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res">
+      <UniqueIdentifier>{4bf3bd48-4156-4a98-b362-d1120a9e180f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="doc">
+      <UniqueIdentifier>{b63a3f06-4cb7-4815-9563-50b147da83f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Menu">
+      <UniqueIdentifier>{2f3359f6-1de1-4e61-8ca3-6f5aad030905}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Application">
+      <UniqueIdentifier>{084bc0b6-f092-4e83-bb04-ddcc14867d19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Dialog">
+      <UniqueIdentifier>{ffb0cae8-fb2a-43f8-be15-70b3895ae328}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Command">
+      <UniqueIdentifier>{49f1a170-c035-417b-bf04-c2b3c9620c24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Data">
+      <UniqueIdentifier>{c8fa926f-50a7-4414-8851-a36effb897a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Exception">
+      <UniqueIdentifier>{2b0dce58-d22c-4bff-b4d5-865da06fefd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Utils">
+      <UniqueIdentifier>{dcce8b75-2f56-45eb-8b95-70ce133f92bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\sample">
+      <UniqueIdentifier>{d049cc72-e8c0-4e7b-bf78-1e6ad43d34cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Control">
+      <UniqueIdentifier>{f14d3cdb-ed9d-4630-8df1-25c3c5a2deac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ARX">
+      <UniqueIdentifier>{82259ad8-fb6e-4c4b-b532-641ac55ea297}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\resource\LineManageAssistant.rc">
+      <Filter>res</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

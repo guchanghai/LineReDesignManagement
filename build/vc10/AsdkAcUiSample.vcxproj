@@ -1,0 +1,227 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{849A0E9A-7517-43E4-9ED1-D59CE2A4F994}</ProjectGuid>
+    <Keyword>MFCProj</Keyword>
+    <ProjectName>LineManageAssistant</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\rxsdk_Releasecfg.props" />
+    <Import Project="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\arx.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\rxsdk_Debugcfg.props" />
+    <Import Project="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\arx.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\rxsdk_Releasecfg.props" />
+    <Import Project="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\arx.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\arx.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">lma</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lma</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lma</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lma</TargetName>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\$(Platform)\</OutDir>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.arx</TargetExt>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">arx</TargetExt>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">arx</TargetExt>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">arx</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib;..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
+      <AdditionalDependencies>acad.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName).arx</OutputFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
+      <TargetMachine>MachineX64</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
+      <MapExports>false</MapExports>
+      <AdditionalDependencies>acad.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName).$(TargetExt)</OutputFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
+      <OutputFile>$(OutDir)$(TargetName).arx</OutputFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
+      <TargetMachine>MachineX64</TargetMachine>
+      <OutputFile>$(OutDir)$(TargetName).arx</OutputFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\application\LineManageAssitant.cpp" />
+    <ClCompile Include="..\..\source\application\StdAfx.cpp" />
+    <ClCompile Include="..\..\source\ARX\ArxCustomObject.cpp" />
+    <ClCompile Include="..\..\source\ARX\ArxWrapper.cpp" />
+    <ClCompile Include="..\..\source\command\CommandManager.cpp" />
+    <ClCompile Include="..\..\source\controls\ListCtrlEx.cpp" />
+    <ClCompile Include="..\..\source\controls\MsgHook.cpp" />
+    <ClCompile Include="..\..\source\data\GlobalDataConfig.cpp" />
+    <ClCompile Include="..\..\source\data\LineCategoryItemData.cpp" />
+    <ClCompile Include="..\..\source\data\LineConfigDataManager.cpp" />
+    <ClCompile Include="..\..\source\data\LineEntryData.cpp" />
+    <ClCompile Include="..\..\source\dialog\EntryManageDialog.cpp" />
+    <ClCompile Include="..\..\source\dialog\AsdkAcUiDialogSample.cpp" />
+    <ClCompile Include="..\..\source\dialog\LineCutPosDialog.cpp" />
+    <ClCompile Include="..\..\source\exception\LMAException.cpp" />
+    <ClCompile Include="..\..\source\menu\MenuLMAMain.cpp">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="..\..\source\menu\MenuManager.cpp">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="..\..\source\utils\LMAUtils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\resource\LineManageAssistant.rc">
+      <AdditionalIncludeDirectories>..\..\header</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\header\ArxCustomObject.h" />
+    <ClInclude Include="..\..\header\ArxWrapper.h" />
+    <ClInclude Include="..\..\header\AsdkAcUiDialogSample.h" />
+    <ClInclude Include="..\..\header\CAcadApplication.h" />
+    <ClInclude Include="..\..\header\CAcadDocument.h" />
+    <ClInclude Include="..\..\header\CAcadMenuBar.h" />
+    <ClInclude Include="..\..\header\CAcadMenuGroup.h" />
+    <ClInclude Include="..\..\header\CAcadMenuGroups.h" />
+    <ClInclude Include="..\..\header\CAcadModelSpace.h" />
+    <ClInclude Include="..\..\header\CAcadPopupMenu.h" />
+    <ClInclude Include="..\..\header\CAcadPopupMenus.h" />
+    <ClInclude Include="..\..\header\EntryManageDialog.h" />
+    <ClInclude Include="..\..\header\GlobalDataConfig.h" />
+    <ClInclude Include="..\..\header\LineCategoryItemData.h" />
+    <ClInclude Include="..\..\header\LineConfigDataManager.h" />
+    <ClInclude Include="..\..\header\LineCutPosDialog.h" />
+    <ClInclude Include="..\..\header\LineEntryData.h" />
+    <ClInclude Include="..\..\header\LineManageAssitant.h" />
+    <ClInclude Include="..\..\header\LineTypeConfigPropertySheet.h" />
+    <ClInclude Include="..\..\header\ListCtrlEx.h" />
+    <ClInclude Include="..\..\header\LMAException.h" />
+    <ClInclude Include="..\..\header\LMAUtils.h" />
+    <ClInclude Include="..\..\header\MenuLMAMain.h" />
+    <ClInclude Include="..\..\header\MenuManager.h" />
+    <ClInclude Include="..\..\header\MsgHook.h" />
+    <ClInclude Include="..\..\header\StdAfx.h" />
+    <ClInclude Include="..\..\resource\resource.h" />
+    <ClInclude Include="..\..\header\CommandManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\resource\res\LineManageAssistant.rc2" />
+    <None Include="..\..\doc\ReadMe.txt" />
+    <None Include="..\..\resource\toolbar_lma.bmp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
