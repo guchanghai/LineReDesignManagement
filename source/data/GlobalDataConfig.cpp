@@ -56,3 +56,10 @@ const UINT GlobalData::ITEM_TEXT_MAX_LENGTH = 250;
 * 出错标题
 **/
 const wstring GlobalData::ERROR_DIALOG_CAPTION = L"管线辅助系统告警";
+
+/**
+* 配置种类
+**/
+const wstring GlobalData::CONFIG_LINE_KIND = L"管线种类";
+const wstring GlobalData::CONFIG_SHAPE_KIND = L"管线形状";
+const wstring GlobalData::CONFIG_BLOCK_KIND = L"阻隔体种类";

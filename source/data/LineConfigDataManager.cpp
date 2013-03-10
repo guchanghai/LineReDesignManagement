@@ -104,17 +104,23 @@ LineConfigDataManager::LineConfigDataManager(void)
 			//得到一行数据
 			wstring& wLine = wContent.substr(lineFrom, linePos-lineFrom);
 
-			//将此行拆分
-			size_t columnFrom = 0;
-			size_t columnPos = wLine.find_first_of(L"\t",columnFrom);
-
-			if( columnPos == wstring::npos )
+			//注释行
+			if( wLine.substr(0,2) == L"##" )
+			{
+				acutPrintf(L"\n注释【%s】", wLine.c_str());
+			}
+			else if (wLine.substr(0,2) == L"**" )
 			{
 				//得到种类
-				category = wLine;
+				acutPrintf(L"\n得到种类【%s】", wLine.c_str());
+				category = wLine.substr(2);
 			}
 			else
 			{
+				//将此行拆分
+				size_t columnFrom = 0;
+				size_t columnPos = wLine.find_first_of(L"\t",columnFrom);
+
 				CommonConfig* newItem = new CommonConfig();
 				newItem->mCategory = category;
 
@@ -135,14 +141,19 @@ LineConfigDataManager::LineConfigDataManager(void)
 					columnPos =  wLine.find_first_of(L'\t',columnFrom);
 				}
 
-				if( indexCol == 1 )
+				wstring& name = wLine.substr(columnFrom);
+				if( indexCol == 0 )
 				{
-					wstring& subName = wLine.substr(columnFrom);
-					newItem->mSubName = subName;
-
-					mLineConfigData->push_back(newItem);
-					acutPrintf(L"\n读取配置数据 - 种类【%s】名称【%s】子项【%s】", newItem->mCategory.c_str(), newItem->mName.c_str(), newItem->mSubName.c_str());
+					newItem->mName = name;
 				}
+				else if( indexCol == 1 )
+				{
+					newItem->mSubName = name;
+				}
+
+				mLineConfigData->push_back(newItem);
+				acutPrintf(L"\n读取配置数据 - 种类【%s】子类【%s】", 
+									newItem->mName.c_str(),newItem->mSubName.c_str());
 			}
 
 			//从下一个字符开始查找另外一行

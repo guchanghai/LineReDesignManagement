@@ -123,13 +123,13 @@ BOOL EntryManageDialog::InitEntryListControl()
 
 BOOL EntryManageDialog::InitEntryDetailControl()
 {
-	LineCommonConfigVector* configVector = LineConfigDataManager::Instance()->mLineConfigData;
-
 	//初始化管线种类列表
 	{
 		int index = 0;
-		for( ConfigIterator iter = configVector->begin();
-			iter != configVector->end();
+		LineCommonConfigVector* lineKindConfig = LineConfigDataManager::Instance()->FindConfig( GlobalData::CONFIG_LINE_KIND);
+
+		for( ConfigIterator iter = lineKindConfig->begin();
+			iter != lineKindConfig->end();
 			iter++)
 		{
 			m_LineCategory.InsertString(index++,(*iter)->mName.c_str());
@@ -140,8 +140,15 @@ BOOL EntryManageDialog::InitEntryDetailControl()
 
 	//初始化管线切面类型列表
 	{
-		m_LineShape.InsertString(0,L"圆形");
-		m_LineShape.InsertString(1,L"矩形");
+		int index = 0;
+		LineCommonConfigVector* lineShapeKind = LineConfigDataManager::Instance()->FindConfig( GlobalData::CONFIG_SHAPE_KIND);
+
+		for( ConfigIterator iter = lineShapeKind->begin();
+			iter != lineShapeKind->end();
+			iter++)
+		{
+			m_LineShape.InsertString(index++,(*iter)->mName.c_str());
+		}
 
 		m_LineShape.SetCurSel(0);
 	}

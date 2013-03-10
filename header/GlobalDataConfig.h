@@ -72,6 +72,13 @@ public:
 	* 出错标题
 	**/
 	static const wstring ERROR_DIALOG_CAPTION;
+
+	/**
+	* 配置种类
+	**/
+	static const wstring CONFIG_LINE_KIND;
+	static const wstring CONFIG_SHAPE_KIND;
+	static const wstring CONFIG_BLOCK_KIND;
 };
 
 
