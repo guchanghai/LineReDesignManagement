@@ -92,7 +92,7 @@ wstring LineCategoryItemData::toString() const
 			+ mPlaneMark + L"\t"
 			+ mCutMark + L"\t"
 			+ mCanThrough + L"\t"
-			+ mThroughDirection + L"\t";
+			+ mThroughDirection;
 }
 
 LineCategoryItemData::~LineCategoryItemData(void){}

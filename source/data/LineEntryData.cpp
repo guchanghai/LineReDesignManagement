@@ -632,8 +632,8 @@ LineEntryFile::~LineEntryFile()
 				iter != m_LineList->end();
 				iter++ )
 		{
-			if( (*iter) && (*iter)->pDbEntry )
-				(*iter)->pDbEntry->close();
+			//if( (*iter) && (*iter)->pDbEntry )
+			//	(*iter)->pDbEntry->close();
 		}
 
 		delete m_LineList;
@@ -1134,18 +1134,18 @@ BOOL LineEntryFileManager::ExportLMALineFile()
 {
 	//导出选择对话框
 	
-	//TODO 去除掉文件后缀（dwg）
-	curDoc()->
+	//去除掉文件后缀（dwg）
+	wstring fileName( curDoc()->fileName() );
+	fileName = fileName.substr(0, fileName.find_first_of(L".")).append(L"dat");
 
 	static wchar_t BASED_CODE szFilter[] = L"管线数据文件 (*.dat)|*.dat||";
-	CFileDialog dlg(FALSE, L"dat", curDoc()->fileName(), 
+	CFileDialog dlg(FALSE, L"dat", fileName.c_str(), 
 					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter, 
 					CWnd::FromHandle(adsw_acadMainWnd()), 0/*, TRUE*/);
 
 	if (dlg.DoModal() == IDOK) 
 	{
         CString expFile = dlg.GetPathName();
-
 		acutPrintf(L"\n导出管线数据到文件【%s】.",expFile.GetBuffer());
 
 		LineEntryFile* exportFile = GetLineEntryFile(wstring(curDoc()->fileName()));

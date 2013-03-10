@@ -151,7 +151,7 @@ HTREEITEM EntryManageDialog::GetKindNode(const wstring& category, bool createOnD
 {
 	TVITEM item;
 
-	HTREEITEM hCurrent,hParent;
+	HTREEITEM hCurrent;
 
 	hCurrent = m_LinesTree.GetNextItem(TVI_ROOT, TVGN_CHILD);
 	while (hCurrent != NULL) 
@@ -189,7 +189,7 @@ HTREEITEM EntryManageDialog::GetKindNode(const wstring& category, bool createOnD
 		acutPrintf(L"\n在树上没有找到了这种类型【%s】，得创建.",category.c_str());
 #endif
 
-		hCurrent = m_LinesTree.InsertItem(category.c_str(),hParent);
+		hCurrent = m_LinesTree.InsertItem(category.c_str(),hCurrent);
 		return hCurrent;
 	}
 }

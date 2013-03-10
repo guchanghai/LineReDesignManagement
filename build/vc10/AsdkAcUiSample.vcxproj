@@ -87,6 +87,7 @@
       <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -110,6 +111,8 @@
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <SmallerTypeCheck>false</SmallerTypeCheck>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -119,10 +122,11 @@
       <ModuleDefinitionFile>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
       <TargetMachine>MachineX64</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapExports>false</MapExports>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
       <AdditionalDependencies>acad.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName).$(TargetExt)</OutputFile>
+      <OptimizeReferences>false</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -131,6 +135,7 @@
       <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -144,6 +149,7 @@
       <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
