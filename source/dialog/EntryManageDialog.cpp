@@ -69,7 +69,7 @@ BOOL EntryManageDialog::OnInitDialog()
 	m_ButtonOK.EnableWindow(false);
 
 	//显示动态元素
-	ShowControlDynamic();
+	ShowDynamicControl();
 
 	return TRUE;
 }
@@ -440,14 +440,20 @@ void EntryManageDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_COMBO_CATEGORY, m_LineCategory);
 	DDX_Control(pDX, IDC_COMBO_SHAPE, m_LineShape);
 
-	DDX_Control(pDX, IDC_STATIC_RADIUS, m_StaticRadius);
-	DDX_Control(pDX, IDC_EDIT_LINE_RADIUS, m_LineRadius);
+	DDX_Control(pDX, IDC_STATIC_DYNAMIC_1, m_StaticDynamic_1);
+	DDX_Control(pDX, IDC_EDIT_DANAMIC_1, m_EditDynamic_1);
 
-	DDX_Control(pDX, IDC_STATIC_WIDTH, m_StaticWidth);
-	DDX_Control(pDX, IDC_EDIT_WIDTH, m_LineWidth);
+	DDX_Control(pDX, IDC_STATIC_DYNAMIC_2, m_StaticDynamic_2);
+	DDX_Control(pDX, IDC_EDIT_DANAMIC_2, m_EditDynamic_2);
 
-	DDX_Control(pDX, IDC_STATIC_HEIGHT, m_StaticHeight);
-	DDX_Control(pDX, IDC_EDIT_HEIGHT, m_LineHeight);
+	DDX_Control(pDX, IDC_STATIC_DYNAMIC_3, m_StaticDynamic_3);
+	DDX_Control(pDX, IDC_EDIT_DANAMIC_3, m_EditDynamic_3);
+
+	DDX_Control(pDX, IDC_STATIC_DYNAMIC_4, m_StaticDynamic_4);
+	DDX_Control(pDX, IDC_EDIT_DANAMIC_4, m_EditDynamic_4);
+
+	DDX_Control(pDX, IDC_STATIC_DYNAMIC_5, m_StaticDynamic_5);
+	DDX_Control(pDX, IDC_EDIT_DANAMIC_5, m_EditDynamic_5);
 
 	DDX_Control(pDX, IDC_EDIT_WALL_SIZE,m_LineWallSize);
 	DDX_Control(pDX, IDC_EDIT_SAFESIZE,m_LineSafeSize);
@@ -488,10 +494,10 @@ BEGIN_MESSAGE_MAP(EntryManageDialog, CDialog)
 	ON_CBN_SELCHANGE(IDC_COMBO_CATEGORY,	OnControlValueChange)
 	ON_CBN_SELCHANGE(IDC_COMBO_SHAPE,		OnControlValueChange)
 
-	ON_EN_CHANGE(IDC_EDIT_LINE_RADIUS,		OnControlValueChange)
-	ON_EN_CHANGE(IDC_EDIT_WIDTH,			OnControlValueChange)
-	ON_EN_CHANGE(IDC_EDIT_HEIGHT,			OnControlValueChange)
-	
+	ON_EN_CHANGE(IDC_EDIT_DANAMIC_1,		OnControlValueChange)
+	ON_EN_CHANGE(IDC_EDIT_DANAMIC_2,		OnControlValueChange)
+	ON_EN_CHANGE(IDC_EDIT_DANAMIC_3,		OnControlValueChange)
+
 	ON_EN_CHANGE(IDC_EDIT_WALL_SIZE,		OnControlValueChange)
 	ON_EN_CHANGE(IDC_EDIT_SAFESIZE,			OnControlValueChange)
 	
@@ -665,7 +671,7 @@ void EntryManageDialog::OnTreeSelChanged(LPNMHDR pnmhdr, LRESULT *pLResult)
 		InitEntryData();
 
 		//显示动态组件
-		ShowControlDynamic();
+		ShowDynamicControl();
 
 		//设置确认按钮不可用
 		m_ButtonOK.EnableWindow(false);
@@ -683,9 +689,9 @@ void EntryManageDialog::FillLineData( LineEntry* lineEntry )
 		m_LineCategory.SetWindowText(lineEntry->m_LineBasiInfo->mCategory.c_str());
 		m_LineShape.SetWindowText(lineEntry->m_LineBasiInfo->mShape.c_str());
 
-		m_LineRadius.SetWindowText(lineEntry->m_LineBasiInfo->mRadius.c_str());
-		m_LineWidth.SetWindowText(lineEntry->m_LineBasiInfo->mWidth.c_str());
-		m_LineHeight.SetWindowText(lineEntry->m_LineBasiInfo->mHeight.c_str());
+		m_EditDynamic_1.SetWindowText(lineEntry->m_LineBasiInfo->mRadius.c_str());
+		m_EditDynamic_2.SetWindowText(lineEntry->m_LineBasiInfo->mWidth.c_str());
+		m_EditDynamic_3.SetWindowText(lineEntry->m_LineBasiInfo->mHeight.c_str());
 
 		m_LineWallSize.SetWindowText(lineEntry->m_LineBasiInfo->mWallSize.c_str());
 		m_LineSafeSize.SetWindowText(lineEntry->m_LineBasiInfo->mSafeSize.c_str());
@@ -711,9 +717,9 @@ LineCategoryItemData* EntryManageDialog::CreateEntryDetailInfo()
 	m_LineCategory.GetWindowTextW(lineCategory);
 	m_LineShape.GetWindowTextW(lineShape);
 
-	m_LineRadius.GetWindowTextW(lineRadius);
-	m_LineWidth.GetWindowTextW(lineWidth);
-	m_LineHeight.GetWindowTextW(lineHeight);
+	m_EditDynamic_1.GetWindowTextW(lineRadius);
+	m_EditDynamic_2.GetWindowTextW(lineWidth);
+	m_EditDynamic_3.GetWindowTextW(lineHeight);
 
 	m_LineWallSize.GetWindowTextW(lineWallSize);
 	m_LineSafeSize.GetWindowTextW(lineSafeSize);
@@ -776,9 +782,9 @@ void EntryManageDialog::ClearLineData()
 	m_LineCategory.SetCurSel(0);
 	m_LineShape.SetCurSel(0);
 
-	m_LineRadius.SetWindowText(L"");
-	m_LineWidth.SetWindowText(L"");
-	m_LineHeight.SetWindowText(L"");
+	m_EditDynamic_1.SetWindowText(L"");
+	m_EditDynamic_2.SetWindowText(L"");
+	m_EditDynamic_3.SetWindowText(L"");
 
 	m_LineWallSize.SetWindowText(L"");
 	m_LineSafeSize.SetWindowText(L"");
@@ -801,9 +807,9 @@ void EntryManageDialog::EnableDetailControl(bool enable)
 	m_LineCategory.EnableWindow(enable);
 	m_LineShape.EnableWindow(enable);
 
-	m_LineRadius.EnableWindow(enable);
-	m_LineWidth.EnableWindow(enable);
-	m_LineHeight.EnableWindow(enable);
+	m_EditDynamic_1.EnableWindow(enable);
+	m_EditDynamic_2.EnableWindow(enable);
+	m_EditDynamic_3.EnableWindow(enable);
 
 	m_LineWallSize.EnableWindow(enable);
 	m_LineSafeSize.EnableWindow(enable);
@@ -816,7 +822,7 @@ void EntryManageDialog::EnableDetailControl(bool enable)
 
 void EntryManageDialog::OnCbnShapeChange()
 {
-	ShowControlDynamic();
+	ShowDynamicControl();
 }
 
 void EntryManageDialog::OnControlValueChange()
@@ -827,30 +833,105 @@ void EntryManageDialog::OnControlValueChange()
 	UpdateData(false);
 }
 
-void EntryManageDialog::ShowControlDynamic()
+void EntryManageDialog::ShowDynamicControl()
 {
+	//首先是隐藏所有的动态控件
+	HideDynamicControl();
+
+	//分类别显示动态控件
 	if( m_LineShape.GetCurSel() == 0 )
 	{
-		m_StaticRadius.EnableWindow( true );
-		m_LineRadius.EnableWindow( true );
+		m_StaticDynamic_1.SetWindowTextW(L"内径(mm)");
 
-		m_StaticWidth.EnableWindow( false );
-		m_LineWidth.EnableWindow( false );
-
-		m_StaticHeight.EnableWindow( false );
-		m_LineHeight.EnableWindow( false );
+		m_StaticDynamic_1.ShowWindow( true );
+		m_EditDynamic_1.ShowWindow( true );
 	}
 	else if( m_LineShape.GetCurSel() == 1 )
 	{
-		m_StaticRadius.EnableWindow( false );
-		m_LineRadius.EnableWindow( false );
+		m_StaticDynamic_1.SetWindowTextW(L"净宽(mm)");
+		m_StaticDynamic_2.SetWindowTextW(L"净高(mm)");
 
-		m_StaticWidth.EnableWindow( true );
-		m_LineWidth.EnableWindow( true );
+		m_StaticDynamic_1.ShowWindow( true );
+		m_EditDynamic_1.ShowWindow( true );
 
-		m_StaticHeight.EnableWindow( true );
-		m_LineHeight.EnableWindow( true );
+		m_StaticDynamic_2.ShowWindow( true );
+		m_EditDynamic_2.ShowWindow( true );
 	}
+	else if( m_LineShape.GetCurSel() == 2 )
+	{
+		m_StaticDynamic_1.SetWindowTextW(L"净宽(mm)");
+		m_StaticDynamic_2.SetWindowTextW(L"矢高(mm)");
+		m_StaticDynamic_3.SetWindowTextW(L"墙高(mm)");
+
+		m_StaticDynamic_1.ShowWindow( true );
+		m_EditDynamic_1.ShowWindow( true );
+
+		m_StaticDynamic_2.ShowWindow( true );
+		m_EditDynamic_2.ShowWindow( true );
+
+		m_StaticDynamic_3.ShowWindow( true );
+		m_EditDynamic_3.ShowWindow( true );
+	}
+	else if( m_LineShape.GetCurSel() == 3 )
+	{
+		m_StaticDynamic_1.SetWindowTextW(L"净宽(mm)");
+		m_StaticDynamic_2.SetWindowTextW(L"上矢高(mm)");
+		m_StaticDynamic_3.SetWindowTextW(L"下矢高(mm)");
+		m_StaticDynamic_4.SetWindowTextW(L"墙高(mm)");
+
+		m_StaticDynamic_1.ShowWindow( true );
+		m_EditDynamic_1.ShowWindow( true );
+
+		m_StaticDynamic_2.ShowWindow( true );
+		m_EditDynamic_2.ShowWindow( true );
+
+		m_StaticDynamic_3.ShowWindow( true );
+		m_EditDynamic_3.ShowWindow( true );
+
+		m_StaticDynamic_4.ShowWindow( true );
+		m_EditDynamic_4.ShowWindow( true );
+	}
+	else if( m_LineShape.GetCurSel() == 4 )
+	{
+		m_StaticDynamic_1.SetWindowTextW(L"上矢宽(mm)");
+		m_StaticDynamic_2.SetWindowTextW(L"下矢宽(mm)");
+		m_StaticDynamic_3.SetWindowTextW(L"上矢高(mm)");
+		m_StaticDynamic_4.SetWindowTextW(L"下矢高(mm)");
+		m_StaticDynamic_5.SetWindowTextW(L"墙高(mm)");
+
+		m_StaticDynamic_1.ShowWindow( true );
+		m_EditDynamic_1.ShowWindow( true );
+
+		m_StaticDynamic_2.ShowWindow( true );
+		m_EditDynamic_2.ShowWindow( true );
+
+		m_StaticDynamic_3.ShowWindow( true );
+		m_EditDynamic_3.ShowWindow( true );
+
+		m_StaticDynamic_4.ShowWindow( true );
+		m_EditDynamic_4.ShowWindow( true );
+
+		m_StaticDynamic_5.ShowWindow( true );
+		m_EditDynamic_5.ShowWindow( true );
+	}
+}
+
+void EntryManageDialog::HideDynamicControl()
+{
+	m_StaticDynamic_1.ShowWindow( false );
+	m_EditDynamic_1.ShowWindow( false );
+
+	m_StaticDynamic_2.ShowWindow( false );
+	m_EditDynamic_2.ShowWindow( false );
+
+	m_StaticDynamic_3.ShowWindow( false );
+	m_EditDynamic_3.ShowWindow( false );
+
+	m_StaticDynamic_4.ShowWindow( false );
+	m_EditDynamic_4.ShowWindow( false );
+
+	m_StaticDynamic_5.ShowWindow( false );
+	m_EditDynamic_5.ShowWindow( false );
 }
 
 void EntryManageDialog::CheckUIData()

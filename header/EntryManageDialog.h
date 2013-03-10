@@ -80,7 +80,9 @@ protected:
 	virtual afx_msg void OnCbnShapeChange();
 	virtual afx_msg void OnControlValueChange();
 
-	virtual void ShowControlDynamic();
+	//动态控件
+	virtual void ShowDynamicControl();
+	virtual void HideDynamicControl();
 
 	//管理控制
 	void SetOperType( OPER_TYPE type ) { m_OperType = type; }
@@ -109,14 +111,20 @@ private:
 	CComboBox m_LineCategory;
 	CComboBox m_LineShape;
 
-	CStatic m_StaticRadius;
-	CEdit m_LineRadius;
+	CStatic m_StaticDynamic_1;
+	CEdit m_EditDynamic_1;
 
-	CStatic m_StaticWidth;
-	CEdit m_LineWidth;
+	CStatic m_StaticDynamic_2;
+	CEdit m_EditDynamic_2;
 
-	CStatic m_StaticHeight;
-	CEdit m_LineHeight;
+	CStatic m_StaticDynamic_3;
+	CEdit m_EditDynamic_3;
+
+	CStatic m_StaticDynamic_4;
+	CEdit m_EditDynamic_4;
+
+	CStatic m_StaticDynamic_5;
+	CEdit m_EditDynamic_5;
 
 	CEdit m_LineWallSize;
 	CEdit m_LineSafeSize;
