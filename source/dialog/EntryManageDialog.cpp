@@ -40,9 +40,11 @@ EntryManageDialog::EntryManageDialog(CWnd* pParent /*=NULL*/)
 
 	//得到当前管理的文档
 	m_fileName = curDoc()->fileName();
+	acutPrintf(L"\n弹出对话框管理【%s】的数据.",m_fileName.c_str());
 
 	//得到实体数据文件中的数据
 	m_EntryFile = LineEntryFileManager::RegisterEntryFile(m_fileName);
+	acutPrintf(L"\n当前文件有【%d】条管线.",m_EntryFile->GetList() ? m_EntryFile->GetList()->size() : 0 );
 }
 
 BOOL EntryManageDialog::OnInitDialog()
@@ -74,7 +76,7 @@ BOOL EntryManageDialog::OnInitDialog()
 
 BOOL EntryManageDialog::InitEntryListControl()
 {
-	acutPrintf(L"初始化管线实例数据.\n");
+	acutPrintf(L"\n初始化管线实例数据.");
 
 #ifdef _DEMO_DATA
 	HTREEITEM hKindItem ,hCatogreyItem,kLineItem;
@@ -206,7 +208,7 @@ HTREEITEM EntryManageDialog::FindKindNode( const UINT& lineID)
 	   if( currentID == lineID)
 	   {
 #ifdef DEBUG
-		   acutPrintf(L"在树上找到了这种ID【%d】\n",lineID);
+		   acutPrintf(L"\n在树上找到了这种ID【%d】.",lineID);
 #endif
 		  //m_LinesTree.DeleteItem(item.hItem);
 		  return hCurrent;
@@ -346,7 +348,7 @@ BOOL EntryManageDialog::UpdateLine( LineEntry* lineEntry )
 BOOL EntryManageDialog::InitEntryPointsControl()
 {
 #ifdef DEBUG
-	acutPrintf(L"初始化管线中点坐标的数据.\n");
+	acutPrintf(L"\n初始化管线中点坐标的数据.");
 #endif
 
 	int index = 0;
@@ -372,10 +374,11 @@ BOOL EntryManageDialog::InitEntryPointsData(LineEntry* lineEntry)
 {
 	m_LineDetailList.DeleteAllItems();
 
-	acutPrintf(L"初始化坐标信息.\n");
+	acutPrintf(L"\n初始化坐标信息.");
 
 	if( lineEntry && lineEntry->m_PointList )
 	{
+		acutPrintf(L"\n共有折线段【%d】条.",lineEntry->m_PointList->size()-1);
 		int index = 0;
 		for( PointIter iter = lineEntry->m_PointList->begin();
 			iter != lineEntry->m_PointList->end();
@@ -415,7 +418,7 @@ EntryManageDialog::~EntryManageDialog()
 {
 #ifdef DEBUG
 	if( m_EntryFile )
-		acutPrintf(L"数据文件【%s】实体管理对话框关闭了.\n",m_EntryFile->m_FileName.c_str());
+		acutPrintf(L"\n数据文件【%s】的实体管理对话框关闭了.",m_EntryFile->m_FileName.c_str());
 #endif
 }
 
@@ -507,6 +510,7 @@ void EntryManageDialog::OnBnClickedButtonOK()
 	{
 		//得到实体名称
 		wstring pipeName = m_EntryFile->GetNewPipeName(detailInfo->mCategory);
+		acutPrintf(L"\n新增管线【%s】,折线段【%d】条.",pipeName.c_str(),pointList->size());
 
 		//创建新的管线
 		LineEntry* newLine = new LineEntry(pipeName,GlobalData::KIND_LINE,
@@ -532,6 +536,10 @@ void EntryManageDialog::OnBnClickedButtonOK()
 		//设置新的数据
 		if( selectLine )
 		{
+			acutPrintf(L"\n更新管线【%s】,折线段【%d】条.",
+				selectLine->m_LineName.c_str(),
+				pointList->size());
+
 			//设置基本信息
 			selectLine->SetBasicInfo( detailInfo );
 
@@ -544,7 +552,7 @@ void EntryManageDialog::OnBnClickedButtonOK()
 	}
 
 	//默认进入XY视图
-	//acedCommand(RTSTR, _T("._-VIEW"), RTSTR, L"TOP", 0);
+	acedCommand(RTSTR, _T("._-VIEW"), RTSTR, L"TOP", 0);
 
 	//保存到临时文件
 	m_EntryFile->Persistent();

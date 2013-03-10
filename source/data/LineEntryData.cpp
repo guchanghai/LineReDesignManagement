@@ -1097,7 +1097,7 @@ LineEntryFile* LineEntryFileManager::GetCurrentLineEntryFile()
 	//Get current filename
 	wstring fileName = curDoc()->fileName();
 
-	acutPrintf(L"\n对【%s】的管线进行切图.",fileName.c_str());
+	acutPrintf(L"\n查找【%s】对应的的管线.",fileName.c_str());
 
 	return GetLineEntryFile(fileName);
 }
@@ -1110,6 +1110,7 @@ BOOL LineEntryFileManager::ImportLMALineFile()
 
 	if (dlg.DoModal() == IDOK) 
 	{
+		//这句话确保了pEntryFileList非空
 		GetCurrentLineEntryFile();
 
 		//得到导入文件
@@ -1136,7 +1137,7 @@ BOOL LineEntryFileManager::ExportLMALineFile()
 	
 	//去除掉文件后缀（dwg）
 	wstring fileName( curDoc()->fileName() );
-	fileName = fileName.substr(0, fileName.find_first_of(L".")).append(L"dat");
+	fileName = fileName.substr(0, fileName.find_first_of(L"."));
 
 	static wchar_t BASED_CODE szFilter[] = L"管线数据文件 (*.dat)|*.dat||";
 	CFileDialog dlg(FALSE, L"dat", fileName.c_str(), 
