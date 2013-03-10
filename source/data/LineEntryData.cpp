@@ -343,6 +343,7 @@ wstring LineEntry::toString()
 
 void LineEntry::Redraw()
 {
+	/*
 	//删除以前的线段(从数据库中)
 	ArxWrapper::eraseLMALine(*this,true);
 
@@ -351,6 +352,7 @@ void LineEntry::Redraw()
 
 	//绘制新的线段
 	ArxWrapper::createLMALine(*this);
+	*/
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1103,8 +1105,8 @@ LineEntryFile* LineEntryFileManager::GetCurrentLineEntryFile()
 BOOL LineEntryFileManager::ImportLMALineFile()
 {
 	//导入选择对话框
-	static wchar_t BASED_CODE szFilter[] = L"管线数据文件 (*.lma)|*.lma||";
-	CFileDialog dlg(TRUE, L"lma", L"", OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter, CWnd::FromHandle(adsw_acadMainWnd()), 0/*, TRUE*/);
+	static wchar_t BASED_CODE szFilter[] = L"管线数据文件 (*.dat)|*.dat||";
+	CFileDialog dlg(TRUE, L"dat", L"", OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter, CWnd::FromHandle(adsw_acadMainWnd()), 0/*, TRUE*/);
 
 	if (dlg.DoModal() == IDOK) 
 	{
@@ -1131,8 +1133,14 @@ BOOL LineEntryFileManager::ImportLMALineFile()
 BOOL LineEntryFileManager::ExportLMALineFile()
 {
 	//导出选择对话框
-	static wchar_t BASED_CODE szFilter[] = L"管线数据文件 (*.lma)|*.lma||";
-	CFileDialog dlg(FALSE, L"lma", curDoc()->fileName(), OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter, CWnd::FromHandle(adsw_acadMainWnd()), 0/*, TRUE*/);
+	
+	//TODO 去除掉文件后缀（dwg）
+	curDoc()->
+
+	static wchar_t BASED_CODE szFilter[] = L"管线数据文件 (*.dat)|*.dat||";
+	CFileDialog dlg(FALSE, L"dat", curDoc()->fileName(), 
+					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter, 
+					CWnd::FromHandle(adsw_acadMainWnd()), 0/*, TRUE*/);
 
 	if (dlg.DoModal() == IDOK) 
 	{

@@ -324,6 +324,7 @@ BOOL EntryManageDialog::UpdateLine( LineEntry* lineEntry )
 	//设置新名称
 	if( hItem )
 	{
+		//TODO 重命名
 		m_LinesTree.SetItemText(hItem, lineEntry->m_LineName.c_str());
 
 		//保存数据
@@ -536,6 +537,9 @@ void EntryManageDialog::OnBnClickedButtonOK()
 
 			//设置折线段信息
 			selectLine->SetPoints( pointList );
+
+			//更新管线
+			UpdateLine(selectLine);
 		}
 	}
 
