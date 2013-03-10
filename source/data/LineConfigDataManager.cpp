@@ -140,10 +140,8 @@ LineConfigDataManager::LineConfigDataManager(void)
 					wstring& subName = wLine.substr(columnFrom);
 					newItem->mSubName = subName;
 
-					acutPrintf(L"\n配置数据：");
-					acutPrintf(L"\n种类【%s】名称【%s】子项【%s】", newItem->mCategory.c_str(), newItem->mName.c_str(), newItem->mSubName.c_str());
-
 					mLineConfigData->push_back(newItem);
+					acutPrintf(L"\n读取配置数据 - 种类【%s】名称【%s】子项【%s】", newItem->mCategory.c_str(), newItem->mName.c_str(), newItem->mSubName.c_str());
 				}
 			}
 
