@@ -189,7 +189,7 @@ public:
 	PointList* GetTempLine( const UINT& lineID );
 	PointList* TransferTempLine( const UINT& lineID );
 
-	wstring GetNewPipeName( const wstring& pipeCategory );
+	wstring GetNewPipeName( const LineCategoryItemData* pipeCategoryData );
 
 	void Import();
 	void Persistent() const;

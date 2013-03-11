@@ -78,6 +78,7 @@ protected:
 	//控件相关
 	virtual afx_msg void OnTreeSelChanged(LPNMHDR pnmhdr, LRESULT *pLResult);
 	virtual afx_msg void OnCbnShapeChange();
+	virtual afx_msg void OnCbnCategoryChange();
 	virtual afx_msg void OnControlValueChange();
 
 	//动态控件

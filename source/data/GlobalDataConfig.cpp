@@ -39,6 +39,9 @@ const wstring GlobalData::BLOCK_CATEGORY_BELLOW = L"下方";
 **/
 const wstring GlobalData::LINE_SHAPE_CIRCLE = L"圆形";
 const wstring GlobalData::LINE_SHAPE_SQUARE = L"矩形";
+const wstring GlobalData::LINE_SHAPE_GZQPD = L"拱直墙平底";
+const wstring GlobalData::LINE_SHAPE_GZQYG = L"拱直墙仰拱";
+const wstring GlobalData::LINE_SHAPE_QQMTX = L"曲墙(马蹄形)";
 
 /**
 * 管道单位

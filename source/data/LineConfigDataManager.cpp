@@ -194,6 +194,25 @@ LineCommonConfigVector* LineConfigDataManager::FindConfig( const wstring& catego
 	return configLig;
 }
 
+wstring LineConfigDataManager::FindDefaultSize( const wstring& category)
+{
+	LineCommonConfigVector* lineCategories = FindConfig(LineConfigDataManager::CONFIG_LINE_NAME);
+	wstring lineSize(L"0");
+
+	for( ConfigIterator iter = mLineConfigData->begin();
+		iter != mLineConfigData->end();
+		iter++)
+	{
+		if( (*iter)->mName.find(category) != wstring::npos )
+		{
+			lineSize = (*iter)->mSubName;
+		}
+	}
+
+	delete lineCategories;
+	return lineSize;
+}
+
 } // end of data
 
 } // end of assistant

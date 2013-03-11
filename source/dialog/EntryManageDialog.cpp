@@ -135,6 +135,7 @@ BOOL EntryManageDialog::InitEntryDetailControl()
 			m_LineCategory.InsertString(index++,(*iter)->mName.c_str());
 		}
 
+		delete lineKindConfig;
 		m_LineCategory.SetCurSel(0);
 	}
 
@@ -150,6 +151,7 @@ BOOL EntryManageDialog::InitEntryDetailControl()
 			m_LineShape.InsertString(index++,(*iter)->mName.c_str());
 		}
 
+		delete lineShapeKind;
 		m_LineShape.SetCurSel(0);
 	}
 
@@ -489,11 +491,12 @@ BEGIN_MESSAGE_MAP(EntryManageDialog, CDialog)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE_LINES, OnTreeSelChanged)
 
 	//切面类型选中
-	ON_CBN_SELCHANGE(IDC_COMBO_SHAPE,		OnCbnShapeChange)
-
+	ON_CBN_SELENDOK(IDC_COMBO_CATEGORY,		OnCbnCategoryChange)
 	ON_CBN_SELCHANGE(IDC_COMBO_CATEGORY,	OnControlValueChange)
-	ON_CBN_SELCHANGE(IDC_COMBO_SHAPE,		OnControlValueChange)
 
+	ON_CBN_SELCHANGE(IDC_COMBO_SHAPE,		OnCbnShapeChange)
+	ON_CBN_SELCHANGE(IDC_COMBO_SHAPE,		OnControlValueChange)
+	
 	ON_EN_CHANGE(IDC_EDIT_DANAMIC_1,		OnControlValueChange)
 	ON_EN_CHANGE(IDC_EDIT_DANAMIC_2,		OnControlValueChange)
 	ON_EN_CHANGE(IDC_EDIT_DANAMIC_3,		OnControlValueChange)
@@ -522,7 +525,7 @@ void EntryManageDialog::OnBnClickedButtonOK()
 	if( m_OperType == OPER_ADD )
 	{
 		//得到实体名称
-		wstring pipeName = m_EntryFile->GetNewPipeName(detailInfo->mCategory);
+		wstring pipeName = m_EntryFile->GetNewPipeName(detailInfo);
 		acutPrintf(L"\n新增管线【%s】,折线段【%d】条.",pipeName.c_str(),pointList->size());
 
 		//创建新的管线
@@ -689,9 +692,15 @@ void EntryManageDialog::FillLineData( LineEntry* lineEntry )
 		m_LineCategory.SetWindowText(lineEntry->m_LineBasiInfo->mCategory.c_str());
 		m_LineShape.SetWindowText(lineEntry->m_LineBasiInfo->mShape.c_str());
 
-		m_EditDynamic_1.SetWindowText(lineEntry->m_LineBasiInfo->mRadius.c_str());
-		m_EditDynamic_2.SetWindowText(lineEntry->m_LineBasiInfo->mWidth.c_str());
-		m_EditDynamic_3.SetWindowText(lineEntry->m_LineBasiInfo->mHeight.c_str());
+		if( lineEntry->m_LineBasiInfo->mShape == GlobalData::LINE_SHAPE_CIRCLE )
+		{
+			m_EditDynamic_1.SetWindowText(lineEntry->m_LineBasiInfo->mRadius.c_str());
+		}
+		else if ( lineEntry->m_LineBasiInfo->mShape == GlobalData::LINE_SHAPE_SQUARE )
+		{
+			m_EditDynamic_1.SetWindowText(lineEntry->m_LineBasiInfo->mWidth.c_str());
+			m_EditDynamic_2.SetWindowText(lineEntry->m_LineBasiInfo->mHeight.c_str());
+		}
 
 		m_LineWallSize.SetWindowText(lineEntry->m_LineBasiInfo->mWallSize.c_str());
 		m_LineSafeSize.SetWindowText(lineEntry->m_LineBasiInfo->mSafeSize.c_str());
@@ -717,9 +726,21 @@ LineCategoryItemData* EntryManageDialog::CreateEntryDetailInfo()
 	m_LineCategory.GetWindowTextW(lineCategory);
 	m_LineShape.GetWindowTextW(lineShape);
 
-	m_EditDynamic_1.GetWindowTextW(lineRadius);
-	m_EditDynamic_2.GetWindowTextW(lineWidth);
-	m_EditDynamic_3.GetWindowTextW(lineHeight);
+	if( wstring(lineShape.GetBuffer()) == GlobalData::LINE_SHAPE_CIRCLE )
+	{
+			m_EditDynamic_1.GetWindowTextW(lineRadius);
+	}
+	else if ( wstring(lineShape.GetBuffer()) == GlobalData::LINE_SHAPE_CIRCLE )
+	{
+		m_EditDynamic_1.GetWindowTextW(lineRadius);
+		m_EditDynamic_2.GetWindowTextW(lineWidth);
+	}
+	else
+	{
+		lineRadius = L"0";
+		lineWidth = L"0";
+		lineHeight = L"0";
+	}
 
 	m_LineWallSize.GetWindowTextW(lineWallSize);
 	m_LineSafeSize.GetWindowTextW(lineSafeSize);
@@ -780,17 +801,24 @@ void EntryManageDialog::ClearLineData()
 {
 	//清空详细数据
 	m_LineCategory.SetCurSel(0);
+	CString category;
+	m_LineCategory.GetWindowTextW(category);
+	wstring lineCategory(category.GetBuffer());
+
 	m_LineShape.SetCurSel(0);
 
-	m_EditDynamic_1.SetWindowText(L"");
-	m_EditDynamic_2.SetWindowText(L"");
-	m_EditDynamic_3.SetWindowText(L"");
+	wstring defaultSize = LineConfigDataManager::Instance()->FindDefaultSize(lineCategory);
+	m_EditDynamic_1.SetWindowText(defaultSize.c_str());
+	m_EditDynamic_2.SetWindowText(defaultSize.c_str());
+	m_EditDynamic_3.SetWindowText(L"0");
+	m_EditDynamic_4.SetWindowText(L"0");
+	m_EditDynamic_5.SetWindowText(L"0");
 
-	m_LineWallSize.SetWindowText(L"");
-	m_LineSafeSize.SetWindowText(L"");
+	m_LineWallSize.SetWindowText(L"0");
+	m_LineSafeSize.SetWindowText(L"0");
 
-	m_LinePlaneDesc.SetWindowText(L"");
-	m_LineCutDesc.SetWindowText(L"");
+	m_LinePlaneDesc.SetWindowText(L"无");
+	m_LineCutDesc.SetWindowText(L"无");
 
 	//清空折线点数据
 	m_LineDetailList.DeleteAllItems();
@@ -810,6 +838,8 @@ void EntryManageDialog::EnableDetailControl(bool enable)
 	m_EditDynamic_1.EnableWindow(enable);
 	m_EditDynamic_2.EnableWindow(enable);
 	m_EditDynamic_3.EnableWindow(enable);
+	m_EditDynamic_4.EnableWindow(enable);
+	m_EditDynamic_5.EnableWindow(enable);
 
 	m_LineWallSize.EnableWindow(enable);
 	m_LineSafeSize.EnableWindow(enable);
@@ -818,6 +848,23 @@ void EntryManageDialog::EnableDetailControl(bool enable)
 	m_LineCutDesc.EnableWindow(enable);
 
 	m_LineDetailList.EnableWindow(enable);
+}
+
+void EntryManageDialog::OnCbnCategoryChange()
+{
+	if( m_OperType == OPER_ADD )
+	{
+		CString category;
+		m_LineCategory.GetWindowTextW(category);
+		wstring lineCategory(category.GetBuffer());
+
+		wstring defaultSize = LineConfigDataManager::Instance()->FindDefaultSize(lineCategory);
+		m_EditDynamic_1.SetWindowText(defaultSize.c_str());
+		m_EditDynamic_2.SetWindowText(defaultSize.c_str());
+		m_EditDynamic_3.SetWindowText(L"0");
+		m_EditDynamic_4.SetWindowText(L"0");
+		m_EditDynamic_5.SetWindowText(L"0");
+	}
 }
 
 void EntryManageDialog::OnCbnShapeChange()
@@ -839,14 +886,20 @@ void EntryManageDialog::ShowDynamicControl()
 	HideDynamicControl();
 
 	//分类别显示动态控件
-	if( m_LineShape.GetCurSel() == 0 )
+	CString shapeSelected;
+	m_LineShape.GetWindowTextW(shapeSelected);
+	wstring shape(shapeSelected.GetBuffer());
+
+	int index = m_LineShape.GetCurSel();
+
+	if( index == 0 /*shape == GlobalData::LINE_SHAPE_CIRCLE*/ )
 	{
 		m_StaticDynamic_1.SetWindowTextW(L"内径(mm)");
 
 		m_StaticDynamic_1.ShowWindow( true );
 		m_EditDynamic_1.ShowWindow( true );
 	}
-	else if( m_LineShape.GetCurSel() == 1 )
+	else if( index == 1 /*shape == GlobalData::LINE_SHAPE_SQUARE*/ )
 	{
 		m_StaticDynamic_1.SetWindowTextW(L"净宽(mm)");
 		m_StaticDynamic_2.SetWindowTextW(L"净高(mm)");
@@ -857,7 +910,7 @@ void EntryManageDialog::ShowDynamicControl()
 		m_StaticDynamic_2.ShowWindow( true );
 		m_EditDynamic_2.ShowWindow( true );
 	}
-	else if( m_LineShape.GetCurSel() == 2 )
+	else if( index == 2 /*shape == GlobalData::LINE_SHAPE_GZQPD*/ )
 	{
 		m_StaticDynamic_1.SetWindowTextW(L"净宽(mm)");
 		m_StaticDynamic_2.SetWindowTextW(L"矢高(mm)");
@@ -872,7 +925,7 @@ void EntryManageDialog::ShowDynamicControl()
 		m_StaticDynamic_3.ShowWindow( true );
 		m_EditDynamic_3.ShowWindow( true );
 	}
-	else if( m_LineShape.GetCurSel() == 3 )
+	else if( index == 3 /*shape == GlobalData::LINE_SHAPE_GZQYG*/ )
 	{
 		m_StaticDynamic_1.SetWindowTextW(L"净宽(mm)");
 		m_StaticDynamic_2.SetWindowTextW(L"上矢高(mm)");
@@ -891,7 +944,7 @@ void EntryManageDialog::ShowDynamicControl()
 		m_StaticDynamic_4.ShowWindow( true );
 		m_EditDynamic_4.ShowWindow( true );
 	}
-	else if( m_LineShape.GetCurSel() == 4 )
+	else if( index == 4 /*shape == GlobalData::LINE_SHAPE_QQMTX*/ )
 	{
 		m_StaticDynamic_1.SetWindowTextW(L"上矢宽(mm)");
 		m_StaticDynamic_2.SetWindowTextW(L"下矢宽(mm)");

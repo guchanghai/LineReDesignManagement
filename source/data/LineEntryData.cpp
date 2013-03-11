@@ -14,10 +14,13 @@
 
 #include <LineEntryData.h>
 #include <LMAUtils.h>
+#include <GlobalDataConfig.h>
 
 #include <ArxWrapper.h>
 #include <acdocman.h>
 #include <acutmem.h>
+
+using namespace ::com::guch::assistant::config;
 
 namespace com
 {
@@ -906,15 +909,34 @@ PointList* LineEntryFile::TransferTempLine( const UINT& lineID )
 	}
 }
 
-wstring LineEntryFile::GetNewPipeName( const wstring& pipeCategory )
+wstring LineEntryFile::GetNewPipeName( const LineCategoryItemData* pipeCategoryData )
 {
 	//TODO Find name exist, plus sequence
 	int index = 1;
 
+	const wstring& pipeCategory = pipeCategoryData->mCategory;
+
 	while(true)
 	{
 		CString pipeName;
-		pipeName.Format(L"%s_%d",pipeCategory.c_str(),index);
+		
+		//ÖÖÀà_ÐÎ×´_³ß´ç_ÐòºÅ
+		CString shape;
+		if( pipeCategoryData->mCategory == GlobalData::LINE_SHAPE_CIRCLE )
+		{
+			shape.Format(L"%s_%s",pipeCategoryData->mCategory.c_str(),pipeCategoryData->mRadius.c_str());
+		}
+		else if( pipeCategoryData->mCategory == GlobalData::LINE_SHAPE_CIRCLE )
+		{
+			shape.Format(L"%s_%sx%s",pipeCategoryData->mCategory.c_str(),
+				pipeCategoryData->mWidth.c_str(),pipeCategoryData->mHeight.c_str());
+		}
+		else
+		{
+			shape.Format(L"%s",pipeCategoryData->mCategory.c_str());
+		}
+
+		pipeName.Format(L"%s_%s_%d",pipeCategory.c_str(),shape.GetBuffer(),index);
 
 		if( this->FindLineByName(pipeName.GetBuffer()) == NULL )
 		{

@@ -55,6 +55,9 @@ public:
 	**/
 	static const wstring LINE_SHAPE_CIRCLE;
 	static const wstring LINE_SHAPE_SQUARE;
+	static const wstring LINE_SHAPE_GZQPD;
+	static const wstring LINE_SHAPE_GZQYG;
+	static const wstring LINE_SHAPE_QQMTX;
 
 	/**
 	* 管道单位
