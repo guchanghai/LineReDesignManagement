@@ -922,18 +922,18 @@ wstring LineEntryFile::GetNewPipeName( const LineCategoryItemData* pipeCategoryD
 		
 		//ÖÖÀà_ÐÎ×´_³ß´ç_ÐòºÅ
 		CString shape;
-		if( pipeCategoryData->mCategory == GlobalData::LINE_SHAPE_CIRCLE )
+		if( pipeCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 		{
-			shape.Format(L"%s_%s",pipeCategoryData->mCategory.c_str(),pipeCategoryData->mRadius.c_str());
+			shape.Format(L"%s_%s",pipeCategoryData->mShape.c_str(),pipeCategoryData->mRadius.c_str());
 		}
-		else if( pipeCategoryData->mCategory == GlobalData::LINE_SHAPE_CIRCLE )
+		else if( pipeCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 		{
-			shape.Format(L"%s_%sx%s",pipeCategoryData->mCategory.c_str(),
+			shape.Format(L"%s_%sx%s",pipeCategoryData->mShape.c_str(),
 				pipeCategoryData->mWidth.c_str(),pipeCategoryData->mHeight.c_str());
 		}
 		else
 		{
-			shape.Format(L"%s",pipeCategoryData->mCategory.c_str());
+			shape.Format(L"%s",pipeCategoryData->mShape.c_str());
 		}
 
 		pipeName.Format(L"%s_%s_%d",pipeCategory.c_str(),shape.GetBuffer(),index);

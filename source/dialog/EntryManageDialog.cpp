@@ -142,16 +142,27 @@ BOOL EntryManageDialog::InitEntryDetailControl()
 	//初始化管线切面类型列表
 	{
 		int index = 0;
+
+		/* TODO From configuration file, the string is different from the hard code in source file
 		LineCommonConfigVector* lineShapeKind = LineConfigDataManager::Instance()->FindConfig( GlobalData::CONFIG_SHAPE_KIND);
 
 		for( ConfigIterator iter = lineShapeKind->begin();
 			iter != lineShapeKind->end();
 			iter++)
 		{
-			m_LineShape.InsertString(index++,(*iter)->mName.c_str());
+			//m_LineShape.InsertString(index++,(*iter)->mName.c_str());
 		}
 
 		delete lineShapeKind;
+		*/
+
+		m_LineShape.InsertString(index++,GlobalData::LINE_SHAPE_CIRCLE.c_str());
+		m_LineShape.InsertString(index++,GlobalData::LINE_SHAPE_SQUARE.c_str());
+		m_LineShape.InsertString(index++,GlobalData::LINE_SHAPE_GZQPD.c_str());
+		m_LineShape.InsertString(index++,GlobalData::LINE_SHAPE_GZQYG.c_str());
+		m_LineShape.InsertString(index++,GlobalData::LINE_SHAPE_QQMTX.c_str());
+
+		
 		m_LineShape.SetCurSel(0);
 	}
 
@@ -854,6 +865,8 @@ void EntryManageDialog::OnCbnCategoryChange()
 {
 	if( m_OperType == OPER_ADD )
 	{
+		UpdateData(true);
+
 		CString category;
 		m_LineCategory.GetWindowTextW(category);
 		wstring lineCategory(category.GetBuffer());
@@ -882,6 +895,8 @@ void EntryManageDialog::OnControlValueChange()
 
 void EntryManageDialog::ShowDynamicControl()
 {
+	UpdateData(true);
+
 	//首先是隐藏所有的动态控件
 	HideDynamicControl();
 
@@ -892,14 +907,14 @@ void EntryManageDialog::ShowDynamicControl()
 
 	int index = m_LineShape.GetCurSel();
 
-	if( index == 0 /*shape == GlobalData::LINE_SHAPE_CIRCLE*/ )
+	if( shape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
 		m_StaticDynamic_1.SetWindowTextW(L"内径(mm)");
 
 		m_StaticDynamic_1.ShowWindow( true );
 		m_EditDynamic_1.ShowWindow( true );
 	}
-	else if( index == 1 /*shape == GlobalData::LINE_SHAPE_SQUARE*/ )
+	else if( shape == GlobalData::LINE_SHAPE_SQUARE )
 	{
 		m_StaticDynamic_1.SetWindowTextW(L"净宽(mm)");
 		m_StaticDynamic_2.SetWindowTextW(L"净高(mm)");
@@ -910,7 +925,7 @@ void EntryManageDialog::ShowDynamicControl()
 		m_StaticDynamic_2.ShowWindow( true );
 		m_EditDynamic_2.ShowWindow( true );
 	}
-	else if( index == 2 /*shape == GlobalData::LINE_SHAPE_GZQPD*/ )
+	else if( shape == GlobalData::LINE_SHAPE_GZQPD )
 	{
 		m_StaticDynamic_1.SetWindowTextW(L"净宽(mm)");
 		m_StaticDynamic_2.SetWindowTextW(L"矢高(mm)");
@@ -925,7 +940,7 @@ void EntryManageDialog::ShowDynamicControl()
 		m_StaticDynamic_3.ShowWindow( true );
 		m_EditDynamic_3.ShowWindow( true );
 	}
-	else if( index == 3 /*shape == GlobalData::LINE_SHAPE_GZQYG*/ )
+	else if( shape == GlobalData::LINE_SHAPE_GZQYG )
 	{
 		m_StaticDynamic_1.SetWindowTextW(L"净宽(mm)");
 		m_StaticDynamic_2.SetWindowTextW(L"上矢高(mm)");
@@ -944,7 +959,7 @@ void EntryManageDialog::ShowDynamicControl()
 		m_StaticDynamic_4.ShowWindow( true );
 		m_EditDynamic_4.ShowWindow( true );
 	}
-	else if( index == 4 /*shape == GlobalData::LINE_SHAPE_QQMTX*/ )
+	else if( shape == GlobalData::LINE_SHAPE_QQMTX )
 	{
 		m_StaticDynamic_1.SetWindowTextW(L"上矢宽(mm)");
 		m_StaticDynamic_2.SetWindowTextW(L"下矢宽(mm)");
