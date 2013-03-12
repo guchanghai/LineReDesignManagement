@@ -349,17 +349,14 @@ BOOL EntryManageDialog::UpdateLine( LineEntry* lineEntry )
 		//TODO 重命名
 		m_LinesTree.SetItemText(hItem, lineEntry->m_LineName.c_str());
 
-		//保存数据
-		m_EntryFile->UpdateLine(lineEntry);
-
 		//保存到数据库
 		ArxWrapper::PostToNameObjectsDict(lineEntry->pDbEntry,lineEntry->LINE_ENTRY_LAYER);
 
+		//保存数据
+		m_EntryFile->UpdateLine(lineEntry);
+
 		//保存到导出文件
 		m_EntryFile->Persistent();
-
-		//更新详细信息
-		InitEntryPointsControl();
 	}
 
 	return TRUE;
