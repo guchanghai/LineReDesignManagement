@@ -69,6 +69,7 @@ BOOL EntryManageDialog::OnInitDialog()
 	m_ButtonOK.EnableWindow(false);
 
 	//显示动态元素
+	UpdateData(true);
 	ShowDynamicControl();
 
 	return TRUE;
@@ -315,16 +316,6 @@ BOOL EntryManageDialog::UpdateLine( LineEntry* lineEntry )
 
 			throw ErrorException(errorMsg.GetBuffer());
 		}
-
-		LineEntry* pAnotherLine = NULL;
-
-		if( pAnotherLine = m_EntryFile->HasAnotherLineByByName( lineEntry->m_LineID, lineEntry->m_LineName ) )
-		{
-			CString errorMsg;
-			errorMsg.Format(L"已有管线叫这个名字，换一个吧");
-
-			throw ErrorException(errorMsg.GetBuffer());
-		}
 	}
 	catch(const ErrorException& e)
 	{
@@ -533,7 +524,7 @@ void EntryManageDialog::OnBnClickedButtonOK()
 	if( m_OperType == OPER_ADD )
 	{
 		//得到实体名称
-		wstring pipeName = m_EntryFile->GetNewPipeName(detailInfo);
+		wstring pipeName = m_EntryFile->GetNewPipeName(detailInfo,L"");
 		acutPrintf(L"\n新增管线【%s】,折线段【%d】条.",pipeName.c_str(),pointList->size());
 
 		//创建新的管线
@@ -563,6 +554,9 @@ void EntryManageDialog::OnBnClickedButtonOK()
 			acutPrintf(L"\n更新管线【%s】,折线段【%d】条.",
 				selectLine->m_LineName.c_str(),
 				pointList->size());
+
+			//得到新的实体名称
+			selectLine->m_LineName = m_EntryFile->GetNewPipeName(detailInfo,selectLine->m_LineName);
 
 			//设置基本信息
 			selectLine->SetBasicInfo( detailInfo );
@@ -665,6 +659,7 @@ BOOL EntryManageDialog::InitEntryData()
 	//得到选择的数据
 	LineEntry* pEntry = m_EntryFile->FindLine(selectedID);
 
+	//填充数据
 	FillLineData(pEntry);
 
 	return TRUE;
@@ -681,14 +676,20 @@ void EntryManageDialog::OnTreeSelChanged(LPNMHDR pnmhdr, LRESULT *pLResult)
 		//填充选中的数据
 		InitEntryData();
 
-		//显示动态组件
-		ShowDynamicControl();
-
 		//设置确认按钮不可用
 		m_ButtonOK.EnableWindow(false);
 
 		//各控件可用
 		EnableDetailControl(true);
+
+		//不可修改种类
+		m_LineCategory.EnableWindow(false);
+
+		//显示数据
+		UpdateData(false);
+
+		//动态显示组件
+		ShowDynamicControl();
 	}
 }
 
@@ -698,8 +699,9 @@ void EntryManageDialog::FillLineData( LineEntry* lineEntry )
 	{
 		//设置详细数据
 		m_LineCategory.SetWindowText(lineEntry->m_LineBasiInfo->mCategory.c_str());
-		m_LineShape.SetWindowText(lineEntry->m_LineBasiInfo->mShape.c_str());
+		FillShapeKind(lineEntry->m_LineBasiInfo->mShape);
 
+		//填充数据
 		if( lineEntry->m_LineBasiInfo->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 		{
 			m_EditDynamic_1.SetWindowText(lineEntry->m_LineBasiInfo->mRadius.c_str());
@@ -723,6 +725,21 @@ void EntryManageDialog::FillLineData( LineEntry* lineEntry )
 	UpdateData(FALSE);
 }
 
+void EntryManageDialog::FillShapeKind(const wstring& shape)
+{
+	for( int i = 0; i < m_LineShape.GetCount(); i++ )
+	{
+		CString shapeEntry;
+		m_LineShape.GetLBText(i,shapeEntry);
+
+		if( wstring(shapeEntry.GetBuffer()) == shape )
+		{
+			acutPrintf(L"\n选中第【%d】项");
+			m_LineShape.SetCurSel(i);
+		}
+	}
+}
+
 LineCategoryItemData* EntryManageDialog::CreateEntryDetailInfo()
 {
 	UpdateData(TRUE);
@@ -738,10 +755,10 @@ LineCategoryItemData* EntryManageDialog::CreateEntryDetailInfo()
 	{
 			m_EditDynamic_1.GetWindowTextW(lineRadius);
 	}
-	else if ( wstring(lineShape.GetBuffer()) == GlobalData::LINE_SHAPE_CIRCLE )
+	else if ( wstring(lineShape.GetBuffer()) == GlobalData::LINE_SHAPE_SQUARE )
 	{
-		m_EditDynamic_1.GetWindowTextW(lineRadius);
-		m_EditDynamic_2.GetWindowTextW(lineWidth);
+		m_EditDynamic_1.GetWindowTextW(lineWidth);
+		m_EditDynamic_2.GetWindowTextW(lineHeight);
 	}
 	else
 	{
@@ -814,6 +831,7 @@ void EntryManageDialog::ClearLineData()
 	wstring lineCategory(category.GetBuffer());
 
 	m_LineShape.SetCurSel(0);
+	ShowDynamicControl();
 
 	wstring defaultSize = LineConfigDataManager::Instance()->FindDefaultSize(lineCategory);
 	m_EditDynamic_1.SetWindowText(defaultSize.c_str());
@@ -979,6 +997,8 @@ void EntryManageDialog::ShowDynamicControl()
 		m_StaticDynamic_5.ShowWindow( true );
 		m_EditDynamic_5.ShowWindow( true );
 	}
+
+	UpdateData(false);
 }
 
 void EntryManageDialog::HideDynamicControl()
@@ -1003,7 +1023,7 @@ void EntryManageDialog::CheckUIData()
 {
 	if( m_ButtonOK.IsWindowEnabled() )
 	{
-		int result = MessageBoxW(L"提醒", L"数据已更改，是否保存", MB_OKCANCEL);
+		int result = MessageBoxW(L"数据已更改，是否保存", L"提醒", MB_OKCANCEL);
 
 		if( result == IDOK )
 		{

@@ -909,11 +909,10 @@ PointList* LineEntryFile::TransferTempLine( const UINT& lineID )
 	}
 }
 
-wstring LineEntryFile::GetNewPipeName( const LineCategoryItemData* pipeCategoryData )
+wstring LineEntryFile::GetNewPipeName( const LineCategoryItemData* pipeCategoryData, const wstring& orinalName )
 {
-	//TODO Find name exist, plus sequence
+	//Find name exist, plus sequence
 	int index = 1;
-
 	const wstring& pipeCategory = pipeCategoryData->mCategory;
 
 	while(true)
@@ -926,7 +925,7 @@ wstring LineEntryFile::GetNewPipeName( const LineCategoryItemData* pipeCategoryD
 		{
 			shape.Format(L"%s_%s",pipeCategoryData->mShape.c_str(),pipeCategoryData->mRadius.c_str());
 		}
-		else if( pipeCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
+		else if( pipeCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 		{
 			shape.Format(L"%s_%sx%s",pipeCategoryData->mShape.c_str(),
 				pipeCategoryData->mWidth.c_str(),pipeCategoryData->mHeight.c_str());
@@ -938,12 +937,24 @@ wstring LineEntryFile::GetNewPipeName( const LineCategoryItemData* pipeCategoryD
 
 		pipeName.Format(L"%s_%s_%d",pipeCategory.c_str(),shape.GetBuffer(),index);
 
+		//如果是更新
+		if( orinalName.length() != 0 )
+		{
+			//如果名字无变化，直接返回
+			if( wstring(pipeName.GetBuffer()) == orinalName )
+			{
+				return wstring(pipeName.GetBuffer());
+			}
+		}
+
+		//如果没有管线是这个名字，则新增
 		if( this->FindLineByName(pipeName.GetBuffer()) == NULL )
 		{
 			return wstring(pipeName.GetBuffer());
 		}
 		else
 		{
+			//序列号递增
 			index++;
 		}
 	}

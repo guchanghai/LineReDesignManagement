@@ -84,6 +84,7 @@ protected:
 	//动态控件
 	virtual void ShowDynamicControl();
 	virtual void HideDynamicControl();
+	virtual void FillShapeKind(const wstring& shape);
 
 	//管理控制
 	void SetOperType( OPER_TYPE type ) { m_OperType = type; }
