@@ -157,7 +157,7 @@ LineEntry::LineEntry(const wstring& rLineName, const wstring& rLineKind,
 	m_PrePointList(NULL)
 {
 	//创建数据库代理对象
-	pDbEntry = new LineDBEntry( this );
+	m_pDbEntry = new LineDBEntry( this );
 }
 
 LineEntry::LineEntry( const wstring& data)
@@ -346,7 +346,6 @@ wstring LineEntry::toString()
 
 void LineEntry::Redraw()
 {
-	/*
 	//删除以前的线段(从数据库中)
 	ArxWrapper::eraseLMALine(*this,true);
 
@@ -355,7 +354,6 @@ void LineEntry::Redraw()
 
 	//绘制新的线段
 	ArxWrapper::createLMALine(*this);
-	*/
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -477,6 +475,9 @@ LineDBEntry::dwgInFields(AcDbDwgFiler* pFiler)
 			pImplemention->m_LineBasiInfo->mThroughDirection = wstring(tmpStr);
 			acutDelString(tmpStr);
 		}
+
+		//得到对象的数据库ID
+		pImplemention->m_dbId = this->id();
 
 		CString filename;
 		dbToStr(this->database(),filename);
@@ -635,8 +636,7 @@ LineEntryFile::~LineEntryFile()
 				iter != m_LineList->end();
 				iter++ )
 		{
-			//if( (*iter) && (*iter)->pDbEntry )
-			//	(*iter)->pDbEntry->close();
+			//TODO no need to do for the database??
 		}
 
 		delete m_LineList;
@@ -759,8 +759,6 @@ BOOL LineEntryFile::UpdateLine(LineEntry* lineEntry)
 	if( iter != this->m_LineList->end())
 	{
 		(*iter)->m_LineName = lineEntry->m_LineName;
-		//(*iter)->m_LineNO = lineEntry->m_LineNO;
-
 		return TRUE;
 	}
 

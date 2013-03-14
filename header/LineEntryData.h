@@ -129,8 +129,11 @@ public:
 	PointList* m_PrePointList;
 	PointList* m_PointList;
 
-	//数据库代理对象
-	LineDBEntry* pDbEntry;
+	//数据库代理对象(既限于新建对象时使用)
+	LineDBEntry* m_pDbEntry;
+
+	//保存其ID
+	AcDbObjectId m_dbId;
 };
 
 /**

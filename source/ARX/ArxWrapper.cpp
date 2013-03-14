@@ -189,7 +189,7 @@ void ArxWrapper::PullFromNameObjectsDict()
 					// if ok
 					if (es == Acad::eOk)
 					{
-						pLineEntry->pDbEntry->close();
+						//pLineEntry->m_pDbEntry->close();
 					}
 				}
 				delete pDictIter;
@@ -264,6 +264,35 @@ AcDbObjectId ArxWrapper::PostToModelSpace(AcDbEntity* pEnt,const wstring& layerN
 	UnLockCurDoc();
 
 	return entId;
+}
+
+Acad::ErrorStatus ArxWrapper::RemoveDbObject(AcDbObjectId id)
+{
+	acutPrintf(L"\n删除数据库对象.");
+	Acad::ErrorStatus es = Acad::eOk;
+
+	if( id.isValid())
+	{
+		AcDbEntity* ent;
+        es = acdbOpenAcDbEntity(ent, id, AcDb::kForWrite);
+
+        if (es == Acad::eOk) 
+		{
+            ent->erase();
+            ent->close();
+        }
+		else
+		{
+			acutPrintf(L"\n打开数据库对象失败.");
+			rxErrorMsg(es);
+		}
+    }
+	else
+	{
+		acutPrintf(L"\n数据库对象不合法");
+	}
+
+	return es;
 }
 
 Acad::ErrorStatus ArxWrapper::LockCurDoc()

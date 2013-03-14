@@ -254,18 +254,6 @@ BOOL EntryManageDialog::InsertLine( LineEntry* lineEntry, BOOL bInitialize )
 
 			throw ErrorException(errorMsg.GetBuffer());
 		}
-
-		LineEntry* pLine = NULL;
-		if( !bInitialize )
-		{
-			if( pLine = m_EntryFile->FindLineByName( lineEntry->m_LineName ) )
-			{
-				CString errorMsg;
-				errorMsg.Format(L"已有管线【%s】也是这个名字，换一个吧",lineEntry->m_LineName.c_str());
-
-				throw ErrorException(errorMsg.GetBuffer());
-			}
-		}
 	}
 	catch(const ErrorException& e)
 	{
@@ -288,11 +276,14 @@ BOOL EntryManageDialog::InsertLine( LineEntry* lineEntry, BOOL bInitialize )
 	//如果不是从数据文件初始化，则是用户手工新增
 	if( !bInitialize )
 	{		
+		//保存到数据库
+		lineEntry->m_dbId = ArxWrapper::PostToNameObjectsDict(lineEntry->m_pDbEntry,LineEntry::LINE_ENTRY_LAYER);
+
+		//清空数据库对象指针，由AutoCAD管理
+		lineEntry->m_pDbEntry = NULL;
+
 		//保存数据到管理器
 		m_EntryFile->InsertLine(lineEntry);
-
-		//保存到数据库
-		ArxWrapper::PostToNameObjectsDict(lineEntry->pDbEntry,LineEntry::LINE_ENTRY_LAYER);
 
 		//设置该项为选中
 		m_LinesTree.Select(newItem, TVGN_CARET);
@@ -340,8 +331,11 @@ BOOL EntryManageDialog::UpdateLine( LineEntry* lineEntry )
 		//TODO 重命名
 		m_LinesTree.SetItemText(hItem, lineEntry->m_LineName.c_str());
 
+		//首先移除原有的数据库代理对象
+		ArxWrapper::RemoveDbObject(lineEntry->m_dbId);
+
 		//保存到数据库
-		ArxWrapper::PostToNameObjectsDict(lineEntry->pDbEntry,lineEntry->LINE_ENTRY_LAYER);
+		lineEntry->m_dbId = ArxWrapper::PostToNameObjectsDict(lineEntry->m_pDbEntry,LineEntry::LINE_ENTRY_LAYER);
 
 		//保存数据
 		m_EntryFile->UpdateLine(lineEntry);
@@ -629,7 +623,7 @@ void EntryManageDialog::OnBnClickedButtonDel()
 		if ( result == IDOK )
 		{
 			//从数据库删除管线本身
-			ArxWrapper::PostToNameObjectsDict(pEntry->pDbEntry,pEntry->LINE_ENTRY_LAYER,true);
+			ArxWrapper::PostToNameObjectsDict(pEntry->m_pDbEntry,LineEntry::LINE_ENTRY_LAYER,true);
 
 			//从数据库删除管线所有的线段
 			ArxWrapper::eraseLMALine(*pEntry);

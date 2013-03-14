@@ -76,6 +76,9 @@ public:
 	//Remove whole layer
 	static Acad::ErrorStatus RemoveFromModelSpace(const wstring& layerName );
 
+	//Remove the object from Database
+	static Acad::ErrorStatus RemoveDbObject(AcDbObjectId id);
+
 	//Add object to name dictionary
 	static AcDbObjectId PostToNameObjectsDict(AcDbObject* pObj,const wstring& key, bool toDelete = false );
 
