@@ -64,7 +64,7 @@ public:
 	static void createLine ( const PointList& points,
 							const wstring& layerName);
 
-	//Add entry to model
+	//Add entity to dictionary
 	static AcDbObjectId PostToModelSpace(AcDbEntity* pEnt,const wstring& layerName );
 
 	//Remove entry from model
@@ -80,10 +80,13 @@ public:
 	static Acad::ErrorStatus RemoveDbObject(AcDbObjectId id);
 
 	//Add object to name dictionary
-	static AcDbObjectId PostToNameObjectsDict(AcDbObject* pObj,const wstring& key, bool toDelete = false );
+	static AcDbObjectId PostToNameObjectsDict( AcDbObject* pNameObj,const wstring& key );
 
 	//Read object from name dictionary
 	static void PullFromNameObjectsDict();
+
+	//Remove entity from dictionary
+	static bool DeleteFromNameObjectsDict( AcDbObjectId objToRemoveId,const wstring& key );
 
 	//move offset
 	static AcDbEntity* MoveToBottom(AcDbEntity* pEntry);

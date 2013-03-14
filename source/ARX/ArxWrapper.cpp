@@ -59,76 +59,55 @@ const double ArxWrapper::kRad360   = 3.14159265358979323846 * 2.0;
 /**
  * 将对象放置在命名词典中
  **/
-AcDbObjectId ArxWrapper::PostToNameObjectsDict(AcDbObject* pObj,const wstring& key, bool toDelete )
+AcDbObjectId ArxWrapper::PostToNameObjectsDict(AcDbObject* pNameObj,const wstring& key )
 {
-	AcDbObjectId id;
-
+	//首先锁闭文档
 	LockCurDoc();
+
+	AcDbObjectId newNameObjId;
 
 	try
 	{
-		AcDbDictionary *pNamedobj;
+		AcDbDictionary *pNamedDict,*pKeyDict;
 		acdbHostApplicationServices()->workingDatabase()->
-			getNamedObjectsDictionary(pNamedobj, AcDb::kForWrite);
+			getNamedObjectsDictionary(pNamedDict, AcDb::kForWrite);
 
 		// Check to see if the dictionary we want to create is
 		// already present. If not, create it and add
 		// it to the named object dictionary.
 		//
-		AcDbDictionary *pDict;
-		if (pNamedobj->getAt(key.c_str(), (AcDbObject*&) pDict,
+		AcDbObjectId keyDictId;
+		if (pNamedDict->getAt(key.c_str(), (AcDbObject*&) pKeyDict,
 			AcDb::kForWrite) == Acad::eKeyNotFound)
 		{
-			pDict = new AcDbDictionary;
-			AcDbObjectId DictId;
-			pNamedobj->setAt(key.c_str(), pDict, DictId);
+			pKeyDict = new AcDbDictionary;
+			pNamedDict->setAt(key.c_str(), pKeyDict, keyDictId);
+			pKeyDict->close();
 		}
-		pNamedobj->close();
 
-		if (pDict) 
+		pNamedDict->close();
+
+		if (pKeyDict) 
 		{
 			// New objects to add to the new dictionary, then close them.
-			LineDBEntry* pLineEntry = LineDBEntry::cast(pObj);
+			LineDBEntry* pLineEntry = LineDBEntry::cast(pNameObj);
 
 			if( pLineEntry )
 			{
-				if( toDelete )
+				Acad::ErrorStatus es = acdbOpenObject(pKeyDict, keyDictId, AcDb::kForWrite);
+
+				if (es != Acad::eOk)
 				{
-					acutPrintf(L"\n从命名词典删除管线【%s】",pLineEntry->pImplemention->m_LineName.c_str());
-					
-					//首先关闭对象，为了下面以可写方式打开，进行删除
-					pLineEntry->close();
-
-					//以可写方式打开
-					AcDbObject* pObjToDel = NULL;
-					Acad::ErrorStatus es = pDict->getAt(pLineEntry->pImplemention->m_LineName.c_str(),pObjToDel,AcDb::kForWrite);
-
-					if( es == Acad::eOk )
-					{
-						//对象自身的erased flag被设置，这样在保存的时候会被过滤掉
-						//奇怪的是对象自身设置标志位后，并没有通知数据库（文件）更新，也就没有保存
-						Acad::ErrorStatus es = pObjToDel->erase();
-						pObjToDel->close();
-
-						if (es != Acad::eOk)
-						{
-							acutPrintf(L"\n删除失败！");
-							rxErrorMsg(es);
-						}
-
-						//从命名字典中删除关键字
-						pDict->remove(pLineEntry->pImplemention->m_LineName.c_str());
-					}
-					else
-					{
-						acutPrintf(L"\n打开被删除的对象失败了！");
-						rxErrorMsg(es);
-					}
+					acutPrintf(L"\n重新打开词典添加失败！");
+					rxErrorMsg(es);
 				}
 				else
 				{
+					CString lineDictName;
+					lineDictName.Format(L"%d",pLineEntry->pImplemention->m_LineID );
+
 					acutPrintf(L"\n添加管线【%s】到命名词典",pLineEntry->pImplemention->m_LineName.c_str());
-					Acad::ErrorStatus es = pDict->setAt(pLineEntry->pImplemention->m_LineName.c_str(), pObj, id);
+					es = pKeyDict->setAt(lineDictName.GetBuffer(), pNameObj, newNameObjId);
 
 					if (es != Acad::eOk)
 					{
@@ -136,11 +115,10 @@ AcDbObjectId ArxWrapper::PostToNameObjectsDict(AcDbObject* pObj,const wstring& k
 						rxErrorMsg(es);
 					}
 
-					pObj->close();
+					pKeyDict->close();
+					pNameObj->close();
 				}
 			}
-
-			pDict->close();
 		}
 	}
 	catch(const Acad::ErrorStatus es)
@@ -151,7 +129,75 @@ AcDbObjectId ArxWrapper::PostToNameObjectsDict(AcDbObject* pObj,const wstring& k
 
 	UnLockCurDoc();
 
-	return id;
+	return newNameObjId;
+}
+
+/**
+ * 将对象放置从命名词典中删除
+ **/
+bool ArxWrapper::DeleteFromNameObjectsDict(AcDbObjectId objToRemoveId,const wstring& key )
+{
+	LockCurDoc();
+
+	try
+	{
+		AcDbDictionary *pNamedDict,*pKeyDict;
+		acdbHostApplicationServices()->workingDatabase()->
+			getNamedObjectsDictionary(pNamedDict, AcDb::kForWrite);
+
+		// Check to see if the dictionary we want to create is
+		// already present. If not, create it and add
+		// it to the named object dictionary.
+		//
+		AcDbDictionary *pDict;
+		if (pNamedDict->getAt(key.c_str(), (AcDbObject*&) pKeyDict,
+			AcDb::kForWrite) == Acad::eKeyNotFound)
+		{
+			acutPrintf(L"\n从命名词典没有子词典【%s】",key.c_str());
+			pNamedDict->close();
+			UnLockCurDoc();
+			return false;
+		}
+
+		pNamedDict->close();
+
+		if (pKeyDict) 
+		{
+			if( objToRemoveId.isValid() )
+			{
+				// Get an iterator for the ASDK_DICT dictionary.
+				AcDbDictionaryIterator* pDictIter= pDict->newIterator();
+
+				LineDBEntry *pLineEntry = NULL;
+				for (; !pDictIter->done(); pDictIter->next()) 
+				{
+					// Get the current record, open it for read, and
+					Acad::ErrorStatus es = pDictIter->getObject((AcDbObject*&)pLineEntry, AcDb::kForRead);
+
+					// if ok
+					if (es == Acad::eOk && pLineEntry && pLineEntry->id() == objToRemoveId )
+					{
+						acutPrintf(L"\n从命名词典删除对象【%s】",pLineEntry->pImplemention->m_LineName.c_str());
+						pLineEntry->erase();
+						pLineEntry->close();
+					}
+				}
+
+				delete pDictIter;
+			}
+
+			pKeyDict->close();
+		}
+	}
+	catch(const Acad::ErrorStatus es)
+	{
+		acutPrintf(L"\n操作词典发生异常！");
+		rxErrorMsg(es);
+	}
+
+	UnLockCurDoc();
+
+	return true;
 }
 
 /**

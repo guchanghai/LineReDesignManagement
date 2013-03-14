@@ -130,7 +130,7 @@ wstring PointEntry::toString() const
 ///////////////////////////////////////////////////////////////////////////
 // Implementation LineEntry
 
-const wstring LineEntry::LINE_ENTRY_LAYER = L"管线实体层";
+const wstring LineEntry::LINE_ENTRY_LAYER = L"管线实体字典";
 
 /**
  * 管线实体

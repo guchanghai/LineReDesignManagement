@@ -332,7 +332,10 @@ BOOL EntryManageDialog::UpdateLine( LineEntry* lineEntry )
 		m_LinesTree.SetItemText(hItem, lineEntry->m_LineName.c_str());
 
 		//首先移除原有的数据库代理对象
-		ArxWrapper::RemoveDbObject(lineEntry->m_dbId);
+		ArxWrapper::DeleteFromNameObjectsDict(lineEntry->m_dbId, LineEntry::LINE_ENTRY_LAYER);
+
+		//新建新的数据库代理对象
+		lineEntry->m_pDbEntry = new LineDBEntry( lineEntry );
 
 		//保存到数据库
 		lineEntry->m_dbId = ArxWrapper::PostToNameObjectsDict(lineEntry->m_pDbEntry,LineEntry::LINE_ENTRY_LAYER);
@@ -484,7 +487,7 @@ BEGIN_MESSAGE_MAP(EntryManageDialog, CDialog)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREE_LINES, OnTreeSelChanged)
 
 	//切面类型选中
-	ON_CBN_SELENDOK(IDC_COMBO_CATEGORY,		OnCbnCategoryChange)
+	ON_CBN_SELCHANGE(IDC_COMBO_CATEGORY,	OnCbnCategoryChange)
 	ON_CBN_SELCHANGE(IDC_COMBO_CATEGORY,	OnControlValueChange)
 
 	ON_CBN_SELCHANGE(IDC_COMBO_SHAPE,		OnCbnShapeChange)
@@ -623,7 +626,7 @@ void EntryManageDialog::OnBnClickedButtonDel()
 		if ( result == IDOK )
 		{
 			//从数据库删除管线本身
-			ArxWrapper::PostToNameObjectsDict(pEntry->m_pDbEntry,LineEntry::LINE_ENTRY_LAYER,true);
+			ArxWrapper::DeleteFromNameObjectsDict(pEntry->m_dbId,LineEntry::LINE_ENTRY_LAYER);
 
 			//从数据库删除管线所有的线段
 			ArxWrapper::eraseLMALine(*pEntry);
