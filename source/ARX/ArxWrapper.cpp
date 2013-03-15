@@ -147,7 +147,6 @@ bool ArxWrapper::DeleteFromNameObjectsDict(AcDbObjectId objToRemoveId,const wstr
 		// already present. If not, create it and add
 		// it to the named object dictionary.
 		//
-		AcDbDictionary *pDict;
 		if (pNamedDict->getAt(key.c_str(), (AcDbObject*&) pKeyDict,
 			AcDb::kForWrite) == Acad::eKeyNotFound)
 		{
@@ -162,13 +161,13 @@ bool ArxWrapper::DeleteFromNameObjectsDict(AcDbObjectId objToRemoveId,const wstr
 		if( objToRemoveId.isValid() )
 		{
 			// Get an iterator for the ASDK_DICT dictionary.
-			AcDbDictionaryIterator* pDictIter= pDict->newIterator();
+			AcDbDictionaryIterator* pDictIter= pKeyDict->newIterator();
 
 			LineDBEntry *pLineEntry = NULL;
 			for (; !pDictIter->done(); pDictIter->next()) 
 			{
 				// Get the current record, open it for read, and
-				Acad::ErrorStatus es = pDictIter->getObject((AcDbObject*&)pLineEntry, AcDb::kForRead);
+				Acad::ErrorStatus es = pDictIter->getObject((AcDbObject*&)pLineEntry, AcDb::kForWrite);
 
 				// if ok
 				if (es == Acad::eOk && pLineEntry && pLineEntry->id() == objToRemoveId )

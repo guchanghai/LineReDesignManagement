@@ -569,8 +569,8 @@ void EntryManageDialog::OnBnClickedButtonOK()
 	//默认进入XY视图
 	acedCommand(RTSTR, _T("._-VIEW"), RTSTR, L"TOP", 0);
 
-	//保存到临时文件
-	m_EntryFile->Persistent();
+	//保存到临时文件(还不需要此功能)
+	//m_EntryFile->Persistent();
 }
 
 LineEntry* EntryManageDialog::GetSelectLine()
