@@ -82,42 +82,40 @@ AcDbObjectId ArxWrapper::PostToNameObjectsDict(AcDbObject* pNameObj,const wstrin
 		{
 			pKeyDict = new AcDbDictionary;
 			pNamedDict->setAt(key.c_str(), pKeyDict, keyDictId);
-			pKeyDict->close();
+		}
+		else
+		{
+			keyDictId = pKeyDict->id();
 		}
 
 		pNamedDict->close();
+		pKeyDict->close();
 
-		if (pKeyDict) 
+		// New objects to add to the new dictionary, then close them.
+		LineDBEntry* pLineEntry = LineDBEntry::cast(pNameObj);
+
+		if( pLineEntry )
 		{
-			// New objects to add to the new dictionary, then close them.
-			LineDBEntry* pLineEntry = LineDBEntry::cast(pNameObj);
+			Acad::ErrorStatus es = acdbOpenObject(pKeyDict, keyDictId, AcDb::kForWrite);
 
-			if( pLineEntry )
+			if (es != Acad::eOk)
 			{
-				Acad::ErrorStatus es = acdbOpenObject(pKeyDict, keyDictId, AcDb::kForWrite);
+				acutPrintf(L"\n重新打开词典添加失败！");
+				rxErrorMsg(es);
+			}
+			else
+			{
+				acutPrintf(L"\n添加管线【%s】到命名词典",pLineEntry->pImplemention->m_LineName.c_str());
+				es = pKeyDict->setAt(pLineEntry->pImplemention->m_LineName.c_str(), pNameObj, newNameObjId);
 
 				if (es != Acad::eOk)
 				{
-					acutPrintf(L"\n重新打开词典添加失败！");
+					acutPrintf(L"\n添加失败！");
 					rxErrorMsg(es);
 				}
-				else
-				{
-					CString lineDictName;
-					lineDictName.Format(L"%d",pLineEntry->pImplemention->m_LineID );
 
-					acutPrintf(L"\n添加管线【%s】到命名词典",pLineEntry->pImplemention->m_LineName.c_str());
-					es = pKeyDict->setAt(lineDictName.GetBuffer(), pNameObj, newNameObjId);
-
-					if (es != Acad::eOk)
-					{
-						acutPrintf(L"\n添加失败！");
-						rxErrorMsg(es);
-					}
-
-					pKeyDict->close();
-					pNameObj->close();
-				}
+				pKeyDict->close();
+				pNameObj->close();
 			}
 		}
 	}
@@ -161,33 +159,31 @@ bool ArxWrapper::DeleteFromNameObjectsDict(AcDbObjectId objToRemoveId,const wstr
 
 		pNamedDict->close();
 
-		if (pKeyDict) 
+		if( objToRemoveId.isValid() )
 		{
-			if( objToRemoveId.isValid() )
+			// Get an iterator for the ASDK_DICT dictionary.
+			AcDbDictionaryIterator* pDictIter= pDict->newIterator();
+
+			LineDBEntry *pLineEntry = NULL;
+			for (; !pDictIter->done(); pDictIter->next()) 
 			{
-				// Get an iterator for the ASDK_DICT dictionary.
-				AcDbDictionaryIterator* pDictIter= pDict->newIterator();
+				// Get the current record, open it for read, and
+				Acad::ErrorStatus es = pDictIter->getObject((AcDbObject*&)pLineEntry, AcDb::kForRead);
 
-				LineDBEntry *pLineEntry = NULL;
-				for (; !pDictIter->done(); pDictIter->next()) 
+				// if ok
+				if (es == Acad::eOk && pLineEntry && pLineEntry->id() == objToRemoveId )
 				{
-					// Get the current record, open it for read, and
-					Acad::ErrorStatus es = pDictIter->getObject((AcDbObject*&)pLineEntry, AcDb::kForRead);
-
-					// if ok
-					if (es == Acad::eOk && pLineEntry && pLineEntry->id() == objToRemoveId )
-					{
-						acutPrintf(L"\n从命名词典删除对象【%s】",pLineEntry->pImplemention->m_LineName.c_str());
-						pLineEntry->erase();
-						pLineEntry->close();
-					}
+					acutPrintf(L"\n从命名词典删除对象【%s】",pLineEntry->pImplemention->m_LineName.c_str());
+					pLineEntry->erase();
+					pLineEntry->close();
+					break;
 				}
-
-				delete pDictIter;
 			}
 
-			pKeyDict->close();
+			delete pDictIter;
 		}
+
+		pKeyDict->close();
 	}
 	catch(const Acad::ErrorStatus es)
 	{
@@ -668,6 +664,7 @@ bool ArxWrapper::createNewLayer(const wstring& layerName)
 #endif
 
 		//构建新的层表记录
+
 		AcDbLayerTableRecord *pLayerTableRecord = new AcDbLayerTableRecord;
 		es = pLayerTableRecord->setName(layerName.c_str());
 
