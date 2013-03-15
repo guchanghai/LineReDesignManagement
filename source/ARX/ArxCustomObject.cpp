@@ -74,8 +74,7 @@ Acad::ErrorStatus LMALineDbObject::Init()
 	}
 
 	LineCategoryItemData* lineConfigData = mLineEntry->m_LineBasiInfo;
-	//LineCategoryItemData* lineConfigData = LineConfigDataManager::Instance()->FindByKind( mLineEntry->m_LineKind );
-
+	
 	if( lineConfigData == NULL )
 	{
 		acutPrintf(L"\n没有找到类型【%s】的配置数据",mLineEntry->m_LineKind.c_str());
@@ -478,6 +477,7 @@ Acad::ErrorStatus LMALineDbObject::CreateDimensions()
 	{
 		acutPrintf(L"\n该线段归属的直线不存在，可能出错了！");
 	}
+
 	return Acad::eOk;
 }
 

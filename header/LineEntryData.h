@@ -55,12 +55,13 @@ struct PointEntry
 	wstring m_Direction;
 
 	PointEntry();
-	PointEntry( const UINT& pointNO, const ads_point& point, const wstring& levelKind, const wstring& direction);
+	PointEntry( const UINT& pointNO, const ads_point& point, 
+		const wstring& levelKind, const wstring& direction, const AcDbObjectId& entityID);
 	PointEntry( const PointEntry& );
 	PointEntry( const wstring& data );
 
-	//AcDbObjectId m_EntryId;
-	AcDbEntity* m_pEntry;
+	AcDbObjectId m_EntryId;
+	//AcDbEntity* m_pEntry;
 
 	wstring toString() const;
 };

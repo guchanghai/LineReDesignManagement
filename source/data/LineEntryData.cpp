@@ -49,18 +49,19 @@ PointEntry::PointEntry()
 :m_PointNO(0),
 m_LevelKind(L""),
 m_Direction(L""),
-m_pEntry(NULL)
+m_EntryId()
 {
 	m_Point[X] = 0;
 	m_Point[Y] = 0;
 	m_Point[Z] = 0;
 }
 
-PointEntry::PointEntry( const UINT& pointNO, const ads_point& point, const wstring& levelKind, const wstring& direction)
+PointEntry::PointEntry( const UINT& pointNO, const ads_point& point, 
+	const wstring& levelKind, const wstring& direction, const AcDbObjectId& entityID)
 :m_PointNO(pointNO),
 m_LevelKind(levelKind),
 m_Direction(direction),
-m_pEntry(NULL)	
+m_EntryId(entityID)
 {
 	m_Point[X] = point[X];
 	m_Point[Y] = point[Y];
@@ -77,7 +78,7 @@ PointEntry::PointEntry( const PointEntry& pointEntry)
 	this->m_Point[Y] = pointEntry.m_Point[Y];
 	this->m_Point[Z] = pointEntry.m_Point[Z];
 
-	this->m_pEntry = pointEntry.m_pEntry;
+	this->m_EntryId = pointEntry.m_EntryId;
 }
 
 PointEntry::PointEntry( const wstring& data )
@@ -1061,8 +1062,8 @@ bool LineEntryFileManager::RegisterLineSegment( const wstring& fileName, AcDbEnt
 		startPoint[Y] = start.y;
 		startPoint[Z] = start.z;
 
-		PointEntry* tempPoint = new PointEntry(0,startPoint,L"",L"");
-		tempPoint->m_pEntry = pEntry;
+		//第一个点没有数据库实体与其对应
+		PointEntry* tempPoint = new PointEntry(0,startPoint,L"",L"",AcDbObjectId());
 
 		if( lineEntry )
 		{
@@ -1079,8 +1080,7 @@ bool LineEntryFileManager::RegisterLineSegment( const wstring& fileName, AcDbEnt
 		endPoint[Y] = end.y;
 		endPoint[Z] = end.z;
 
-		tempPoint = new PointEntry(0,endPoint,L"",L"");
-		tempPoint->m_pEntry = pEntry;
+		tempPoint = new PointEntry(0,endPoint,L"",L"",pEntry->id());
 
 		if( lineEntry )
 		{
@@ -1102,8 +1102,7 @@ bool LineEntryFileManager::RegisterLineSegment( const wstring& fileName, AcDbEnt
 		endPoint[Y] = end.y;
 		endPoint[Z] = end.z;
 
-		PointEntry* tempPoint = new PointEntry(0,endPoint,L"",L"");
-		tempPoint->m_pEntry = pEntry;
+		PointEntry* tempPoint = new PointEntry(0,endPoint,L"",L"",pEntry->id());
 
 		if( lineEntry )
 		{

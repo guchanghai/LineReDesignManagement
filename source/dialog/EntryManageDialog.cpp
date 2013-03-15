@@ -215,6 +215,10 @@ HTREEITEM EntryManageDialog::GetKindNode(const wstring& category, bool createOnD
 		hCurrent = m_LinesTree.InsertItem(category.c_str(),hCurrent);
 		return hCurrent;
 	}
+	else
+	{
+		return NULL;
+	}
 }
 
 HTREEITEM EntryManageDialog::FindKindNode( const UINT& lineID)

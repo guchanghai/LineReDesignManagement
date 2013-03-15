@@ -224,64 +224,70 @@ void LineCutPosDialog::GenereateCutRegion(LineEntry* lineEntry)
 		acutPrintf(L"\n对第【%d】个线段进行切图！",pointEntry->m_PointNO);
 #endif
 
-		if( pointEntry->m_pEntry == NULL )
+		if( pointEntry->m_EntryId.isNull() )
 		{
 			acutPrintf(L"\n当前线段没有对应的数据库实体，不能切图！");
 			continue;
 		}
 
-		LMALineDbObject* pLMALine = LMALineDbObject::cast(pointEntry->m_pEntry);
+		AcDbEntity* pLineObj;
+		Acad::ErrorStatus es = acdbOpenAcDbEntity(pLineObj, pointEntry->m_EntryId, AcDb::kForWrite);
 
-		if( pLMALine == NULL )
+		if( es == Acad::eOk )
 		{
-			acutPrintf(L"\n当前线段不是有效的辅助系统管理的实体，不考虑切图！");
-			continue;
-		}
+			LMALineDbObject* pLMALine = LMALineDbObject::cast(pLineObj);
 
-		//得到实体与切面相切的截面
-		AcDbRegion *pSelectionRegion = NULL;
-		pLMALine->getSection(m_CutPlane, pSelectionRegion);
-
-		if( pSelectionRegion )
-		{
-			//创建切面所在的图层
-			if( ArxWrapper::createNewLayer(m_CutLayerName.GetBuffer()) == false )
-				return;
-
-			//将截面加入到模型空间
-			if( ArxWrapper::PostToModelSpace(pSelectionRegion,m_CutLayerName.GetBuffer()) == false )
-				return;
-
-			//创建该界面的填充区域
-			ArxWrapper::CreateHatch(pSelectionRegion,L"NET", true, m_CutLayerName.GetBuffer(), m_CutPlane, m_strOffset);
-
+			if( pLMALine == NULL )
 			{
-				//得到注释的中心点
-				AcGePoint3d centerPoint = pLMALine->GetCutCenter(m_CutPlane);
+				acutPrintf(L"\n当前线段不是有效的辅助系统管理的实体，不考虑切图！");
+				continue;
+			}
 
-				//设置注释的内容
-				CString markContent;
+			//得到实体与切面相切的截面
+			AcDbRegion *pSelectionRegion = NULL;
+			pLMALine->getSection(m_CutPlane, pSelectionRegion);
 
-				if( pLMALine->mLineShape == GlobalData::LINE_SHAPE_CIRCLE )
+			if( pSelectionRegion )
+			{
+				//创建切面所在的图层
+				if( ArxWrapper::createNewLayer(m_CutLayerName.GetBuffer()) == false )
+					return;
+
+				//将截面加入到模型空间
+				if( ArxWrapper::PostToModelSpace(pSelectionRegion,m_CutLayerName.GetBuffer()) == false )
+					return;
+
+				//创建该界面的填充区域
+				ArxWrapper::CreateHatch(pSelectionRegion,L"NET", true, m_CutLayerName.GetBuffer(), m_CutPlane, m_strOffset);
+
 				{
-					//markContent.Format(L"管线【%s】号段【%d】半径【%0.2lf】",pLMALine->mLineEntry->m_LineName.c_str(),
-					//			pLMALine->mSequenceNO,pLMALine->mRadius);
+					//得到注释的中心点
+					AcGePoint3d centerPoint = pLMALine->GetCutCenter(m_CutPlane);
+
+					//设置注释的内容
+					CString markContent;
+
+					if( pLMALine->mLineShape == GlobalData::LINE_SHAPE_CIRCLE )
+					{
+						//markContent.Format(L"管线【%s】号段【%d】半径【%0.2lf】",pLMALine->mLineEntry->m_LineName.c_str(),
+						//			pLMALine->mSequenceNO,pLMALine->mRadius);
 					
-					markContent.Format(L"%s#%d",pLMALine->mLineEntry->m_LineName.c_str(),
-								pLMALine->mSequenceNO,pLMALine->mRadius);
-				}
-				else if ( pLMALine->mLineShape == GlobalData::LINE_SHAPE_SQUARE )
-				{
-					//markContent.Format(L"管线【%s】号段【%d】长【%0.2lf】宽【%0.2lf】",pLMALine->mLineEntry->m_LineName.c_str(),
-					//	pLMALine->mSequenceNO,pLMALine->mLength,pLMALine->mWidth);
+						markContent.Format(L"%s#%d",pLMALine->mLineEntry->m_LineName.c_str(),
+									pLMALine->mSequenceNO,pLMALine->mRadius);
+					}
+					else if ( pLMALine->mLineShape == GlobalData::LINE_SHAPE_SQUARE )
+					{
+						//markContent.Format(L"管线【%s】号段【%d】长【%0.2lf】宽【%0.2lf】",pLMALine->mLineEntry->m_LineName.c_str(),
+						//	pLMALine->mSequenceNO,pLMALine->mLength,pLMALine->mWidth);
 
-					markContent.Format(L"%s#%d",pLMALine->mLineEntry->m_LineName.c_str(),
-						pLMALine->mSequenceNO,pLMALine->mLength,pLMALine->mWidth);
-				}
+						markContent.Format(L"%s#%d",pLMALine->mLineEntry->m_LineName.c_str(),
+							pLMALine->mSequenceNO,pLMALine->mLength,pLMALine->mWidth);
+					}
 
-				//创建截图区域的注释
-				ArxWrapper::CreateMLeader(centerPoint,this->m_strOffset,this->m_Direction,
-					markContent.GetBuffer(),m_CutLayerName.GetBuffer());
+					//创建截图区域的注释
+					ArxWrapper::CreateMLeader(centerPoint,this->m_strOffset,this->m_Direction,
+						markContent.GetBuffer(),m_CutLayerName.GetBuffer());
+				}
 			}
 		}
 	}

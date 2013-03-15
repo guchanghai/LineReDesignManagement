@@ -1022,8 +1022,7 @@ void ArxWrapper::DrawPolyCylinder( const LineEntry& lineEntry )
 			AcDb3dSolid* pNewLine = DrawCylinder( lineEntry.m_LineID, (*iter)->m_PointNO, *pStart, *pEnd, layerName, const_cast<LineEntry&>(lineEntry) );
 
 			//保存实例的ObjectID
-			//(*iter)->m_EntryId = pNewLine->objectId();
-			(*iter)->m_pEntry = pNewLine;
+			(*iter)->m_EntryId = pNewLine->objectId();;
 
 			//删除临时对象
 			delete pStart;
@@ -1075,22 +1074,49 @@ void ArxWrapper::eraseLMALine(const LineEntry& lineEntry, bool old)
 		else
 		{
 			//得到线段的数据库对象ID
-			//AcDbObjectId objId = (*iter)->m_EntryId;
-			if( (*iter)->m_pEntry )
+			AcDbObjectId lineObjId = (*iter)->m_EntryId;
+			if( lineObjId.isValid() )
 			{
 #ifdef DEBUG
 				acutPrintf(L"\n线段终点 序号【%d】 坐标 x:【%lf】y:【%lf】z:【%lf】被删除",(*iter)->m_PointNO,(*iter)->m_Point[X],(*iter)->m_Point[Y],(*iter)->m_Point[Z]);
 #endif
-
-				LMALineDbObject* pLineObject = dynamic_cast<LMALineDbObject*>((*iter)->m_pEntry);
-
-				if( pLineObject )
+				//根据objectID从数据库得到直线
+				AcDbEntity* pLineObject(NULL);
+				Acad::ErrorStatus es = acdbOpenAcDbEntity(pLineObject, lineObjId, AcDb::kForWrite);
+				if (es == Acad::eOk)
 				{
-					RemoveFromModelSpace(pLineObject->mHandleDim,lineEntry.m_LineName);
-					
-					RemoveFromModelSpace(pLineObject->mHandleText,lineEntry.m_LineName);
+					LMALineDbObject* pLineObject = dynamic_cast<LMALineDbObject*>(pLineObject);
 
-					RemoveFromModelSpace(pLineObject,lineEntry.m_LineName);
+					if( pLineObject )
+					{
+						/*
+						RemoveFromModelSpace(pLineObject->mHandleDim,lineEntry.m_LineName);
+					
+						RemoveFromModelSpace(pLineObject->mHandleText,lineEntry.m_LineName);
+
+						RemoveFromModelSpace(pLineObject,lineEntry.m_LineName);
+						*/
+
+						AcDbObjectId dimObjId, txtObjId;
+						
+						//得到标注对象的ID
+						acdbHostApplicationServices()->workingDatabase()->getAcDbObjectId(
+							dimObjId,false,pLineObject->mHandleDim);
+						
+						//得到文字说明
+						acdbHostApplicationServices()->workingDatabase()->getAcDbObjectId(
+							txtObjId,false,pLineObject->mHandleDim);
+
+						//删除线段对象
+						RemoveDbObject(lineObjId);
+						RemoveDbObject(dimObjId);
+						RemoveDbObject(txtObjId);
+					}
+				}
+				else
+				{
+					acutPrintf(L"\n在删除管线是没有找到对应的数据库对象！");
+					rxErrorMsg(es);
 				}
 			}
 		}
