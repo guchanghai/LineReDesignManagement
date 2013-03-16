@@ -151,7 +151,7 @@ bool ArxWrapper::DeleteFromNameObjectsDict(AcDbObjectId objToRemoveId,const wstr
 		if (pNamedDict->getAt(key.c_str(), (AcDbObject*&) pKeyDict,
 			AcDb::kForWrite) == Acad::eKeyNotFound)
 		{
-			acutPrintf(L"\n从命名词典没有子词典【%s】",key.c_str());
+			acutPrintf(L"\n命名词典没有集合【%s】",key.c_str());
 			pNamedDict->close();
 			UnLockCurDoc();
 			return false;
@@ -174,8 +174,10 @@ bool ArxWrapper::DeleteFromNameObjectsDict(AcDbObjectId objToRemoveId,const wstr
 				if (es == Acad::eOk && pLineEntry && pLineEntry->id() == objToRemoveId )
 				{
 					acutPrintf(L"\n从命名词典删除对象【%s】",pLineEntry->pImplemention->m_LineName.c_str());
+					
 					pLineEntry->erase();
 					pLineEntry->close();
+
 					break;
 				}
 			}
@@ -1099,6 +1101,8 @@ void ArxWrapper::eraseLMALine(const LineEntry& lineEntry, bool old)
 
 	AcGePoint3d *pStart = NULL;
 
+	LockCurDoc();
+
 	for( ContstPointIter iter = points.begin();
 		iter != points.end();
 		iter++)
@@ -1160,6 +1164,8 @@ void ArxWrapper::eraseLMALine(const LineEntry& lineEntry, bool old)
 			}
 		}
 	}
+
+	UnLockCurDoc();
 }
 
 

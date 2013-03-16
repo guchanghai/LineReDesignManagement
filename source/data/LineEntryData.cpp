@@ -321,7 +321,7 @@ wstring LineEntry::toString()
 	wstring lineData;
 
 	CString temp;
-	temp.Format(L"%d\t%s\t%s\t%s\t%d",m_LineID,m_LineName,m_LineKind,
+	temp.Format(L"%d\t%s\t%s\t%s\t%d",m_LineID,m_LineName.c_str(),m_LineKind.c_str(),
 					m_LineBasiInfo->toString().c_str(),
 					m_CurrentPointNO);
 

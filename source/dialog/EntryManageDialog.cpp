@@ -638,14 +638,11 @@ void EntryManageDialog::OnBnClickedButtonDel()
 			//删除所有的内存节点
 			pEntry->ClearPoints();
 
-			//Delete from the list
+			//删除线段集合
 			m_EntryFile->DeleteLine(selectedID);
 
-			// delete the selected item. 
+			//在管线列表中删除
 			m_LinesTree.DeleteItem(selectedItem);
-
-			//保存到导出文件
-			m_EntryFile->Persistent();
 		}
 	}
 }
@@ -679,6 +676,7 @@ void EntryManageDialog::OnTreeSelChanged(LPNMHDR pnmhdr, LRESULT *pLResult)
 
 		//设置确认按钮不可用
 		m_ButtonOK.EnableWindow(false);
+		m_ButtonDel.EnableWindow(true);
 
 		//各控件可用
 		EnableDetailControl(true);
