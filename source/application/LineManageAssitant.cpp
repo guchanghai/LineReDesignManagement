@@ -74,7 +74,7 @@ static void dwgLoaded()
 static void dwgUnLoaded()
 {
 	//有DWG文件卸载，删除配置数据
-	LineEntryFileManager::RemoveEntryFileOnDWGUnLoad();
+	//LineEntryFileManager::RemoveEntryFileOnDWGUnLoad();
 }
 
 //////////////////////////////////////////////////////////////

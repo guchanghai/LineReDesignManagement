@@ -707,13 +707,14 @@ void LineEntryFile::Import()
 
 void LineEntryFile::Persistent() const
 {
-	acutPrintf(L"\n开始导出管线实体数据.");
+	acutPrintf(L"\n持久化管线数据.");
+
 	ExportTo(this->m_FileName);
 }
 
 void LineEntryFile::ExportTo(const wstring& filename) const
 {
-	acutPrintf(L"\n开始导出管线实体数据.");
+	acutPrintf(L"\n导出实体数据.");
 
 	CString exportFile;
 	exportFile.Format(L"%s",filename.c_str());
@@ -1116,7 +1117,7 @@ bool LineEntryFileManager::RegisterLineSegment( const wstring& fileName, AcDbEnt
 	}
 	else if ( sequence == 0)
 	{
-		acutPrintf(L"\n无效的线段.");
+		acutPrintf(L"\n失效的线段.");
 	}
 
 	return true;

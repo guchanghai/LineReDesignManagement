@@ -87,11 +87,17 @@ Acad::ErrorStatus LMALineDbObject::Init()
 	if( mLineShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
 		acdbDisToF(lineConfigData->mRadius.c_str(), -1, &mRadius);
+
+		//直径的单位是毫米，而距离的单位是米
+		mRadius = mRadius / 1000;
 	}
 	else if ( mLineShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
 		acdbDisToF(lineConfigData->mHeight.c_str(), -1, &mLength);
 		acdbDisToF(lineConfigData->mWidth.c_str(), -1, &mWidth);
+
+		mLength = mLength / 1000;
+		mWidth = mWidth / 1000;
 	}
 
 	return CreatePipe();
@@ -229,14 +235,12 @@ LMALineDbObject::dwgOutFields(AcDbDwgFiler* pFiler) const
 	dbToStr(this->database(),filename);
 
 #ifdef DEBUG
-	acutPrintf(L"\n从保存管线线段实体 ID【%d】序列号【%d】 起点 X:【%lf】Y:【%lf】Z:【%lf】 终点 X:【%lf】Y:【%lf】Z:【%lf】到DWG文件【%s】.",
-					mLineID,mSequenceNO,
-					mStartPoint.x,mStartPoint.y,mStartPoint.z,
+	acutPrintf(L"\n从保存管线线段实体【%s】序列号【%d】 起点 X:【%lf】Y:【%lf】Z:【%lf】 终点 X:【%lf】Y:【%lf】Z:【%lf】到DWG文件【%s】.",
+					this->mLineEntry->m_LineName.c_str()
+					,mSequenceNO,mStartPoint.x,mStartPoint.y,mStartPoint.z,
 					mEndPoint.x,mEndPoint.y,mEndPoint.z,
 					filename.GetBuffer());
 #endif
-
-
 
     return pFiler->filerStatus();
 }
@@ -302,6 +306,9 @@ Acad::ErrorStatus LMALineDbObject::CreatePipe()
 	if( height < 0.1 )
 		return Acad::eInvalidInput;
 	
+	//acutPrintf(L"\n设置线型和所在一致");
+	//setLinetype(acdbHostApplicationServices()->workingDatabase()->byLayerLinetype(),true);
+
 	if( mLineShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
 		acutPrintf(L"\n绘制半径为【%lf】高为【%lf】的圆柱",mRadius,height);
@@ -340,14 +347,8 @@ Acad::ErrorStatus LMALineDbObject::CreatePipe()
 
 	transformBy(moveMatrix);
 
+	//创建标注
 	CreateDimensions();
-
-#ifdef DEBUG
-	//acutPrintf(L"插入中心线，用于矫正");
-
-	//AcDbLine *pLine = new AcDbLine(start, end);
-    //ArxWrapper::PostToModelSpace(pLine,mLayerName);
-#endif
 
 	return Acad::eOk;
 }
@@ -467,9 +468,15 @@ Acad::ErrorStatus LMALineDbObject::CreateDimensions()
 	//添加到模型空间
 	if( mLineEntry )
 	{
+		acutPrintf(L"\n加入标注到数据库");
+
+		//mAlignedDim->setLinetype( acdbHostApplicationServices()->workingDatabase()->byLayerLinetype(), true );
 		ArxWrapper::PostToModelSpace(mAlignedDim,mLineEntry->m_LineName.c_str());
 		mAlignedDim->getAcDbHandle(mHandleDim);
 
+		acutPrintf(L"\n加入文字说明到数据库");
+		
+		//mLineDim->setLinetype( acdbHostApplicationServices()->workingDatabase()->byLayerLinetype(), true );
 		ArxWrapper::PostToModelSpace(mLineDim,mLineEntry->m_LineName.c_str());
 		mLineDim->getAcDbHandle(mHandleText);
 	}

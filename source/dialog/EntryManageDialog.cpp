@@ -347,8 +347,8 @@ BOOL EntryManageDialog::UpdateLine( LineEntry* lineEntry )
 		//保存数据
 		m_EntryFile->UpdateLine(lineEntry);
 
-		//保存到导出文件
-		m_EntryFile->Persistent();
+		//保存到导出文件(暂时不考虑)
+		//m_EntryFile->Persistent();
 	}
 
 	return TRUE;

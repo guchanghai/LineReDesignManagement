@@ -40,6 +40,7 @@ void TestHatch();
 void TestText();
 void TestLeader();
 void TestMLeader();
+void TestLayer();
 
 using namespace com::guch::assistant::arx;
 using namespace com::guch::assistant::data;
@@ -252,10 +253,6 @@ AcDbObjectId ArxWrapper::PostToModelSpace(AcDbEntity* pEnt,const wstring& layerN
 	if( !pEnt )
 		return 0;
 
-#ifdef DEBUG
-	acutPrintf(L"\n加入实体【%p】到图层【%s】",pEnt,layerName.c_str());
-#endif 
-
 	AcDbBlockTable *pBlockTable(NULL);
 	AcDbBlockTableRecord *pBlockTableRecord(NULL);
 
@@ -284,6 +281,8 @@ AcDbObjectId ArxWrapper::PostToModelSpace(AcDbEntity* pEnt,const wstring& layerN
 
 		//关闭实体
 		pEnt->close();
+
+		acutPrintf(L"\n成功添加到图层【%s】",layerName.c_str());
 	}
 	catch(const Acad::ErrorStatus es)
 	{
@@ -309,7 +308,6 @@ AcDbObjectId ArxWrapper::PostToModelSpace(AcDbEntity* pEnt,const wstring& layerN
 
 Acad::ErrorStatus ArxWrapper::RemoveDbObject(AcDbObjectId id)
 {
-	acutPrintf(L"\n删除数据库对象.");
 	Acad::ErrorStatus es = Acad::eOk;
 
 	if( id.isValid())
@@ -321,6 +319,7 @@ Acad::ErrorStatus ArxWrapper::RemoveDbObject(AcDbObjectId id)
 		{
             ent->erase();
             ent->close();
+			acutPrintf(L"\n成功删除.");
         }
 		else
 		{
@@ -330,7 +329,7 @@ Acad::ErrorStatus ArxWrapper::RemoveDbObject(AcDbObjectId id)
     }
 	else
 	{
-		acutPrintf(L"\n数据库对象不合法");
+		acutPrintf(L"\n数据库对象不合法.");
 	}
 
 	return es;
@@ -630,67 +629,104 @@ Acad::ErrorStatus ArxWrapper::RemoveFromModelSpace(AcDbEntity* pEnt,const wstrin
 /**
  * 创建特定名称的层
  **/
-bool ArxWrapper::createNewLayer(const wstring& layerName)
+bool ArxWrapper::createNewLayer(const wstring& rLayerName)
 {
 	bool result = false;
-	Acad::ErrorStatus es;
-		
-	AcDbLayerTable *pLayerTable;
-	AcDbLayerTableRecord *pLayerTableRecord = NULL;
+	int option = 0;
 
-	LockCurDoc();
-
-	try
+	if( option == 0 )
 	{
-		//打开层表数据库
-		es = acdbHostApplicationServices()->workingDatabase()
-			->getSymbolTable(pLayerTable, AcDb::kForWrite);
+		Acad::ErrorStatus es;
+		
+		AcDbLayerTable *pLayerTable;
+		AcDbLayerTableRecord *pLayerTableRecord = NULL;
 
-		if( es != Acad::eOk )
-			throw ErrorException(L"打开层表记录失败");
+		LockCurDoc();
 
-		//层表不存在，则创建
-		if( pLayerTable->has(layerName.c_str()) )
+		try
 		{
-			acutPrintf(L"\n图层【%s】已存在,无需创建",layerName.c_str());
+			//打开层表数据库
+			es = acdbHostApplicationServices()->workingDatabase()
+				->getSymbolTable(pLayerTable, AcDb::kForWrite);
+
+			if( es != Acad::eOk )
+				throw ErrorException(L"打开层表记录失败");
+
+			//层表不存在，则创建
+			if( pLayerTable->has(rLayerName.c_str()) )
+			{
+				acutPrintf(L"\n图层【%s】已存在,无需创建",rLayerName.c_str());
+				pLayerTable->close();
+
+				return true;
+			}
+
+			//构建新的层表记录
+			acutPrintf(L"\n创建图层【%s】",rLayerName.c_str());
+			pLayerTableRecord = new AcDbLayerTableRecord;
+			es = pLayerTableRecord->setName(rLayerName.c_str());
+			if( es != Acad::eOk )
+				throw ErrorException(L"设置新层表记录的名字失败");
+
+			// Defaults are used for other properties of 
+			// the layer if they are not otherwise specified.
+			AcDbObjectId layerTblRcdId;
+			es = pLayerTable->add(layerTblRcdId,pLayerTableRecord);
+			if( es != Acad::eOk )
+				throw ErrorException(L"加入新的层表记录失败");
+
+			es = acdbHostApplicationServices()->workingDatabase()->setClayer(layerTblRcdId);
+			if( es != Acad::eOk )
+				throw ErrorException(L"设置当前图层为CLAYER时出错");
+
+			result = true; 
+		}
+		catch( const ErrorException& e)
+		{
+			acutPrintf(L"\n创建新的层表记录失败，【%s】！",e.errMsg.c_str());
+			rxErrorMsg(es);
+		}
+
+		if( pLayerTableRecord != NULL )
+			pLayerTableRecord->close();
+
+		if( pLayerTable != NULL )
 			pLayerTable->close();
 
+		UnLockCurDoc();
+	}
+	else
+	{
+		// 提示用户输入新建图层的名称
+		ACHAR layerName[100];
+		wmemset(layerName,0,100);
+		wsprintf(layerName,L"%s",rLayerName.c_str());
+
+		// 获得当前图形的层表
+		AcDbLayerTable *pLayerTbl;
+		acdbHostApplicationServices()->workingDatabase()
+			->getLayerTable(pLayerTbl, AcDb::kForWrite);
+
+		// 是否已经包含指定的层表记录
+		if (pLayerTbl->has(layerName))
+		{
+			pLayerTbl->close();
 			return true;
 		}
 
-#ifdef DEBUG
-		acutPrintf(L"\n创建图层【%s】",layerName.c_str());
-#endif
+		// 创建新的层表记录
+		AcDbLayerTableRecord *pLayerTblRcd;
+		pLayerTblRcd = new AcDbLayerTableRecord();
+		pLayerTblRcd->setName(layerName);
 
-		//构建新的层表记录
+		// 将新建的层表记录添加到层表中
+		AcDbObjectId layerTblRcdId;
+		pLayerTbl->add(layerTblRcdId, pLayerTblRcd);
+		acdbHostApplicationServices()->workingDatabase()->setClayer(layerTblRcdId);
 
-		AcDbLayerTableRecord *pLayerTableRecord = new AcDbLayerTableRecord;
-		es = pLayerTableRecord->setName(layerName.c_str());
-
-		if( es != Acad::eOk )
-			throw ErrorException(L"设置新层表记录的名字失败");
-
-		// Defaults are used for other properties of 
-		// the layer if they are not otherwise specified.
-		es = pLayerTable->add(pLayerTableRecord);
-		if( es != Acad::eOk )
-			throw ErrorException(L"加入新的层表记录失败");
-
-		result = true; 
+		pLayerTblRcd->close();
+		pLayerTbl->close();
 	}
-	catch( const ErrorException& e)
-	{
-		acutPrintf(L"\n创建新的层表记录失败【%s】",e.errMsg.c_str());
-		rxErrorMsg(es);
-	}
-
-	if( pLayerTable != NULL )
-		pLayerTable->close();
-
-	if( pLayerTableRecord != NULL )
-		pLayerTableRecord->close();
-
-	UnLockCurDoc();
 
 	return result;
 }
@@ -1046,7 +1082,7 @@ void ArxWrapper::eraseLMALine(const LineEntry& lineEntry, bool old)
 	if( pPointList == NULL )
 	{
 #ifdef DEBUG
-		acutPrintf(L"\n管线没有【%s】的线段",(old ? L"无效" : L"当前"));
+		acutPrintf(L"\n管线没有【%s】的线段",(old ? L"失效" : L"当前"));
 #endif
 		return;
 	}
@@ -1055,7 +1091,7 @@ void ArxWrapper::eraseLMALine(const LineEntry& lineEntry, bool old)
 	const wstring& layerName = lineEntry.m_LineName;
 
 #ifdef DEBUG
-	acutPrintf(L"\n删除管线【%s】所有【%s】的线段共【%d】条",lineEntry.m_LineName.c_str(),(old ? L"无效" : L"当前"),points.size());
+	acutPrintf(L"\n删除管线【%s】所有【%s】的线段共【%d】条",lineEntry.m_LineName.c_str(),(old ? L"失效" : L"当前"),points.size());
 #endif
 
 	if( points.size() < 2 )
@@ -1085,31 +1121,34 @@ void ArxWrapper::eraseLMALine(const LineEntry& lineEntry, bool old)
 				Acad::ErrorStatus es = acdbOpenAcDbEntity(pLineObject, lineObjId, AcDb::kForWrite);
 				if (es == Acad::eOk)
 				{
-					LMALineDbObject* pLineObject = dynamic_cast<LMALineDbObject*>(pLineObject);
+					LMALineDbObject* pLmaLineObject = dynamic_cast<LMALineDbObject*>(pLineObject);
 
-					if( pLineObject )
+					if( pLmaLineObject )
 					{
-						/*
-						RemoveFromModelSpace(pLineObject->mHandleDim,lineEntry.m_LineName);
-					
-						RemoveFromModelSpace(pLineObject->mHandleText,lineEntry.m_LineName);
+						AcDbHandle handleDim = pLmaLineObject->mHandleDim;
+						AcDbHandle handleText = pLmaLineObject->mHandleText;
 
-						RemoveFromModelSpace(pLineObject,lineEntry.m_LineName);
-						*/
+						//关闭管线实体
+						pLmaLineObject->close();
 
 						AcDbObjectId dimObjId, txtObjId;
 						
 						//得到标注对象的ID
 						acdbHostApplicationServices()->workingDatabase()->getAcDbObjectId(
-							dimObjId,false,pLineObject->mHandleDim);
+							dimObjId,false,handleDim);
 						
 						//得到文字说明
 						acdbHostApplicationServices()->workingDatabase()->getAcDbObjectId(
-							txtObjId,false,pLineObject->mHandleDim);
+							txtObjId,false,handleText);
 
 						//删除线段对象
+						acutPrintf(L"\n删除折线段实体.");
 						RemoveDbObject(lineObjId);
+
+						acutPrintf(L"\n删除标注对象.");
 						RemoveDbObject(dimObjId);
+
+						acutPrintf(L"\n删除文字说明.");
 						RemoveDbObject(txtObjId);
 					}
 				}
@@ -1354,6 +1393,7 @@ AcDbObjectId ArxWrapper::CreateMLeader(const AcGePoint3d& start, const int& offs
 	}
 
 	//添加到模型空间中
+	leader->setLinetype( acdbHostApplicationServices()->workingDatabase()->byLayerLinetype() );
 	ArxWrapper::PostToModelSpace(leader,layerName);
 
 	return leader->objectId();
@@ -1367,7 +1407,44 @@ void ArxWrapper::TestFunction()
 
 	//TestLeader();
 
-	TestMLeader();
+	//TestMLeader();
+
+	TestLayer();
+}
+
+void TestLayer()
+{
+	// 提示用户输入新建图层的名称
+	ACHAR layerName[100];
+	if (acedGetString(Adesk::kFalse, L"\n输入新图层的名称：", layerName) != RTNORM)
+	{
+		return;
+	}
+
+	// 获得当前图形的层表
+	AcDbLayerTable *pLayerTbl;
+	acdbHostApplicationServices()->workingDatabase()
+		->getLayerTable(pLayerTbl, AcDb::kForWrite);
+
+	// 是否已经包含指定的层表记录
+	if (pLayerTbl->has(layerName))
+	{
+		pLayerTbl->close();
+		return;
+	}
+
+	// 创建新的层表记录
+	AcDbLayerTableRecord *pLayerTblRcd;
+	pLayerTblRcd = new AcDbLayerTableRecord();
+	pLayerTblRcd->setName(layerName);
+
+	// 将新建的层表记录添加到层表中
+	AcDbObjectId layerTblRcdId;
+	pLayerTbl->add(layerTblRcdId, pLayerTblRcd);
+	acdbHostApplicationServices()->workingDatabase()->setClayer(layerTblRcdId);
+
+	pLayerTblRcd->close();
+	pLayerTbl->close();
 }
 
 void TestHatch()
