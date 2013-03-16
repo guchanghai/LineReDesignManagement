@@ -108,9 +108,6 @@
     <ClInclude Include="..\..\header\LineCutPosDialog.h">
       <Filter>inc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\header\LineTypeConfigPropertySheet.h">
-      <Filter>inc</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\header\MenuManager.h">
       <Filter>inc</Filter>
     </ClInclude>

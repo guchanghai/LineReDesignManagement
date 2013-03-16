@@ -206,7 +206,6 @@
     <ClInclude Include="..\..\header\LineCutPosDialog.h" />
     <ClInclude Include="..\..\header\LineEntryData.h" />
     <ClInclude Include="..\..\header\LineManageAssitant.h" />
-    <ClInclude Include="..\..\header\LineTypeConfigPropertySheet.h" />
     <ClInclude Include="..\..\header\ListCtrlEx.h" />
     <ClInclude Include="..\..\header\LMAException.h" />
     <ClInclude Include="..\..\header\LMAUtils.h" />

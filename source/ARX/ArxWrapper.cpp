@@ -1168,7 +1168,6 @@ void ArxWrapper::eraseLMALine(const LineEntry& lineEntry, bool old)
 	UnLockCurDoc();
 }
 
-
 /**
  * 切换当前视图到与WCS的viewDirection相一致的视图
  **/

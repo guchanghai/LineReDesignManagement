@@ -19,10 +19,10 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\2008\$(ConfigurationName)"
+			IntermediateDirectory="..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\2008\$(ConfigurationName)"
 			ConfigurationType="2"
-			InheritedPropertySheets="..\..\include\inc_2008\inc-win32\rxsdk_Debugcfg.vsprops;..\..\include\inc_2008\inc-win32\arx.vsprops"
+			InheritedPropertySheets="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\rxsdk_Debugcfg.vsprops;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\arx.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -42,7 +42,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\header;..\..\include\inc_2008\inc-win32;..\..\resource;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include"
+				AdditionalIncludeDirectories="..\..\header;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32;..\..\resource;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include"
 				PreprocessorDefinitions=";ACRXAPP;RADPACK;"
 				UsePrecompiledHeader="0"
 			/>
@@ -59,8 +59,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)\$(ProjectName)-2008.arx"
-				AdditionalLibraryDirectories="..\..\library\lib-2008\lib-win32;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib"
-				ModuleDefinitionFile="..\..\include\inc_2008\inc-win32\AcRxDefault.def"
+				AdditionalLibraryDirectories="..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2008\lib-win32;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib"
+				ModuleDefinitionFile="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\AcRxDefault.def"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -89,10 +89,10 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\2008\$(ConfigurationName)"
+			IntermediateDirectory="..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\2008\$(ConfigurationName)"
 			ConfigurationType="2"
-			InheritedPropertySheets="..\..\include\inc_2008\inc-win32\rxsdk_Releasecfg.vsprops;..\..\include\inc_2008\inc-win32\arx.vsprops"
+			InheritedPropertySheets="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\rxsdk_Releasecfg.vsprops;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\arx.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -112,7 +112,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\header;..\..\include\inc_2008\inc-win32;..\..\resource;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include"
+				AdditionalIncludeDirectories="..\..\header;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32;..\..\resource;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include"
 				PreprocessorDefinitions="ACRXAPP;RADPACK;"
 				UsePrecompiledHeader="0"
 			/>
@@ -127,8 +127,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="..\..\library\lib-2008\lib-win32;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib"
-				ModuleDefinitionFile="..\..\include\inc_2008\inc-win32\AcRxDefault.def"
+				AdditionalLibraryDirectories="..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2008\lib-win32;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib"
+				ModuleDefinitionFile="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\AcRxDefault.def"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -158,7 +158,7 @@
 		<Configuration
 			Name="Debug|x64"
 			ConfigurationType="2"
-			InheritedPropertySheets="..\..\include\inc_2008\inc-win32\rxsdk_Debugcfg.vsprops;..\..\include\inc_2008\inc-win32\arx.vsprops"
+			InheritedPropertySheets="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\rxsdk_Debugcfg.vsprops;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\arx.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -178,7 +178,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\include\inc_2008\inc-win32"
+				AdditionalIncludeDirectories="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32"
 				PreprocessorDefinitions=";ACRXAPP;RADPACK;"
 				UsePrecompiledHeader="0"
 			/>
@@ -194,8 +194,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="..\..\library\lib-2008\lib-win32"
-				ModuleDefinitionFile="..\..\include\inc_2008\inc-win32\AcRxDefault.def"
+				AdditionalLibraryDirectories="..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2008\lib-win32"
+				ModuleDefinitionFile="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\AcRxDefault.def"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -226,7 +226,7 @@
 		<Configuration
 			Name="Release|x64"
 			ConfigurationType="2"
-			InheritedPropertySheets="..\..\include\inc_2008\inc-win32\rxsdk_Releasecfg.vsprops;..\..\include\inc_2008\inc-win32\arx.vsprops"
+			InheritedPropertySheets="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\rxsdk_Releasecfg.vsprops;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\arx.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -246,7 +246,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\include\inc_2008\inc-win32"
+				AdditionalIncludeDirectories="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32"
 				PreprocessorDefinitions="ACRXAPP;RADPACK;"
 				UsePrecompiledHeader="0"
 			/>
@@ -261,8 +261,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="..\..\library\lib-2008\lib-win32"
-				ModuleDefinitionFile="..\..\include\inc_2008\inc-win32\AcRxDefault.def"
+				AdditionalLibraryDirectories="..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2008\lib-win32"
+				ModuleDefinitionFile="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\AcRxDefault.def"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -366,67 +366,7 @@
 				Name="dialog"
 				>
 				<File
-					RelativePath="..\..\source\dialog\AddBlockDialog .cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\dialog\AddEntryDialog.cpp"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\source\dialog\AddLineDialog.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\dialog\AsdkAcUiDialogSample.cpp"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\source\dialog\BlockLineConfigDialog.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\source\dialog\EntryManageDialog.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\dialog\LineConfigDialog.cpp"
 					>
 				</File>
 				<File
@@ -450,10 +390,6 @@
 							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 						/>
 					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\source\dialog\LineTypeConfigPropertySheet.cpp"
-					>
 				</File>
 			</Filter>
 			<Filter
@@ -489,18 +425,6 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;fi;fd"
 			>
-			<File
-				RelativePath="..\..\header\addentrydialog.CPP"
-				>
-			</File>
-			<File
-				RelativePath="..\..\header\AddEntryDialog.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\header\AddLineDialog.h"
-				>
-			</File>
 			<File
 				RelativePath="..\..\header\ArxCustomObject.h"
 				>
@@ -566,14 +490,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\header\LineConfigDataManager.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\header\LineConfigDialog.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\header\linecutposdialog.CPP"
 				>
 			</File>
@@ -587,10 +503,6 @@
 			</File>
 			<File
 				RelativePath="..\..\header\LineManageAssitant.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\header\LineTypeConfigPropertySheet.h"
 				>
 			</File>
 			<File
