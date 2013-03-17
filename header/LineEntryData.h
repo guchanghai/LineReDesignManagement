@@ -241,10 +241,14 @@ public:
 
 	static bool RegisterLineSegment( const wstring& fileName, AcDbEntity* pEntry, UINT lineID, UINT sequence, 
 										const AcGePoint3d& start, const AcGePoint3d& end );
+public:
+	
+	static bool openingDwg;
 
 private:
 
 	static EntryFileList* pEntryFileList;
+
 };
 
 } // end of data

@@ -379,6 +379,12 @@ LineDBEntry::LineDBEntry( LineEntry* implementation )
 Acad::ErrorStatus
 LineDBEntry::dwgInFields(AcDbDwgFiler* pFiler)
 {
+	if( LineEntryFileManager::openingDwg == false )
+	{
+		acutPrintf(L"\n设置当前状态为正在打开文件");
+		LineEntryFileManager::openingDwg = true;
+	}
+
     assertWriteEnabled();
 
     AcDbObject::dwgInFields(pFiler);
@@ -984,6 +990,7 @@ LineList LineEntryFile::GetList( const wstring& entityKind )
 /////////////////////////////////////////////////////////////////////////
 
 EntryFileList* LineEntryFileManager::pEntryFileList = NULL;
+bool LineEntryFileManager::openingDwg = false;
 
 void LineEntryFileManager::ReadFromCurrentDWG()
 {
@@ -991,7 +998,7 @@ void LineEntryFileManager::ReadFromCurrentDWG()
 	acutPrintf(L"从当前DWG文件读取数据。");
 #endif
 
-	ArxWrapper::PullFromNameObjectsDict();
+	//ArxWrapper::PullFromNameObjectsDict();
 }
 
 void LineEntryFileManager::RemoveEntryFileOnDWGUnLoad()

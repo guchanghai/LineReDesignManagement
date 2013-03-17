@@ -73,8 +73,17 @@ static void dwgLoaded()
 
 static void dwgUnLoaded()
 {
-	//有DWG文件卸载，删除配置数据
-	LineEntryFileManager::RemoveEntryFileOnDWGUnLoad();
+	acutPrintf(L"\nDWG文件卸载");
+	if( LineEntryFileManager::openingDwg )
+	{
+		acutPrintf(L"\n但当前是打开文件状态，估不做任何处理");
+		LineEntryFileManager::openingDwg = false;
+	}
+	else
+	{
+		acutPrintf(L"\n删除所有管线配置");
+		LineEntryFileManager::RemoveEntryFileOnDWGUnLoad();
+	}
 }
 
 //////////////////////////////////////////////////////////////
