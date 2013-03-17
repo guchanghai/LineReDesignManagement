@@ -181,21 +181,21 @@ void MenuManager::AddDropdownMenu()
 				V_VT(&index) = VT_I4;
 				V_I4(&index) = 0;
 
-				cmdMenuName.Format(L"%s\n",CommandManager::CMD_BLOCK_INPUT);
+				cmdMenuName.Format(L"%s\n",CommandManager::CMD_BLOCK_IMPORT);
 				ILineManagePopUpMenu.AddMenuItem(index, MAIN_MENU_BLOCK_IMPORT, cmdMenuName);
 			
 				VariantInit(&index);
 				V_VT(&index) = VT_I4;
 				V_I4(&index) = 1;
 
-				cmdMenuName.Format(L"%s\n",CommandManager::CMD_BLOCK_EXPORT);
+				cmdMenuName.Format(L"%s\n",CommandManager::CMD_BLOCK_INPUT);
 				ILineManagePopUpMenu.AddMenuItem(index, MAIN_MENU_BLOCK_INPUT, cmdMenuName);
 			
 				VariantInit(&index);
 				V_VT(&index) = VT_I4;
 				V_I4(&index) = 2;
 
-				cmdMenuName.Format(L"%s\n",CommandManager::CMD_BLOCK_IMPORT);
+				cmdMenuName.Format(L"%s\n",CommandManager::CMD_BLOCK_EXPORT);
 				ILineManagePopUpMenu.AddMenuItem(index, MAIN_MENU_BLOCK_EXPORT, cmdMenuName);
 
 				pLineManageDisp = ILineManagePopUpMenu.m_lpDispatch;

@@ -6,12 +6,14 @@
 #include <LineCutPosDialog.h>
 #include <EntryManageDialog.h>
 #include <ArxWrapper.h>
+#include <GlobalDataConfig.h>
 
 #include "AsdkAcUiDialogSample.h"
 #include "AcExtensionModule.h"
 
 using namespace com::guch::assistant::config;
 using namespace com::guch::assistant::entry;
+using namespace com::guch::assistant::data;
 
 typedef map<wstring,AcRxFunctionPtr>::const_iterator CommandIterator;
 
@@ -105,7 +107,7 @@ void CommandManager::ImportLine()
 	acutPrintf(L"\n导入管线数据");
 #endif
 
-	LineEntryFileManager::ImportLMALineFile();
+	LineEntryFileManager::ImportLMALineFile(GlobalData::KIND_LINE);
 }
 
 void CommandManager::LineManage()
@@ -114,7 +116,7 @@ void CommandManager::LineManage()
 	acutPrintf(L"\n录入管线数据");
 #endif
 
-	EntryManageDialog dlg(CWnd::FromHandle(adsw_acadMainWnd()));
+	EntryManageDialog dlg(CWnd::FromHandle(adsw_acadMainWnd()),GlobalData::KIND_LINE);
 	INT_PTR nReturnValue = dlg.DoModal();
 }
 
@@ -124,7 +126,7 @@ void CommandManager::ExportLine()
 	acutPrintf(L"\n导出管线数据");
 #endif
 
-	LineEntryFileManager::ExportLMALineFile();
+	LineEntryFileManager::ExportLMALineFile(GlobalData::KIND_LINE);
 }
 
 void CommandManager::ImportBlock()
@@ -133,7 +135,7 @@ void CommandManager::ImportBlock()
 	acutPrintf(L"\n导入阻隔体数据");
 #endif
 
-	LineEntryFileManager::ImportLMALineFile();
+	LineEntryFileManager::ImportLMALineFile(GlobalData::KIND_BLOCK);
 }
 
 void CommandManager::BlockManage()
@@ -142,7 +144,7 @@ void CommandManager::BlockManage()
 	acutPrintf(L"\n录入阻隔体数据");
 #endif
 
-	EntryManageDialog dlg(CWnd::FromHandle(adsw_acadMainWnd()));
+	EntryManageDialog dlg(CWnd::FromHandle(adsw_acadMainWnd()),GlobalData::KIND_BLOCK);
 	INT_PTR nReturnValue = dlg.DoModal();
 }
 
@@ -152,11 +154,14 @@ void CommandManager::ExportBlock()
 	acutPrintf(L"\n导出阻隔体数据");
 #endif
 
-	LineEntryFileManager::ExportLMALineFile();
+	LineEntryFileManager::ExportLMALineFile(GlobalData::KIND_BLOCK);
 }
 
 void CommandManager::GenerateCut()
 {
+#ifdef DEBUG
+	acutPrintf(L"\n生成切图");
+#endif
 	LineCutPosDialog dlg(CWnd::FromHandle(adsw_acadMainWnd()));
 	INT_PTR nReturnValue = dlg.DoModal();
 }

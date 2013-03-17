@@ -197,9 +197,10 @@ public:
 
 	void Import();
 	void Persistent() const;
-	void ExportTo(const wstring& filename) const;
+	void ExportTo(const wstring& filename,const wstring& lineKind) const;
 
 	LineList* GetList() const {return m_LineList;}
+	LineList GetList( const wstring& entityKind );
 
 	wstring m_FileName;
 
@@ -226,9 +227,9 @@ public:
 
 	static void RemoveEntryFileOnDWGUnLoad();
 
-	static BOOL ImportLMALineFile();
+	static BOOL ImportLMALineFile( const wstring& lineKind );
 
-	static BOOL ExportLMALineFile();
+	static BOOL ExportLMALineFile( const wstring& lineKind );
 
 	static LineEntryFile* GetCurrentLineEntryFile();
 

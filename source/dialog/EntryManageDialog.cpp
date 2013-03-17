@@ -31,8 +31,9 @@ namespace entry
 
 IMPLEMENT_DYNAMIC(EntryManageDialog, CDialog)
 
-EntryManageDialog::EntryManageDialog(CWnd* pParent /*=NULL*/)
-	: CDialog(EntryManageDialog::IDD, pParent)
+EntryManageDialog::EntryManageDialog(CWnd* pParent,const wstring& entryKind)
+:CDialog( GetDlgID(entryKind), pParent)
+,m_EntryKind(entryKind)
 {
 	//坐标点控件需要回调
 	m_LineDetailList.m_Callback = EntryManageDialog::LinePointModified;
@@ -44,7 +45,6 @@ EntryManageDialog::EntryManageDialog(CWnd* pParent /*=NULL*/)
 
 	//得到实体数据文件中的数据
 	m_EntryFile = LineEntryFileManager::RegisterEntryFile(m_fileName);
-	acutPrintf(L"\n当前文件有【%d】条管线.",m_EntryFile->GetList() ? m_EntryFile->GetList()->size() : 0 );
 }
 
 BOOL EntryManageDialog::OnInitDialog()
@@ -106,11 +106,13 @@ BOOL EntryManageDialog::InitEntryListControl()
 	kLineItem = m_LinesTree.InsertItem(L"巷道#2",hCatogreyItem,kLineItem);
 
 #else
-	LineList* lineList = m_EntryFile->GetList();
+
+	LineList lineList = m_EntryFile->GetList(m_EntryKind);
+	acutPrintf(L"\n当前文件有【%d】条管线.", lineList.size() );
 
 	//初始化左边栏树形数据
-	for( LineIterator iter = lineList->begin();
-			iter != lineList->end();
+	for( LineIterator iter = lineList.begin();
+			iter != lineList.end();
 			iter++)
 	{
 		InsertLine((*iter),TRUE);
@@ -118,6 +120,7 @@ BOOL EntryManageDialog::InitEntryListControl()
 
 	//默认展开根节点
 	m_LinesTree.Expand(TVI_ROOT, TVE_EXPAND);
+
 #endif
 	return TRUE;
 }
@@ -127,7 +130,8 @@ BOOL EntryManageDialog::InitEntryDetailControl()
 	//初始化管线种类列表
 	{
 		int index = 0;
-		LineCommonConfigVector* lineKindConfig = LineConfigDataManager::Instance()->FindConfig( GlobalData::CONFIG_LINE_KIND);
+		wstring configKind = IsLineEdit(m_EntryKind) ? GlobalData::CONFIG_LINE_KIND : GlobalData::CONFIG_BLOCK_KIND;
+		LineCommonConfigVector* lineKindConfig = LineConfigDataManager::Instance()->FindConfig( configKind );
 
 		for( ConfigIterator iter = lineKindConfig->begin();
 			iter != lineKindConfig->end();
@@ -457,7 +461,20 @@ void EntryManageDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC_DYNAMIC_5, m_StaticDynamic_5);
 	DDX_Control(pDX, IDC_EDIT_DANAMIC_5, m_EditDynamic_5);
 
-	DDX_Control(pDX, IDC_EDIT_WALL_SIZE,m_LineWallSize);
+	if( IsLineEdit(m_EntryKind) )
+	{
+		DDX_Control(pDX, IDC_EDIT_WALL_SIZE,m_LineWallSize);
+	}
+	else
+	{
+		DDX_Control(pDX, IDC_THROUGH_LEFT,m_ThroughLeft);
+		DDX_Control(pDX, IDC_THROUGH_RIGHT,m_ThroughRight);
+		DDX_Control(pDX, IDC_THROUGH_RFONT,m_ThroughFront);
+		DDX_Control(pDX, IDC_THROUGH_BACK,m_ThroughBack);
+		DDX_Control(pDX, IDC_THROUGH_ABOVE,m_ThroughAbove);
+		DDX_Control(pDX, IDC_THROUGH_BELLOW,m_ThroughBellow);
+	}
+
 	DDX_Control(pDX, IDC_EDIT_SAFESIZE,m_LineSafeSize);
 
 	DDX_Control(pDX, IDC_EDIT_PLANE_MARK,m_LinePlaneDesc);
@@ -501,6 +518,13 @@ BEGIN_MESSAGE_MAP(EntryManageDialog, CDialog)
 	ON_EN_CHANGE(IDC_EDIT_DANAMIC_2,		OnControlValueChange)
 	ON_EN_CHANGE(IDC_EDIT_DANAMIC_3,		OnControlValueChange)
 
+	ON_BN_CLICKED(IDC_THROUGH_LEFT,			OnControlValueChange)
+	ON_BN_CLICKED(IDC_THROUGH_RIGHT,		OnControlValueChange)
+	ON_BN_CLICKED(IDC_THROUGH_RFONT,		OnControlValueChange)
+	ON_BN_CLICKED(IDC_THROUGH_BACK,			OnControlValueChange)
+	ON_BN_CLICKED(IDC_THROUGH_ABOVE,		OnControlValueChange)
+	ON_BN_CLICKED(IDC_THROUGH_BELLOW,		OnControlValueChange)
+
 	ON_EN_CHANGE(IDC_EDIT_WALL_SIZE,		OnControlValueChange)
 	ON_EN_CHANGE(IDC_EDIT_SAFESIZE,			OnControlValueChange)
 	
@@ -529,8 +553,7 @@ void EntryManageDialog::OnBnClickedButtonOK()
 		acutPrintf(L"\n新增管线【%s】,折线段【%d】条.",pipeName.c_str(),pointList->size());
 
 		//创建新的管线
-		LineEntry* newLine = new LineEntry(pipeName,GlobalData::KIND_LINE,
-											detailInfo,NULL);
+		LineEntry* newLine = new LineEntry(pipeName,m_EntryKind,detailInfo,NULL);
 
 		//生成该项的ID
 		newLine->m_LineID = (UINT)GetTickCount();
@@ -711,7 +734,15 @@ void EntryManageDialog::FillLineData( LineEntry* lineEntry )
 			m_EditDynamic_2.SetWindowText(lineEntry->m_LineBasiInfo->mHeight.c_str());
 		}
 
-		m_LineWallSize.SetWindowText(lineEntry->m_LineBasiInfo->mWallSize.c_str());
+		if( IsLineEdit(m_EntryKind) )
+		{
+			m_LineWallSize.SetWindowText(lineEntry->m_LineBasiInfo->mWallSize.c_str());
+		}
+		else
+		{
+			FillLineThroughDirection(lineEntry->m_LineBasiInfo->mThroughDirection);
+		}
+
 		m_LineSafeSize.SetWindowText(lineEntry->m_LineBasiInfo->mSafeSize.c_str());
 
 		m_LinePlaneDesc.SetWindowText(lineEntry->m_LineBasiInfo->mPlaneMark.c_str());
@@ -744,7 +775,8 @@ LineCategoryItemData* EntryManageDialog::CreateEntryDetailInfo()
 	UpdateData(TRUE);
 
 	CString lineCategory,lineShape,lineRadius,lineWidth,lineHeight,
-			lineSafeSize,lineWallSize,linePlaneDesc,lineCutDesc;
+			lineSafeSize,lineWallSize,lineThroughDirect,
+			linePlaneDesc,lineCutDesc;
 
 	//得到各个输入框的信息
 	m_LineCategory.GetWindowTextW(lineCategory);
@@ -766,7 +798,15 @@ LineCategoryItemData* EntryManageDialog::CreateEntryDetailInfo()
 		lineHeight = L"0";
 	}
 
-	m_LineWallSize.GetWindowTextW(lineWallSize);
+	if( IsLineEdit(m_EntryKind) )
+	{
+		m_LineWallSize.GetWindowTextW(lineWallSize);
+	}
+	else
+	{
+		lineThroughDirect = GetLineThrough();
+	}
+
 	m_LineSafeSize.GetWindowTextW(lineSafeSize);
 
 	m_LinePlaneDesc.GetWindowTextW(linePlaneDesc);
@@ -775,18 +815,20 @@ LineCategoryItemData* EntryManageDialog::CreateEntryDetailInfo()
 	//准备配置数据结构体
 	LineCategoryItemData* categoryData = new LineCategoryItemData();
 
-	categoryData->mCategory = lineCategory;
-	categoryData->mShape = lineShape;
+	categoryData->mCategory = wstring(lineCategory.GetBuffer());
+	categoryData->mShape = wstring(lineShape.GetBuffer());
 
-	categoryData->mRadius = lineRadius;
-	categoryData->mWidth = lineWidth;
-	categoryData->mHeight = lineHeight;
+	categoryData->mRadius = wstring(lineRadius.GetBuffer());
+	categoryData->mWidth = wstring(lineWidth.GetBuffer());
+	categoryData->mHeight = wstring(lineHeight.GetBuffer());
 
-	categoryData->mWallSize = lineWallSize;
-	categoryData->mSafeSize = lineSafeSize;
+	categoryData->mWallSize = wstring(lineWallSize.GetBuffer());
+	categoryData->mSafeSize = wstring(lineSafeSize.GetBuffer());
 
-	categoryData->mPlaneMark = linePlaneDesc;
-	categoryData->mCutMark = lineCutDesc;
+	categoryData->mPlaneMark = wstring(linePlaneDesc.GetBuffer());
+	categoryData->mCutMark = wstring(lineCutDesc.GetBuffer());
+
+	categoryData->mThroughDirection = wstring(lineThroughDirect.GetBuffer());
 
 	return categoryData;
 }
@@ -839,7 +881,15 @@ void EntryManageDialog::ClearLineData()
 	m_EditDynamic_4.SetWindowText(L"0");
 	m_EditDynamic_5.SetWindowText(L"0");
 
-	m_LineWallSize.SetWindowText(L"0");
+	if( IsLineEdit(m_EntryKind) )
+	{
+		m_LineWallSize.SetWindowText(L"0");
+	}
+	else
+	{
+		ClearLineThroughDirection();
+	}
+
 	m_LineSafeSize.SetWindowText(L"0");
 
 	m_LinePlaneDesc.SetWindowText(L"无");
@@ -866,7 +916,20 @@ void EntryManageDialog::EnableDetailControl(bool enable)
 	m_EditDynamic_4.EnableWindow(enable);
 	m_EditDynamic_5.EnableWindow(enable);
 
-	m_LineWallSize.EnableWindow(enable);
+	if( IsLineEdit(m_EntryKind) )
+	{
+		m_LineWallSize.EnableWindow(enable);
+	}
+	else
+	{
+		m_ThroughLeft.EnableWindow(enable);
+		m_ThroughRight.EnableWindow(enable);
+		m_ThroughFront.EnableWindow(enable);
+		m_ThroughBack.EnableWindow(enable);
+		m_ThroughAbove.EnableWindow(enable);
+		m_ThroughBellow.EnableWindow(enable);
+	}
+
 	m_LineSafeSize.EnableWindow(enable);
 
 	m_LinePlaneDesc.EnableWindow(enable);
@@ -923,15 +986,15 @@ void EntryManageDialog::ShowDynamicControl()
 
 	if( shape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
-		m_StaticDynamic_1.SetWindowTextW(L"内径(mm)");
+		m_StaticDynamic_1.SetWindowTextW(L"内径 (mm)");
 
 		m_StaticDynamic_1.ShowWindow( true );
 		m_EditDynamic_1.ShowWindow( true );
 	}
 	else if( shape == GlobalData::LINE_SHAPE_SQUARE )
 	{
-		m_StaticDynamic_1.SetWindowTextW(L"净宽(mm)");
-		m_StaticDynamic_2.SetWindowTextW(L"净高(mm)");
+		m_StaticDynamic_1.SetWindowTextW(L"净宽 (mm)");
+		m_StaticDynamic_2.SetWindowTextW(L"净高 (mm)");
 
 		m_StaticDynamic_1.ShowWindow( true );
 		m_EditDynamic_1.ShowWindow( true );
@@ -941,9 +1004,9 @@ void EntryManageDialog::ShowDynamicControl()
 	}
 	else if( shape == GlobalData::LINE_SHAPE_GZQPD )
 	{
-		m_StaticDynamic_1.SetWindowTextW(L"净宽(mm)");
-		m_StaticDynamic_2.SetWindowTextW(L"矢高(mm)");
-		m_StaticDynamic_3.SetWindowTextW(L"墙高(mm)");
+		m_StaticDynamic_1.SetWindowTextW(L"净宽 (mm)");
+		m_StaticDynamic_2.SetWindowTextW(L"矢高 (mm)");
+		m_StaticDynamic_3.SetWindowTextW(L"墙高 (mm)");
 
 		m_StaticDynamic_1.ShowWindow( true );
 		m_EditDynamic_1.ShowWindow( true );
@@ -956,10 +1019,10 @@ void EntryManageDialog::ShowDynamicControl()
 	}
 	else if( shape == GlobalData::LINE_SHAPE_GZQYG )
 	{
-		m_StaticDynamic_1.SetWindowTextW(L"净宽(mm)");
-		m_StaticDynamic_2.SetWindowTextW(L"上矢高(mm)");
-		m_StaticDynamic_3.SetWindowTextW(L"下矢高(mm)");
-		m_StaticDynamic_4.SetWindowTextW(L"墙高(mm)");
+		m_StaticDynamic_1.SetWindowTextW(L"净宽 (mm)");
+		m_StaticDynamic_2.SetWindowTextW(L"上矢高 (mm)");
+		m_StaticDynamic_3.SetWindowTextW(L"下矢高 (mm)");
+		m_StaticDynamic_4.SetWindowTextW(L"墙高 (mm)");
 
 		m_StaticDynamic_1.ShowWindow( true );
 		m_EditDynamic_1.ShowWindow( true );
@@ -975,11 +1038,11 @@ void EntryManageDialog::ShowDynamicControl()
 	}
 	else if( shape == GlobalData::LINE_SHAPE_QQMTX )
 	{
-		m_StaticDynamic_1.SetWindowTextW(L"上矢宽(mm)");
-		m_StaticDynamic_2.SetWindowTextW(L"下矢宽(mm)");
-		m_StaticDynamic_3.SetWindowTextW(L"上矢高(mm)");
-		m_StaticDynamic_4.SetWindowTextW(L"下矢高(mm)");
-		m_StaticDynamic_5.SetWindowTextW(L"墙高(mm)");
+		m_StaticDynamic_1.SetWindowTextW(L"上矢宽 (mm)");
+		m_StaticDynamic_2.SetWindowTextW(L"下矢宽 (mm)");
+		m_StaticDynamic_3.SetWindowTextW(L"上矢高 (mm)");
+		m_StaticDynamic_4.SetWindowTextW(L"下矢高 (mm)");
+		m_StaticDynamic_5.SetWindowTextW(L"墙高 (mm)");
 
 		m_StaticDynamic_1.ShowWindow( true );
 		m_EditDynamic_1.ShowWindow( true );
@@ -1042,6 +1105,53 @@ void EntryManageDialog::LinePointModified(void* dialog)
 		//控件发生了值变化
 		entryDlg->OnControlValueChange();
 	}
+}
+
+UINT EntryManageDialog::GetDlgID( const wstring& entryKind )
+{
+	if( entryKind == GlobalData::KIND_LINE )
+	{
+		return IDD_DIALOG_ENTRY_MANAGE;
+	}
+	else
+	{
+		return IDD_DIALOG_BLOCK_MANAGE;
+	}
+}
+	
+void EntryManageDialog::FillLineThroughDirection( const wstring& throughDirection)
+{
+	m_ThroughLeft.SetCheck( throughDirection.substr(0,1) == L"1" ? BST_CHECKED : BST_UNCHECKED );
+	m_ThroughRight.SetCheck( throughDirection.substr(1,1) == L"1" ? BST_CHECKED : BST_UNCHECKED );
+	m_ThroughFront.SetCheck( throughDirection.substr(2,1) == L"1" ? BST_CHECKED : BST_UNCHECKED );
+	m_ThroughBack.SetCheck( throughDirection.substr(3,1) == L"1" ? BST_CHECKED : BST_UNCHECKED );
+	m_ThroughAbove.SetCheck( throughDirection.substr(4,1) == L"1" ? BST_CHECKED : BST_UNCHECKED );
+	m_ThroughBellow.SetCheck( throughDirection.substr(5,1) == L"1" ? BST_CHECKED : BST_UNCHECKED );
+}
+
+void EntryManageDialog::ClearLineThroughDirection()
+{
+	m_ThroughLeft.SetCheck(BST_UNCHECKED);
+	m_ThroughRight.SetCheck(BST_UNCHECKED);
+	m_ThroughFront.SetCheck(BST_UNCHECKED);
+	m_ThroughBack.SetCheck(BST_UNCHECKED);
+	m_ThroughAbove.SetCheck(BST_UNCHECKED);
+	m_ThroughBellow.SetCheck(BST_UNCHECKED);
+}
+
+CString EntryManageDialog::GetLineThrough()
+{
+	CString lineThrough;
+
+	lineThrough.Format(L"%s%s%s%s%s%s",
+		m_ThroughLeft.GetCheck() == BST_CHECKED ? L"1" : L"0",
+		m_ThroughRight.GetCheck() == BST_CHECKED ? L"1" : L"0",
+		m_ThroughFront.GetCheck() == BST_CHECKED ? L"1" : L"0",
+		m_ThroughBack.GetCheck() == BST_CHECKED ? L"1" : L"0",
+		m_ThroughAbove.GetCheck() == BST_CHECKED ? L"1" : L"0",
+		m_ThroughBellow.GetCheck() == BST_CHECKED ? L"1" : L"0");
+
+	return lineThrough;
 }
 
 // EntryManageDialog message handlers

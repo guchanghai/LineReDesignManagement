@@ -7,7 +7,7 @@ using namespace com::guch::assistant::data;
 * 管线类型
 **/
 const wstring GlobalData::KIND_LINE = L"管线";
-const wstring GlobalData::KIND_SEPERATOR = L"阻隔体";
+const wstring GlobalData::KIND_BLOCK = L"阻隔体";
 
 /**
 * 管道种类

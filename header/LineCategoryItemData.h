@@ -40,13 +40,6 @@ struct CommonConfig
 
 struct LineCategoryItemData
 {
-	int mIndex;
-
-	UINT mID;
-
-	//管线的种类
-	wstring mKind;
-
 	//配置的种类
 	wstring mCategory;
 	
@@ -66,14 +59,10 @@ struct LineCategoryItemData
 	wstring mPlaneMark;
 	wstring mCutMark;
 
-	wstring mCanThrough;
 	wstring mThroughDirection;
 
 	LineCategoryItemData(void);
-	LineCategoryItemData( const int& index,
-							const UINT& rID,
-							const wstring& rKind,
-							const wstring& rCategory,
+	LineCategoryItemData( const wstring& rCategory,
 							const wstring& rShape,
 							const wstring& rRadius,
 							const wstring& rWidth,
@@ -82,7 +71,6 @@ struct LineCategoryItemData
 							const wstring& rSafeSize,
 							const wstring& rPlaneMark,
 							const wstring& rCutMark,
-							const wstring& rCanThrough,
 							const wstring& rThroughDirection);
 
 	LineCategoryItemData( const LineCategoryItemData& rData);

@@ -189,7 +189,6 @@ LineEntry::LineEntry( const wstring& data)
 	m_LineBasiInfo->mSafeSize = (*dataColumn)[index++];
 	m_LineBasiInfo->mPlaneMark = (*dataColumn)[index++];
 	m_LineBasiInfo->mCutMark = (*dataColumn)[index++];
-	m_LineBasiInfo->mCanThrough = (*dataColumn)[index++];
 	m_LineBasiInfo->mThroughDirection = (*dataColumn)[index++];
 
 	//编号在点左边前面
@@ -468,11 +467,6 @@ LineDBEntry::dwgInFields(AcDbDwgFiler* pFiler)
 
 			tmpStr = NULL;    // must explicitly set to NULL or readItem() crashes!
 			pFiler->readItem(&tmpStr);
-			pImplemention->m_LineBasiInfo->mCanThrough = wstring(tmpStr);
-			acutDelString(tmpStr);
-
-			tmpStr = NULL;    // must explicitly set to NULL or readItem() crashes!
-			pFiler->readItem(&tmpStr);
 			pImplemention->m_LineBasiInfo->mThroughDirection = wstring(tmpStr);
 			acutDelString(tmpStr);
 		}
@@ -552,7 +546,6 @@ LineDBEntry::dwgOutFields(AcDbDwgFiler* pFiler) const
 	pFiler->writeItem(pImplemention->m_LineBasiInfo->mPlaneMark.c_str());
 	pFiler->writeItem(pImplemention->m_LineBasiInfo->mCutMark.c_str());
 
-	pFiler->writeItem(pImplemention->m_LineBasiInfo->mCanThrough.c_str());
 	pFiler->writeItem(pImplemention->m_LineBasiInfo->mThroughDirection.c_str());
 
     return pFiler->filerStatus();
@@ -709,10 +702,10 @@ void LineEntryFile::Persistent() const
 {
 	acutPrintf(L"\n持久化管线数据.");
 
-	ExportTo(this->m_FileName);
+	//ExportTo(this->m_FileName);
 }
 
-void LineEntryFile::ExportTo(const wstring& filename) const
+void LineEntryFile::ExportTo(const wstring& filename,const wstring& lineKind) const
 {
 	acutPrintf(L"\n导出实体数据.");
 
@@ -727,7 +720,8 @@ void LineEntryFile::ExportTo(const wstring& filename) const
 	{
 		LineEntry* data = *iter;
 
-		if( data )
+		if( data 
+			&& data->m_LineKind == lineKind )
 		{
 			//得到消息的宽字符序列化
 			wstring wData = data->toString();
@@ -962,6 +956,24 @@ wstring LineEntryFile::GetNewPipeName( const LineCategoryItemData* pipeCategoryD
 	return pipeCategory;
 }
 
+LineList LineEntryFile::GetList( const wstring& entityKind )
+{
+	LineList kindList;
+
+	//初始化左边栏树形数据
+	for( LineIterator iter = m_LineList->begin();
+			iter != m_LineList->end();
+			iter++)
+	{
+		if( (*iter)->m_LineKind == entityKind )
+		{
+			kindList.push_back((*iter));
+		}
+	}
+
+	return kindList;
+}
+
 /////////////////////////////////////////////////////////////////////////
 
 EntryFileList* LineEntryFileManager::pEntryFileList = NULL;
@@ -1133,11 +1145,13 @@ LineEntryFile* LineEntryFileManager::GetCurrentLineEntryFile()
 	return GetLineEntryFile(fileName);
 }
 
-BOOL LineEntryFileManager::ImportLMALineFile()
+BOOL LineEntryFileManager::ImportLMALineFile( const wstring& lineKind )
 {
 	//导入选择对话框
-	static wchar_t BASED_CODE szFilter[] = L"管线数据文件 (*.dat)|*.dat||";
-	CFileDialog dlg(TRUE, L"dat", L"", OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter, CWnd::FromHandle(adsw_acadMainWnd()), 0/*, TRUE*/);
+	CString szFilter;
+	szFilter.Format(L"%s", IsLineEdit(lineKind) ? L"管线数据文件 (*.ldt)|*.ldt||" : L"阻隔体数据文件 (*.bdt)|*.bdt||");
+	CFileDialog dlg(TRUE, IsLineEdit(lineKind) ? L"ldt" : L"bdt", L"", OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter.GetBuffer(), 
+					CWnd::FromHandle(adsw_acadMainWnd()), 0/*, TRUE*/);
 
 	if (dlg.DoModal() == IDOK) 
 	{
@@ -1162,17 +1176,17 @@ BOOL LineEntryFileManager::ImportLMALineFile()
         return(FALSE);
 }
 
-BOOL LineEntryFileManager::ExportLMALineFile()
+BOOL LineEntryFileManager::ExportLMALineFile( const wstring& lineKind )
 {
-	//导出选择对话框
-	
 	//去除掉文件后缀（dwg）
 	wstring fileName( curDoc()->fileName() );
 	fileName = fileName.substr(0, fileName.find_first_of(L"."));
 
-	static wchar_t BASED_CODE szFilter[] = L"管线数据文件 (*.dat)|*.dat||";
-	CFileDialog dlg(FALSE, L"dat", fileName.c_str(), 
-					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter, 
+	//导出选择对话框
+	CString szFilter;
+	szFilter.Format(L"%s", IsLineEdit(lineKind) ? L"管线数据文件 (*.ldt)|*.ldt||" : L"阻隔体数据文件 (*.bdt)|*.bdt||");
+	CFileDialog dlg(FALSE, IsLineEdit(lineKind) ? L"ldt" : L"bdt", fileName.c_str(), 
+					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter.GetBuffer(), 
 					CWnd::FromHandle(adsw_acadMainWnd()), 0/*, TRUE*/);
 
 	if (dlg.DoModal() == IDOK) 
@@ -1183,7 +1197,7 @@ BOOL LineEntryFileManager::ExportLMALineFile()
 		LineEntryFile* exportFile = GetLineEntryFile(wstring(curDoc()->fileName()));
 
 		if( exportFile )
-			exportFile->ExportTo(expFile.GetBuffer());
+			exportFile->ExportTo(expFile.GetBuffer(),lineKind);
 
         return(TRUE);
     }

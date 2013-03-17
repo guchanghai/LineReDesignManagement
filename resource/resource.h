@@ -42,7 +42,7 @@
 #define IDC_STATIC_DYNAMIC_3            10040
 #define IDC_STATIC_DYNAMIC_4            10041
 #define IDC_STATIC_DYNAMIC_5            10042
-#define IDC_EDIT_DANAMIC_1				10043
+#define IDC_EDIT_DANAMIC_1              10043
 #define IDC_EDIT_DANAMIC_2              10044
 #define IDC_EDIT_DANAMIC_3              10045
 #define IDC_EDIT_DANAMIC_4              10046
@@ -50,24 +50,32 @@
 #define IDC_EDIT_PLANE_MARK             10048
 #define IDC_EDIT_CUT_MARK               10049
 #define IDC_EDIT_WALL_SIZE              10050
-#define IDC_STATIC_RADIUS				10051
-#define ID_INPUT_POINT                  10058
+#define IDC_THROUGH_LEFT                10060
+#define IDC_THROUGH_RIGHT               10061
+#define IDC_THROUGH_RFONT               10062
+#define IDC_THROUGH_BACK                10063
+#define IDC_THROUGH_ABOVE               10064
+#define IDC_THROUGH_BELLOW              10065
+#define IDC_STATIC_RADIUS               11051
+#define IDD_DIALOG_BLOCK_MANAGE         11059
 #define ID_GENERATE_CUT                 32774
-#define ID_LINE_CONFIG                  32776
 #define ID_GENERATE_BACK                32784
 #define ID_MENU_TEST                    32786
-#define ID_LINE_IMPORT                  32790
-#define ID_LINE_EXPORT                  32791
-#define ID_LINE_CONFIG_EXPORT           32792
-#define ID_LINE_CONFIG_IMPORT           32793
+#define ID_MENU_BLOCK_IMPORT            32797
+#define ID_MENU_BLOCK_INPUT             32798
+#define ID_MENU_BLOCK_EXPORT            32799
+#define ID_MENU_LINE_IMPORT             32800
+#define ID_MENU_LINE_INPUT              32801
+#define ID_MENU_LINE_EXPOR              32802
+#define ID_MENU_LINE_EXPORT             32803
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        141
-#define _APS_NEXT_COMMAND_VALUE         32797
-#define _APS_NEXT_CONTROL_VALUE         1060
+#define _APS_NEXT_COMMAND_VALUE         32804
+#define _APS_NEXT_CONTROL_VALUE         1066
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

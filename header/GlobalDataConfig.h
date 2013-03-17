@@ -23,7 +23,7 @@ public:
 	* 管线类型
 	**/
 	static const wstring KIND_LINE;
-	static const wstring KIND_SEPERATOR;
+	static const wstring KIND_BLOCK;
 
 	/**
 	* 管道种类

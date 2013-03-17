@@ -36,3 +36,5 @@ wstrVector* vectorContructor( const wstring& data, const wstring& seq, size_t st
 LPCTSTR dbToStr(AcDbDatabase* db, CString& str);
 
 void rxErrorMsg(Acad::ErrorStatus msgId);
+
+bool IsLineEdit( const wstring& lineKind );

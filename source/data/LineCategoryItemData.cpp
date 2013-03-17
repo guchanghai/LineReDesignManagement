@@ -17,10 +17,7 @@ namespace config
 {
 
 LineCategoryItemData::LineCategoryItemData(void)
-:mIndex(0),
-mID(0),
-mKind(L""),
-mCategory(L""),
+:mCategory(L""),
 mShape(L""),
 mRadius(L"0"),
 mWidth(L"0"),
@@ -29,15 +26,11 @@ mWallSize(L"0"),
 mSafeSize(L"0"),
 mPlaneMark(L""),
 mCutMark(L""),
-mCanThrough(L""),
 mThroughDirection(L"")
 {
 }
 
-LineCategoryItemData::LineCategoryItemData( const int&		index,
-											const UINT&		rID,
-											const wstring& rKind,
-											const wstring& rCategory,
+LineCategoryItemData::LineCategoryItemData( const wstring& rCategory,
 											const wstring& rShape,
 											const wstring& rRadius,
 											const wstring& rWidth,
@@ -46,12 +39,8 @@ LineCategoryItemData::LineCategoryItemData( const int&		index,
 											const wstring& rSafeSize,
 											const wstring& rPlaneMark,
 											const wstring& rCutMark,
-											const wstring& rCanThrough,
 											const wstring& rThroughDirection)
-:mIndex(index),
-mID(rID),
-mKind(rKind),
-mCategory(rCategory),
+:mCategory(rCategory),
 mShape(rShape),
 mRadius(rRadius),
 mWidth(rWidth),
@@ -60,22 +49,17 @@ mWallSize(rWallSize),
 mSafeSize(rSafeSize),
 mPlaneMark(rPlaneMark),
 mCutMark(rCutMark),
-mCanThrough(rCanThrough),
 mThroughDirection(rThroughDirection)
 {}
 
 LineCategoryItemData::LineCategoryItemData( const LineCategoryItemData& rData)
-:mIndex(rData.mIndex),
-mID(rData.mID),
-mKind(rData.mKind),
-mCategory(rData.mCategory),
+:mCategory(rData.mCategory),
 mWidth(rData.mWidth),
 mHeight(rData.mHeight),
 mWallSize(rData.mWallSize),
 mSafeSize(rData.mSafeSize),
 mPlaneMark(rData.mPlaneMark),
 mCutMark(rData.mCutMark),
-mCanThrough(rData.mCanThrough),
 mThroughDirection(rData.mThroughDirection)
 {
 }
@@ -91,7 +75,6 @@ wstring LineCategoryItemData::toString() const
 			+ mSafeSize + L"\t"
 			+ mPlaneMark + L"\t"
 			+ mCutMark + L"\t"
-			+ mCanThrough + L"\t"
 			+ mThroughDirection;
 }
 

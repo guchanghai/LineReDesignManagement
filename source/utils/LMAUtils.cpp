@@ -1,4 +1,5 @@
 #include <LMAUtils.h>
+#include <GlobalDataConfig.h>
 
 #include "stdafx.h"
 
@@ -6,6 +7,8 @@
 #pragma warning(disable : 4244)
 #pragma warning(disable : 4305)
 #pragma warning(disable : 4309)
+
+using namespace com::guch::assistant::data;
 
 //将string转换成wstring     
 wstring StringToWString(const string& str)     
@@ -193,4 +196,16 @@ void rxErrorMsg(Acad::ErrorStatus msgId)
 {
     if (msgId != Acad::eOk)
         acutPrintf(_T("\n出错原因: 【%s】"), acadErrorStatusText(msgId));
+}
+
+bool IsLineEdit( const wstring& lineKind )
+{
+	if( lineKind == GlobalData::KIND_LINE )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }

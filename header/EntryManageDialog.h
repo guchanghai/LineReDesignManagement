@@ -36,7 +36,7 @@ class EntryManageDialog : public CDialog
 
 public:
 
-	EntryManageDialog(CWnd* pParent = NULL);   // standard constructor
+	EntryManageDialog(CWnd* pParent,const wstring& entryKind);   // standard constructor
 	virtual ~EntryManageDialog();
 
 	// Dialog Data
@@ -46,6 +46,8 @@ public:
 protected:
 	
 	DECLARE_MESSAGE_MAP()
+
+	static UINT GetDlgID( const wstring& entryKind );
 
 	//对话框数据
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -86,6 +88,11 @@ protected:
 	virtual void HideDynamicControl();
 	virtual void FillShapeKind(const wstring& shape);
 
+	//穿越方向相关
+	void FillLineThroughDirection( const wstring& throughDirection);
+	void ClearLineThroughDirection();
+	CString GetLineThrough();
+
 	//管理控制
 	void SetOperType( OPER_TYPE type ) { m_OperType = type; }
 
@@ -113,6 +120,7 @@ private:
 	CComboBox m_LineCategory;
 	CComboBox m_LineShape;
 
+	//实体大小（由管线形状决定）
 	CStatic m_StaticDynamic_1;
 	CEdit m_EditDynamic_1;
 
@@ -133,6 +141,14 @@ private:
 
 	CEdit m_LinePlaneDesc;
 	CEdit m_LineCutDesc;
+
+	//可以穿越的方向
+	CButton m_ThroughLeft;
+	CButton m_ThroughRight;
+	CButton m_ThroughFront;
+	CButton m_ThroughBack;
+	CButton m_ThroughAbove;
+	CButton m_ThroughBellow;
 
 	CAcUiNumericEdit m_PointEdit;
 
