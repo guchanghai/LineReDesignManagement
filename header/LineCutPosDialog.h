@@ -52,6 +52,8 @@ protected:
 
 	void ShowCutRegion();
 
+	static void RemoveObectsLastCut();
+
 private:
 
 	//切面的偏移量
@@ -65,6 +67,8 @@ private:
 
 	//切面的名称
 	static CString m_CutLayerName;
+
+	static AcDbObjectIdArray m_CutObjects;
 
 public:
 

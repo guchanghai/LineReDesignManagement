@@ -31,11 +31,14 @@
 
 #include <GlobalDataConfig.h>
 
+#include <LMAUtils.h>
+
 using namespace com::guch::assistant::arx;
 
 // LineCutPosDialog dialog
 
 CString LineCutPosDialog::m_CutLayerName = L"";
+AcDbObjectIdArray LineCutPosDialog::m_CutObjects = AcDbObjectIdArray();
 
 IMPLEMENT_DYNAMIC(LineCutPosDialog, CAcUiDialog)
 
@@ -163,6 +166,8 @@ void LineCutPosDialog::GenereateCutRegion()
 	//首先恢复视图
 	CutBack();
 
+	ArxWrapper::LockCurDoc();
+
 	//得到切面
 	GenerateCutPlane();
 
@@ -194,6 +199,8 @@ void LineCutPosDialog::GenereateCutRegion()
 		if( *lineIter != NULL )
 			GenereateCutRegion(*lineIter);
 	}
+
+	ArxWrapper::UnLockCurDoc();
 }
 
 void LineCutPosDialog::GenereateCutRegion(LineEntry* lineEntry)
@@ -231,7 +238,7 @@ void LineCutPosDialog::GenereateCutRegion(LineEntry* lineEntry)
 		}
 
 		AcDbEntity* pLineObj;
-		Acad::ErrorStatus es = acdbOpenAcDbEntity(pLineObj, pointEntry->m_EntryId, AcDb::kForWrite);
+		Acad::ErrorStatus es = acdbOpenAcDbEntity(pLineObj, pointEntry->m_EntryId, AcDb::kForRead);
 
 		if( es == Acad::eOk )
 		{
@@ -247,48 +254,45 @@ void LineCutPosDialog::GenereateCutRegion(LineEntry* lineEntry)
 			AcDbRegion *pSelectionRegion = NULL;
 			pLMALine->getSection(m_CutPlane, pSelectionRegion);
 
+			//得到注释的中心点
+			AcGePoint3d centerPoint = pLMALine->GetCutCenter(m_CutPlane);
+
+			//设置注释的内容
+			CString markContent;
+			markContent.Format(L"%s#%d",pLMALine->mLineEntry->m_LineName.c_str(), pLMALine->mSequenceNO);
+
+			//关闭实体
+			pLMALine->close();
+
 			if( pSelectionRegion )
 			{
+				acutPrintf(L"\n生成切面区域");
+
 				//创建切面所在的图层
 				if( ArxWrapper::createNewLayer(m_CutLayerName.GetBuffer()) == false )
 					return;
 
 				//将截面加入到模型空间
-				if( ArxWrapper::PostToModelSpace(pSelectionRegion,m_CutLayerName.GetBuffer()) == false )
-					return;
+				AcDbObjectId regionId = ArxWrapper::PostToModelSpace(pSelectionRegion,m_CutLayerName.GetBuffer());
+				m_CutObjects.append(regionId);
 
 				//创建该界面的填充区域
-				ArxWrapper::CreateHatch(pSelectionRegion,L"NET", true, m_CutLayerName.GetBuffer(), m_CutPlane, m_strOffset);
+				AcDbObjectId hatchId = ArxWrapper::CreateHatch(regionId,L"NET", true, m_CutLayerName.GetBuffer(), m_CutPlane, m_strOffset);
+				m_CutObjects.append(hatchId);
 
-				{
-					//得到注释的中心点
-					AcGePoint3d centerPoint = pLMALine->GetCutCenter(m_CutPlane);
-
-					//设置注释的内容
-					CString markContent;
-
-					if( pLMALine->mLineShape == GlobalData::LINE_SHAPE_CIRCLE )
-					{
-						//markContent.Format(L"管线【%s】号段【%d】半径【%0.2lf】",pLMALine->mLineEntry->m_LineName.c_str(),
-						//			pLMALine->mSequenceNO,pLMALine->mRadius);
-					
-						markContent.Format(L"%s#%d",pLMALine->mLineEntry->m_LineName.c_str(),
-									pLMALine->mSequenceNO,pLMALine->mRadius);
-					}
-					else if ( pLMALine->mLineShape == GlobalData::LINE_SHAPE_SQUARE )
-					{
-						//markContent.Format(L"管线【%s】号段【%d】长【%0.2lf】宽【%0.2lf】",pLMALine->mLineEntry->m_LineName.c_str(),
-						//	pLMALine->mSequenceNO,pLMALine->mLength,pLMALine->mWidth);
-
-						markContent.Format(L"%s#%d",pLMALine->mLineEntry->m_LineName.c_str(),
-							pLMALine->mSequenceNO,pLMALine->mLength,pLMALine->mWidth);
-					}
-
-					//创建截图区域的注释
-					ArxWrapper::CreateMLeader(centerPoint,this->m_strOffset,this->m_Direction,
-						markContent.GetBuffer(),m_CutLayerName.GetBuffer());
-				}
+				//创建截图区域的注释
+				AcDbObjectId mLeaderId = ArxWrapper::CreateMLeader(centerPoint, m_strOffset, m_Direction, markContent.GetBuffer(), m_CutLayerName.GetBuffer());
+				m_CutObjects.append(mLeaderId);
 			}
+			else
+			{
+				acutPrintf(L"\n切面与该管线（阻隔体）无相交区域！");
+			}
+		}
+		else
+		{
+			acutPrintf(L"\n打开管线实体失败！");
+			rxErrorMsg(es);
 		}
 	}
 }
@@ -311,8 +315,11 @@ void LineCutPosDialog::CutBack()
 		acutPrintf(L"\n首先锁定该文档");
 		ArxWrapper::LockCurDoc();
 
-		acutPrintf(L"\n恢复WCS视窗");
-		acedCommand(RTSTR, _T("UCS"), RTSTR, L"W", 0);
+		//acutPrintf(L"\n恢复WCS视窗");
+		//acedCommand(RTSTR, _T("UCS"), RTSTR, L"W", 0);
+
+		acutPrintf(L"\n删除切图相关的对象");
+		RemoveObectsLastCut();
 
 		acutPrintf(L"\n删除切图所在的图层");
 		if( ArxWrapper::DeleteLayer(m_CutLayerName.GetBuffer(),true) )
@@ -361,6 +368,21 @@ void LineCutPosDialog::OnBnPickCutPos()
 	m_EditOffset.SetWindowTextW(temp.GetBuffer());
 
 	UpdateData(FALSE);
+}
+
+void LineCutPosDialog::RemoveObectsLastCut()
+{
+	while( m_CutObjects.length() )
+	{
+		AcDbObjectId objId = m_CutObjects.at(0);
+
+		if( objId.isValid() )
+		{
+			ArxWrapper::RemoveDbObject(objId);
+		}
+
+		m_CutObjects.removeAt(0);
+	}
 }
 
 // LineCutPosDialog message handlers

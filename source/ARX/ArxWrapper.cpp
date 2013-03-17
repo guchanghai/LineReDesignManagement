@@ -677,9 +677,12 @@ bool ArxWrapper::createNewLayer(const wstring& rLayerName)
 			if( es != Acad::eOk )
 				throw ErrorException(L"加入新的层表记录失败");
 
+			/*
+			pLayerTableRecord->downgradeOpen();
 			es = acdbHostApplicationServices()->workingDatabase()->setClayer(layerTblRcdId);
 			if( es != Acad::eOk )
 				throw ErrorException(L"设置当前图层为CLAYER时出错");
+			*/
 
 			result = true; 
 		}
@@ -762,13 +765,14 @@ bool ArxWrapper::DeleteLayer(const wstring& layerName, bool deleteChildren)
 			// Defaults are used for other properties of 
 			// the layer if they are not otherwise specified.
 			Acad::ErrorStatus es = pLayerTable->getAt(layerName.c_str(),pLayerRecord,AcDb::kForWrite);
+			pLayerTable->close();
 
 			if( pLayerRecord )
 			{
-				if( deleteChildren )
-				{
-					RemoveFromModelSpace(layerName);
-				}
+				//if( deleteChildren )
+				//{
+					//RemoveFromModelSpace(layerName);
+				//}
 
 				pLayerRecord->erase();
 				pLayerRecord->close();
@@ -785,11 +789,6 @@ bool ArxWrapper::DeleteLayer(const wstring& layerName, bool deleteChildren)
 		{
 			acutPrintf(L"\n图层【%s】不存在，无法删除",layerName.c_str());
 		}
-
-		pLayerTable->close();
-
-		if( pLayerTableRecord )
-			pLayerTableRecord->close();
 	}
 	else
 	{
@@ -1272,17 +1271,15 @@ AcDbObjectId ArxWrapper::CreateHatch(AcDbObjectIdArray objIds,const wstring& pat
 			}
 		}
 	}
-	
+
 	return hatchId;
 }
 
-AcDbObjectId ArxWrapper::CreateHatch(AcDbEntity* entity,const wstring& patName, bool bAssociative, const wstring& layerName, const AcGePlane& plane, const double& distance  )
+AcDbObjectId ArxWrapper::CreateHatch(AcDbObjectId entityId,const wstring& patName, bool bAssociative, const wstring& layerName, const AcGePlane& plane, const double& distance  )
 {
-	if( entity == NULL )
+	if( !entityId.isValid() )
 		return 0;
 
-	AcDbObjectId objId = entity->objectId();
-			
 	AcGeVector3d normal = plane.normal();
 	//double distance = plane.distanceTo(AcGePoint3d::kOrigin);
 
@@ -1291,7 +1288,7 @@ AcDbObjectId ArxWrapper::CreateHatch(AcDbEntity* entity,const wstring& patName, 
 #endif
 
 	AcDbObjectIdArray objIds;
-	objIds.append(objId);
+	objIds.append(entityId);
 
 	return ArxWrapper::CreateHatch(objIds,patName,bAssociative,layerName,normal,distance);
 }
@@ -1398,10 +1395,8 @@ AcDbObjectId ArxWrapper::CreateMLeader(const AcGePoint3d& start, const int& offs
 	}
 
 	//添加到模型空间中
-	leader->setLinetype( acdbHostApplicationServices()->workingDatabase()->byLayerLinetype() );
-	ArxWrapper::PostToModelSpace(leader,layerName);
-
-	return leader->objectId();
+	//leader->setLinetype( acdbHostApplicationServices()->workingDatabase()->byLayerLinetype() );
+	return ArxWrapper::PostToModelSpace(leader,layerName);
 }
 
 void ArxWrapper::TestFunction()

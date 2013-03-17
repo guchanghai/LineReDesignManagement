@@ -111,7 +111,7 @@ public:
 	static void ChangeView(int viewDirection);
 
 	//…Ë÷√ÃÓ≥‰
-	static AcDbObjectId CreateHatch(AcDbEntity* entity,const wstring& patName, bool bAssociative, const wstring& layerName, const AcGePlane& plane, const double& distance );
+	static AcDbObjectId CreateHatch(AcDbObjectId entityId,const wstring& patName, bool bAssociative, const wstring& layerName, const AcGePlane& plane, const double& distance );
 
 	static AcDbObjectId CreateHatch(AcDbObjectIdArray objIds,const wstring& patName, bool bAssociative, const wstring& layerName, const AcGeVector3d& normal, const double& elevation);
 
