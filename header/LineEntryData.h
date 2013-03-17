@@ -176,6 +176,8 @@ public:
 	~LineEntryFile();
 
 	void InsertLine( LineEntry* lineEntry);
+	void InsertLine( LineList* lineList);
+
 	BOOL UpdateLine( LineEntry* lineEntry);
 	BOOL DeleteLine( const UINT& lineID );
 

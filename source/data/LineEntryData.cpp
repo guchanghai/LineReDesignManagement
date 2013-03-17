@@ -206,6 +206,9 @@ LineEntry::LineEntry( const wstring& data)
 	}
 
 	delete dataColumn;
+
+	//创建数据库代理对象
+	m_pDbEntry = new LineDBEntry( this );
 }
 
 LineEntry::~LineEntry()
@@ -364,19 +367,6 @@ ACRX_DXF_DEFINE_MEMBERS(LineDBEntry, AcDbObject, AcDb::kDHL_CURRENT, AcDb::kMRel
 LineDBEntry::LineDBEntry()
 {
 	pImplemention = new LineEntry();
-
-	/*
-	//在打开DWG文件时，自动加入管理器
-	LineEntryFile* curEntryFile = LineEntryFileManager::GetCurrentLineEntryFile();
-	if( curEntryFile )
-	{
-		curEntryFile->InsertLine(pImplemention);
-	}
-	else
-	{
-		acutPrintf(L"\n出错了。打开文件时，找不到管线管理器！");
-	}
-	*/
 }
 
 LineDBEntry::LineDBEntry( LineEntry* implementation )
@@ -683,6 +673,10 @@ void LineEntryFile::Import()
 		LineEntry *newLine = new LineEntry(wLine);
 		m_LineList->push_back( newLine );
 
+		//保存到数据库
+		newLine->m_dbId = ArxWrapper::PostToNameObjectsDict(newLine->m_pDbEntry,LineEntry::LINE_ENTRY_LAYER);
+		newLine->m_pDbEntry = NULL;
+
 		//创建对应的图层
 		ArxWrapper::createNewLayer( newLine->m_LineName );
 
@@ -746,6 +740,19 @@ void LineEntryFile::InsertLine(LineEntry* lineEntry)
 {
 	if( lineEntry )
 		m_LineList->push_back(lineEntry);
+}
+
+void LineEntryFile::InsertLine( LineList* lineList)
+{
+	if( lineList == NULL || lineList->size() == 0)
+		return;
+
+	for( LineIterator iter = lineList->begin();
+			iter != lineList->end();
+			iter++)
+	{
+		m_LineList->push_back((*iter));
+	}
 }
 
 BOOL LineEntryFile::UpdateLine(LineEntry* lineEntry)
@@ -1142,7 +1149,7 @@ LineEntryFile* LineEntryFileManager::GetCurrentLineEntryFile()
 
 	acutPrintf(L"\n查找【%s】对应的的管线.",fileName.c_str());
 
-	return GetLineEntryFile(fileName);
+	return RegisterEntryFile(fileName);
 }
 
 BOOL LineEntryFileManager::ImportLMALineFile( const wstring& lineKind )
@@ -1155,20 +1162,19 @@ BOOL LineEntryFileManager::ImportLMALineFile( const wstring& lineKind )
 
 	if (dlg.DoModal() == IDOK) 
 	{
-		//这句话确保了pEntryFileList非空
-		GetCurrentLineEntryFile();
+		//得到当前的文件实体管理器
+		LineEntryFile* currentFile = GetCurrentLineEntryFile();
 
 		//得到导入文件
         CString impFile = dlg.GetPathName();
-
 		acutPrintf(L"\n导入管线文件【%s】.",impFile.GetBuffer());
 		LineEntryFile* importFile = new LineEntryFile(impFile.GetBuffer(),true);
 
-		acutPrintf(L"\n设置为当前文件名【%s】.",curDoc()->fileName());
-		importFile->m_FileName = wstring(curDoc()->fileName());
+		//插入其中的管线
+		currentFile->InsertLine( importFile->GetList() );
 
-		//插入到管线管理器中
-		pEntryFileList->push_back(importFile);
+		//删除临时导入的文件实体
+		delete importFile;
 
         return(TRUE);
     }
