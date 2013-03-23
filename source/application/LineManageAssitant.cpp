@@ -86,6 +86,13 @@ static void dwgUnLoaded()
 	}
 }
 
+static void dwgSaved()
+{
+	acutPrintf(L"\nDWGÎÄ¼þ±£´æ");
+
+	LineEntryFileManager::SaveFileEntity();
+}
+
 //////////////////////////////////////////////////////////////
 //
 // Entry points
@@ -165,8 +172,12 @@ extern "C" AcRx::AppRetCode acrxEntryPoint( AcRx::AppMsgCode msg, void* appId)
         break;
 
     case AcRx::kInitDialogMsg:
-        
         break;
+
+	case AcRx::kSaveMsg:
+		dwgSaved();
+		break;
+
     default:
         break;
     }

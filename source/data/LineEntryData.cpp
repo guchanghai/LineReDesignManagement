@@ -121,8 +121,8 @@ wstring PointEntry::toString() const
 				m_Point[X], POINTS_SEP,
 				m_Point[Y], POINTS_SEP,
 				m_Point[Z], POINTS_SEP,
-				m_LevelKind,POINTS_SEP,
-				m_Direction,POINTS_SEP,
+				m_LevelKind.c_str(),POINTS_SEP,
+				m_Direction.c_str(),POINTS_SEP,
 				POINT_END);
 
 	return temp.GetBuffer();
@@ -519,7 +519,7 @@ LineDBEntry::dwgOutFields(AcDbDwgFiler* pFiler) const
         pFiler->writeHardPointerId((AcDbHardPointerId)ownerId());
 
 #ifdef DEBUG
-	acutPrintf(L"保存管线实体到数据库 ID【%d】名称【%s】类型【%s】\n",
+	acutPrintf(L"\n保存管线实体到数据库 ID【%d】名称【%s】类型【%s】.",
 				pImplemention->m_LineID,
 				pImplemention->m_LineName.c_str(),
 				pImplemention->m_LineKind.c_str());
@@ -1058,6 +1058,15 @@ LineEntryFile* LineEntryFileManager::RegisterEntryFile(const wstring& fileName)
 	}
 
 	return entryFile;
+}
+
+LineEntryFile* LineEntryFileManager::SaveFileEntity()
+{
+	wstring fileName( curDoc()->fileName() );
+
+	acutPrintf(L"\n文件保存为[%s].",fileName.c_str());
+
+	return GetLineEntryFile(fileName);
 }
 
 bool LineEntryFileManager::RegisterLineSegment( const wstring& fileName, AcDbEntity* pEntry, UINT lineID, UINT sequence, 

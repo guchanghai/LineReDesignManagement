@@ -239,6 +239,8 @@ public:
 
 	static LineEntryFile* RegisterEntryFile(const wstring& fileName);
 
+	static LineEntryFile* SaveFileEntity();
+
 	static bool RegisterLineSegment( const wstring& fileName, AcDbEntity* pEntry, UINT lineID, UINT sequence, 
 										const AcGePoint3d& start, const AcGePoint3d& end );
 public:

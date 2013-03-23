@@ -235,7 +235,7 @@ LMALineDbObject::dwgOutFields(AcDbDwgFiler* pFiler) const
 	dbToStr(this->database(),filename);
 
 #ifdef DEBUG
-	acutPrintf(L"\n从保存管线线段实体 序列号【%d】 起点 X:【%lf】Y:【%lf】Z:【%lf】 终点 X:【%lf】Y:【%lf】Z:【%lf】到DWG文件【%s】.",
+	acutPrintf(L"\n保存管线线段实体 序列号【%d】 起点 X:【%lf】Y:【%lf】Z:【%lf】 终点 X:【%lf】Y:【%lf】Z:【%lf】到DWG文件【%s】【%s】.",
 					mSequenceNO,mStartPoint.x,mStartPoint.y,mStartPoint.z,
 					mEndPoint.x,mEndPoint.y,mEndPoint.z,
 					filename.GetBuffer());
@@ -359,14 +359,10 @@ Acad::ErrorStatus LMALineDbObject::CreateDimensions()
 
 	//设置标注的文字
 	AcDbText* mLineDim = new AcDbText;
-
 	{
 		CString textSeq;
 		textSeq.Format(L"【%d】",mSequenceNO);
 		mLineDim->setTextString(textSeq);
-
-		//高度减半
-		mLineDim->setHeight(mLineDim->height()/4); 
 	}
 
 	//得到线段长度
@@ -374,15 +370,11 @@ Acad::ErrorStatus LMALineDbObject::CreateDimensions()
 	if( length < 0.1 )
 		return Acad::eInvalidInput;
 
-#ifdef DEBUG
-	acutPrintf(L"\n标注长度为【%lf】",length);
-#endif
-
 	//文字的偏移为直径距离
 	double dimAlignTextOff = 0;
 	if ( mLineShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
-		dimAlignTextOff = mRadius * 2;
+		dimAlignTextOff = mRadius*2;
 	}
 	else if ( mLineShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
@@ -392,21 +384,30 @@ Acad::ErrorStatus LMALineDbObject::CreateDimensions()
 	//首先在原点处，沿X轴方向标注
 	mAlignedDim->setXLine1Point(AcGePoint3d::kOrigin);
     mAlignedDim->setXLine2Point(AcGePoint3d(length,0,0));
-
 	mAlignedDim->setTextPosition(AcGePoint3d(length/2,dimAlignTextOff,0));
 
 	//文字【段号】
-	double dimTextOff = 0;
+	double dimTextOff = 0,dimTextHeight = 0;
+
+	//设置文字的高度，和Y轴位置
 	if ( mLineShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
-		dimTextOff = -mRadius/2;
+		dimTextHeight = mRadius;
+		dimTextOff = mRadius/2;
 	}
 	else if ( mLineShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
-		dimTextOff = -mLength/2;
+		dimTextHeight = mLength;
+		dimTextOff = mLength/2;
 	}
 
+	mLineDim->setHeight(dimTextHeight); 
 	mLineDim->setPosition(AcGePoint3d(length/2, dimTextOff,0));
+
+#ifdef DEBUG
+	acutPrintf(L"\n标注长度为【%0.2lf】，文字说明的位置X【%0.2lf】Y【%0.2lf】,段号说明位置高度【%0.2lf】Y【%0.2lf】",
+					length, length/2, dimAlignTextOff,dimTextHeight,dimTextOff);
+#endif
 
 	//设置标注字的配置
     mAlignedDim->useSetTextPosition();    // make text go where user picked

@@ -178,9 +178,7 @@ HTREEITEM EntryManageDialog::GetKindNode(const wstring& category, bool createOnD
 {
 	TVITEM item;
 
-	HTREEITEM hCurrent;
-
-	hCurrent = m_LinesTree.GetNextItem(TVI_ROOT, TVGN_CHILD);
+	HTREEITEM hCurrent = m_LinesTree.GetRootItem();
 	while (hCurrent != NULL) 
 	{
 	   // Get the text for the item. Notice we use TVIF_TEXT because
@@ -195,7 +193,7 @@ HTREEITEM EntryManageDialog::GetKindNode(const wstring& category, bool createOnD
 	   BOOL bWorked = m_LinesTree.GetItem(&item);
 
 	   // Try to get the next item
-	   hCurrent = m_LinesTree.GetNextItem(hCurrent, TVGN_CHILD);
+	   hCurrent = m_LinesTree.GetNextItem(hCurrent, TVGN_NEXTVISIBLE);
 
 	   // If we successfuly retrieved an item, and the item's text
 	   // is the line kind
@@ -592,6 +590,9 @@ void EntryManageDialog::OnBnClickedButtonOK()
 			UpdateLine(selectLine);
 		}
 	}
+
+	//默认进入真实视觉样式
+	acedCommand(RTSTR, _T("._VSCURRENT"), RTSTR, L"R", 0);
 
 	//默认进入XY视图
 	acedCommand(RTSTR, _T("._-VIEW"), RTSTR, L"TOP", 0);
