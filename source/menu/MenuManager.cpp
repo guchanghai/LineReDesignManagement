@@ -67,7 +67,7 @@ void MenuManager::RegisterMenu()
 	//注册下拉菜单
 	AddDropdownMenu();
 
-	acutPrintf(L"菜单加载成功\n");
+	acutPrintf(L"\n菜单加载成功.");
 }
 
 void MenuManager::UnRegisterMenu()
@@ -75,14 +75,14 @@ void MenuManager::UnRegisterMenu()
 	//删除上下文菜单
 	if( mpMainMenu )
 	{
-		acutPrintf(L"辅助系统菜单开始卸载\n");
+		acutPrintf(L"\n辅助系统菜单开始卸载.");
 		acedRemoveDefaultContextMenu(mpMainMenu ); // 移除默认上下文菜单
 	}
 
 	//删除主下拉菜单
 	RemoveDropdownMenu();
 
-	acutPrintf(L"菜单卸载成功\n");
+	acutPrintf(L"\n菜单卸载成功.");
 }
 
 

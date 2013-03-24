@@ -41,6 +41,7 @@ void TestText();
 void TestLeader();
 void TestMLeader();
 void TestLayer();
+void TestArxPath();
 
 using namespace com::guch::assistant::arx;
 using namespace com::guch::assistant::data;
@@ -1409,7 +1410,25 @@ void ArxWrapper::TestFunction()
 
 	//TestMLeader();
 
-	TestLayer();
+	//TestLayer();
+
+	TestArxPath();
+}
+
+void TestArxPath()
+{
+	void *appPaths = acrxLoadedApps();
+	AcDbVoidPtrArray *appPathArray = (AcDbVoidPtrArray*)appPaths;
+
+	for (int i=0; i <= appPathArray->length(); i++)
+	{
+		wstring s;
+		wchar_t *path =(wchar_t*)appPathArray->at(i);
+
+		acutPrintf(L"\nµÄARX¼ÓÔØÂ·¾¶¡¾%s¡¿",path);
+	}
+
+	delete appPaths;
 }
 
 void TestLayer()

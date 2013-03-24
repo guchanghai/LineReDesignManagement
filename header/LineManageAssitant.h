@@ -9,10 +9,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 //
-
+#ifndef _LINE_MANAGE_ASSISTANT_H_
+#define _LINE_MANAGE_ASSISTANT_H_
 
 #include "resource.h"       // main symbols
-
+#include <string>
 
 #define PI  3.14159265359
 /////////////////////////////////////////////////////////////////////////////
@@ -21,4 +22,4 @@
 
 void testCreate();
 
-
+#endif

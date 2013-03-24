@@ -16,6 +16,8 @@
 #error _DEBUG should not be defined except in internal Adesk debug builds
 #endif
 
+#include <string>
+
 #include <rxobject.h>
 #include <rxregsvc.h>
 #include <aced.h>
@@ -27,8 +29,6 @@
 
 //3D Object
 #include <dbsol3d.h>
-
-#include <string>
 
 #include <LineEntryData.h>
 
@@ -72,6 +72,7 @@ public:
 class LMALineDbObject : public AcDb3dSolid
 {
 public:
+
     ACRX_DECLARE_MEMBERS(LMALineDbObject);
 
     LMALineDbObject();
@@ -79,25 +80,7 @@ public:
 					const Adesk::Int32& seqNO,
 					const AcGePoint3d& start,
 					const AcGePoint3d& end,
-					LineEntry* lineEntry)
-		: mLineID(id)
-		, mSequenceNO(seqNO)
-		, mStartPoint(start)
-		, mEndPoint(end)
-		, mLineEntry(lineEntry)
-		, mRadius(0)
-		, mWidth(0)
-		, mLength(0)
-		, mLineShape()
-	{
-		Init();
-	}
-
-    Acad::ErrorStatus         getLineID     (Adesk::Int32&);
-    Acad::ErrorStatus         setLineID     (Adesk::Int32);
-
-	Acad::ErrorStatus         getPointSeqNO     (Adesk::Int32&);
-    Acad::ErrorStatus         setPointSeqNO     (Adesk::Int32);
+					LineEntry* lineEntry);
 
 	void setLineEntity( LineEntry* pEntry);
 
@@ -107,16 +90,27 @@ public:
     virtual Acad::ErrorStatus dxfInFields (AcDbDxfFiler*);
     virtual Acad::ErrorStatus dxfOutFields(AcDbDxfFiler*)
         const;
-
-	LineCutRegion* GetCutRegion( const AcGePlane& );
-
+	
 	AcGePoint3d GetCutCenter( const AcGePlane& );
 
-	//handler of the dimension
-	AcDbHandle mHandleDim;
+protected:
 
-	//handler of the text
-	AcDbHandle mHandleText;
+	// create the line pipe
+	Acad::ErrorStatus Init();
+
+	// creat the 3d pipe
+	Acad::ErrorStatus CreatePipe();
+
+	// create the dimensions
+	Acad::ErrorStatus CreateDimensions();
+
+public:
+	
+	//Identify the line
+	LineEntry* mLineEntry;
+
+	//Identify the lineshape
+	wstring mLineShape;
 	
 	//Identify the index in the line
 	Adesk::Int32 mSequenceNO;
@@ -129,23 +123,12 @@ public:
 
 	//the widht
 	double mWidth;
-	
-	//Identify the line
-	LineEntry* mLineEntry;
 
-	//Identify the lineshape
-	wstring mLineShape;
+	//handler of the dimension
+	AcDbHandle mHandleDim;
 
-protected:
-
-	// create the line pipe
-	Acad::ErrorStatus Init();
-
-	// creat the 3d pipe
-	Acad::ErrorStatus CreatePipe();
-
-	// create the dimensions
-	Acad::ErrorStatus CreateDimensions();
+	//handler of the text
+	AcDbHandle mHandleText;
 
 private:
 

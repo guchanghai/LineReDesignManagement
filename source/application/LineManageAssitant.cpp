@@ -28,6 +28,8 @@
 
 #include <ArxCustomObject.h>
 
+wstring LMA_ARX_PATH;
+
 using namespace com::guch::assistant::arx;
 
 #ifdef _DEBUG
@@ -71,6 +73,34 @@ static void dwgLoaded()
 	//LineEntryFileManager::ReadFromCurrentDWG();
 }
 
+/// <summary>
+/// Stores the LMA arx path.
+/// </summary>
+/// <param name="hInstance">The h instance.</param>
+static void StoreLMAArxPath( HINSTANCE hInstance )
+{
+	CString arxPath,acedPath;   //存放路径
+
+	HINSTANCE curdll;//当前DLL的句柄,可在DllMain()函数的传入参数中找到，用一个全局变量保存即可
+	curdll = hInstance;
+
+	//第一个参数为NULL时,则得到调用当前DLL文件的可执行程序的路径,为DLL句柄时,就得到DLL文件的路径
+	GetModuleFileName(NULL,acedPath.GetBufferSetLength(MAX_PATH+1),MAX_PATH);
+	acutPrintf(L"\nAutoCAD的路径是【%s】",acedPath.GetBuffer());
+
+	GetModuleFileName(curdll,arxPath.GetBufferSetLength(MAX_PATH+1),MAX_PATH);
+	acutPrintf(L"\n管线设计系统的路径是【%s】",arxPath.GetBuffer());
+
+	arxPath.ReleaseBuffer();   //这里得到的是带名称的路径
+	acedPath.ReleaseBuffer();
+
+	int nPos = arxPath.ReverseFind('\\');   
+	arxPath = arxPath.Left(nPos);  //获得绝对路径 
+
+	LMA_ARX_PATH = wstring(arxPath.GetBuffer());
+	acutPrintf(L"\n存储管线设计系统的路径【%s】",LMA_ARX_PATH.c_str());
+}
+
 static void dwgUnLoaded()
 {
 	acutPrintf(L"\nDWG文件卸载");
@@ -101,6 +131,13 @@ static void dwgSaved()
 
 static AFX_EXTENSION_MODULE MyAsdkMfcComSampDLL = { NULL, NULL };
 
+/// <summary>
+/// DLLs the main.
+/// </summary>
+/// <param name="hInstance">The h instance.</param>
+/// <param name="dwReason">The dw reason.</param>
+/// <param name="lpReserved">The lp reserved.</param>
+/// <returns></returns>
 extern "C" int APIENTRY
 DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 {
@@ -129,6 +166,7 @@ DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 
 		new CDynLinkLibrary(MyAsdkMfcComSampDLL);
 
+		StoreLMAArxPath( hInstance );
     }
     else if (dwReason == DLL_PROCESS_DETACH)
     {

@@ -12,14 +12,14 @@ extern HINSTANCE _hdllInstance = NULL;//全局变量
 
 MenuLMAMain::MenuLMAMain(void)
 {
-	acutPrintf(L"开始构造主菜单。");
+	acutPrintf(L"\n开始构造主菜单。");
 	acDocManagerPtr()->pushResourceHandle(_hdllInstance);
 
 	this->mpMenu = new CMenu();
 	this->mpMenu->LoadMenu(IDR_MENU1);// ID_LMA_MAIN_MENU 是要调入的菜单 
 
 	acDocManager->popResourceHandle();
-	acutPrintf(L"主菜单构造完成。");
+	acutPrintf(L"\n主菜单构造完成。");
 }
 
 MenuLMAMain::~MenuLMAMain(void)
@@ -30,7 +30,7 @@ MenuLMAMain::~MenuLMAMain(void)
 
 void* MenuLMAMain::getMenuContext(const AcRxClass *, const AcDbObjectIdArray&)
 {
-	acutPrintf(L"得到子菜单");
+	acutPrintf(L"\n得到子菜单");
 	m_tempHMenu = mpMenu->GetSubMenu(0)->GetSafeHmenu();   
 	return &m_tempHMenu;
 }
