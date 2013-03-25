@@ -98,6 +98,9 @@
       <AdditionalDependencies>acad.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName).arx</OutputFile>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /B $(OutDir)$(TargetName).$(TargetExt) ..\..\release\2013\$(Platform)\$(Configuration)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -128,6 +131,9 @@
       <OutputFile>$(OutDir)$(TargetName).$(TargetExt)</OutputFile>
       <OptimizeReferences>false</OptimizeReferences>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /B $(OutDir)$(TargetName).$(TargetExt) ..\..\release\2013\$(Platform)\$(Configuration)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -142,6 +148,9 @@
       <ModuleDefinitionFile>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
       <OutputFile>$(OutDir)$(TargetName).arx</OutputFile>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /B $(OutDir)$(TargetName).$(TargetExt) ..\..\release\2013\$(Platform)\$(Configuration)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -157,6 +166,9 @@
       <TargetMachine>MachineX64</TargetMachine>
       <OutputFile>$(OutDir)$(TargetName).arx</OutputFile>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /B $(OutDir)$(TargetName).$(TargetExt) ..\..\release\2013\$(Platform)\$(Configuration)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\application\LineManageAssitant.cpp" />

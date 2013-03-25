@@ -28,7 +28,7 @@
 
 #include <ArxCustomObject.h>
 
-wstring LMA_ARX_PATH;
+wstring gLmaArxLoadPath;
 
 using namespace com::guch::assistant::arx;
 
@@ -97,8 +97,8 @@ static void StoreLMAArxPath( HINSTANCE hInstance )
 	int nPos = arxPath.ReverseFind('\\');   
 	arxPath = arxPath.Left(nPos);  //获得绝对路径 
 
-	LMA_ARX_PATH = wstring(arxPath.GetBuffer());
-	acutPrintf(L"\n存储管线设计系统的路径【%s】",LMA_ARX_PATH.c_str());
+	gLmaArxLoadPath = wstring(arxPath.GetBuffer());
+	acutPrintf(L"\n存储管线设计系统的路径【%s】",gLmaArxLoadPath.c_str());
 }
 
 static void dwgUnLoaded()

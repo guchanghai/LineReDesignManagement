@@ -15,6 +15,10 @@ using namespace com::guch::assistant::data;
 #pragma warning(disable : 4267)
 #pragma warning(disable : 4244)
 
+extern wstring gLmaArxLoadPath;
+static wstring gConfigLineEnd = L"\r\n";
+static wstring gColumnSegment = L"\t";
+
 namespace com
 {
 
@@ -28,7 +32,7 @@ namespace config
 {
 
 LineConfigDataManager* LineConfigDataManager::instance = NULL;
-LPCWSTR LineConfigDataManager::LMA_CONFIG_FILE = L"C:\\管线改移辅助系统配置文件.txt";
+LPCWSTR LineConfigDataManager::LMA_CONFIG_FILE = L"管线改移辅助系统配置文件.txt";
 
 wstring LineConfigDataManager::CONFIG_LINE_NAME = L"管线种类";
 wstring LineConfigDataManager::CONFIG_SHAPE_NAME = L"管线形状";
@@ -74,7 +78,10 @@ LineConfigDataManager::LineConfigDataManager(void)
 	try
 	{
 		//read data from file LMA_CONFIG_FILE
-		BOOL result = archiveFile.Open(LMA_CONFIG_FILE,CFile::modeRead);
+		wstring configFile = gLmaArxLoadPath + L"\\" + LMA_CONFIG_FILE;
+		acutPrintf(L"\n配置文件路径是【%s】",configFile.c_str());
+
+		BOOL result = archiveFile.Open(configFile.c_str(),CFile::modeRead);
 		if( !result )
 		{
 			acutPrintf(L"\n打开管线类型配置文件失败.");
@@ -95,10 +102,9 @@ LineConfigDataManager::LineConfigDataManager(void)
 
 		//查找回车以决定行
 		size_t lineFrom = 0;
-		size_t linePos = wContent.find_first_of(L"\n",lineFrom);
+		size_t linePos = wContent.find_first_of(gConfigLineEnd,lineFrom);
 
 		wstring category;
-
 		while( linePos != wstring::npos )
 		{
 			//得到一行数据
@@ -107,22 +113,19 @@ LineConfigDataManager::LineConfigDataManager(void)
 			//注释行
 			if( wLine.substr(0,2) == L"##" )
 			{
-				acutPrintf(L"\n注释【%s】", wLine.substr(0,wLine.length()-1).c_str());
+				acutPrintf(L"\n注释【%s】", wLine.substr(0,wLine.length()).c_str());
 			}
 			else if (wLine.substr(0,2) == L"**" )
 			{
 				//得到种类
 				category = wLine.substr(2);
-				wstring::size_type length = category.length();
-				category = category.substr(0,length-1);
-
 				acutPrintf(L"\n得到种类【%s】", category.c_str());
 			}
 			else
 			{
 				//将此行拆分
 				size_t columnFrom = 0;
-				size_t columnPos = wLine.find_first_of(L"\t",columnFrom);
+				size_t columnPos = wLine.find_first_of(gColumnSegment,columnFrom);
 
 				CommonConfig* newItem = new CommonConfig();
 				newItem->mCategory = category;
@@ -136,19 +139,17 @@ LineConfigDataManager::LineConfigDataManager(void)
 					//决定其属性
 					if( indexCol == 0 )
 					{
-						newItem->mName = rColumn.substr(0,rColumn.length()-1);
+						newItem->mName = rColumn;
 					}
 
 					indexCol++;
 
 					//继续下一个column
-					columnFrom = columnPos + 1;
-					columnPos =  wLine.find_first_of(L'\t',columnFrom);
+					columnFrom = columnPos + gColumnSegment.length();
+					columnPos =  wLine.find_first_of(gColumnSegment,columnFrom);
 				}
 
 				wstring& name = wLine.substr(columnFrom);
-				name = name.substr(0,name.length()-1);
-
 				if( indexCol == 0 )
 				{
 					newItem->mName = name;
@@ -166,8 +167,8 @@ LineConfigDataManager::LineConfigDataManager(void)
 			}
 
 			//从下一个字符开始查找另外一行
-			lineFrom = linePos + 1;
-			linePos = wContent.find_first_of(L"\n",lineFrom + 1);
+			lineFrom = linePos + gConfigLineEnd.length();
+			linePos = wContent.find_first_of(gConfigLineEnd,lineFrom);
 		}
 
 		//关闭文件
