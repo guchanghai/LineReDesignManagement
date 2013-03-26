@@ -204,10 +204,9 @@ LineCommonConfigVector* LineConfigDataManager::FindConfig( const wstring& catego
 	return configLig;
 }
 
-wstring LineConfigDataManager::FindDefaultSize( const wstring& category)
+wstring LineConfigDataManager::FindDefaultSafeSize( const wstring& category)
 {
-	LineCommonConfigVector* lineCategories = FindConfig(LineConfigDataManager::CONFIG_LINE_NAME);
-	wstring lineSize(L"0");
+	wstring lineSafeSize(L"0");
 
 	for( ConfigIterator iter = mLineConfigData->begin();
 		iter != mLineConfigData->end();
@@ -215,12 +214,14 @@ wstring LineConfigDataManager::FindDefaultSize( const wstring& category)
 	{
 		if( (*iter)->mName.find(category) != wstring::npos )
 		{
-			lineSize = (*iter)->mSubName;
+			lineSafeSize = (*iter)->mSubName;
 		}
 	}
 
-	delete lineCategories;
-	return lineSize;
+	if( lineSafeSize.length() == 0 )
+		lineSafeSize = L"0";
+
+	return lineSafeSize;
 }
 
 } // end of data

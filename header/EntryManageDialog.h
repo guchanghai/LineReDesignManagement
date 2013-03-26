@@ -86,7 +86,7 @@ protected:
 	//动态控件
 	virtual void ShowDynamicControl();
 	virtual void HideDynamicControl();
-	virtual void FillShapeKind(const wstring& shape);
+	virtual void FillComobBox(CComboBox& comboBox, const wstring& value);
 
 	//穿越方向相关
 	void FillLineThroughDirection( const wstring& throughDirection);

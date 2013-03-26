@@ -37,7 +37,7 @@ public:
 	
 	LineCommonConfigVector* mLineConfigData;
 
-	wstring FindDefaultSize( const wstring& category);
+	wstring FindDefaultSafeSize( const wstring& category);
 
 protected:
 
