@@ -734,7 +734,9 @@ void LineEntryFile::ExportTo(const wstring& filename,const wstring& lineKind) co
 #endif
 			//使用 virtual void Write( const void* lpBuf, UINT nCount ); 将窄字符写入文件
 			archiveFile.Write(dataStr.c_str(),(UINT)dataStr.size());
-			archiveFile.Write("\n",(UINT)strlen("\n"));
+
+			//使用Windows默认的回车，换行
+			archiveFile.Write("\r\n",(UINT)strlen("\r\n"));
 		}
 	}
 

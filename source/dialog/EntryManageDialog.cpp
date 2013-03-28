@@ -668,8 +668,8 @@ void EntryManageDialog::OnBnClickedButtonDel()
 			//删除线段集合
 			m_EntryFile->DeleteLine(selectedID);
 
-			//在管线列表中删除
-			m_LinesTree.DeleteItem(selectedItem);
+			//如果没有改类型的管线，则删除种类节点
+			RemoveLineFromTree(selectedItem);
 		}
 	}
 }
@@ -1155,6 +1155,50 @@ CString EntryManageDialog::GetLineThrough()
 		m_ThroughBellow.GetCheck() == BST_CHECKED ? L"1" : L"0");
 
 	return lineThrough;
+}
+
+/// <summary>
+/// Removes the empty parent.
+/// </summary>
+/// <param name="child">The child.</param>
+/// <returns></returns>
+void EntryManageDialog::RemoveLineFromTree( HTREEITEM& lineTreeNode )
+{
+	BOOL shouldRemoveParent = TRUE;
+	HTREEITEM hSiblingItem = NULL;
+
+	//Has previous sibling item
+	hSiblingItem = m_LinesTree.GetNextItem(lineTreeNode, TVGN_PREVIOUS);
+	if( hSiblingItem != NULL )
+	{
+		acutPrintf(L"\n上面还存在该类型的管线");
+		shouldRemoveParent = FALSE;
+	}
+
+	//Has next sibling item previous
+	hSiblingItem = m_LinesTree.GetNextItem(lineTreeNode, TVGN_NEXT);
+	if( hSiblingItem != NULL )
+	{
+		acutPrintf(L"\n下面还存在该类型的管线");
+		shouldRemoveParent = FALSE;
+	}
+
+	//Store the parent item
+	HTREEITEM hParent = m_LinesTree.GetNextItem(lineTreeNode, TVGN_PARENT);
+	
+	//删除当前节点
+	m_LinesTree.DeleteItem(lineTreeNode);
+
+	//处理父节点
+	if( shouldRemoveParent )
+	{
+		acutPrintf(L"\n应当删除种类节点");
+		if(hParent != NULL)
+		{
+			acutPrintf(L"\n删除种类节点");
+			m_LinesTree.DeleteItem(hParent);
+		}
+	}
 }
 
 // EntryManageDialog message handlers
