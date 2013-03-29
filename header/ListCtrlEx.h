@@ -4,7 +4,7 @@
 #include "afxcmn.h"
 #include "afxmt.h"
 
-typedef void (*DoubleClickCallback)(void* parent);
+typedef void (*DoubleClickCallback)(void* parent, int nRow);
 
 // CListCtrlEx
 typedef BOOL (*PFNEDITORCALLBACK)(CWnd** pWnd, int nRow, int nColumn, CString& strSubItemText, DWORD_PTR dwItemData, void* pThis, BOOL bUpdate);

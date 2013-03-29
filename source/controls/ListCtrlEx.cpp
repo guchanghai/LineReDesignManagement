@@ -446,25 +446,42 @@ BOOL CListCtrlEx::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 	{
 		CString number;
 
-		int newItem = this->GetItemCount();
-		number.Format(L"%d",newItem+1);
-		this->InsertItem(newItem,number);
+		int current = this->GetItemCount();
+		int next = current +1;
 
-		SetItemText(newItem, 1, L"0.00");
-		SetItemText(newItem, 2, L"0.00");
-		SetItemText(newItem, 3, L"0.00");
+		number.Format(L"%d",next);
+		this->InsertItem(next,number);
+
+		if( next == 1 )
+		{
+			//初始值为0
+			SetItemText(next, 1, L"0.00");
+			SetItemText(next, 2, L"0.00");
+			SetItemText(next, 3, L"0.00");
+		}
+		else
+		{
+			//默认重复上一行的值
+			SetItemText(next, 1, GetItemText(current,1));
+			SetItemText(next, 2, GetItemText(current,2));
+			SetItemText(next, 3, GetItemText(current,3));
+		}
 
 		//默认新增加的一行的X坐标为编辑区域
-		DisplayEditor(newItem,1);
+		DisplayEditor(next,1);
+
+		//回调父窗口进行处理,但不进行重复值检查，故传行数为-1
+		if( m_Callback != NULL );
+			m_Callback(m_ParentDialog, -1);
 	}
 	else
 	{
 		*pResult = DisplayEditor(nItem, nSubItem);
-	}
 
-	//回调父窗口进行处理
-	if( m_Callback != NULL );
-		m_Callback(m_ParentDialog);
+		//回调父窗口进行处理,并进行重复值检查
+		if( m_Callback != NULL );
+			m_Callback(m_ParentDialog, m_nEditingRow);
+	}
 
 	return *pResult;
 }
@@ -814,7 +831,7 @@ LRESULT CListCtrlEx::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 				//回调父窗口进行处理
 				if( m_Callback != NULL );
-					m_Callback(m_ParentDialog);
+					m_Callback(m_ParentDialog,m_nEditingRow);
 			}
 		}
 	}

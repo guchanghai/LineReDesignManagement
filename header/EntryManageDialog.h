@@ -107,7 +107,8 @@ protected:
 	void EnableDetailControl(bool enable);
 
 	//坐标点事件
-	static void LinePointModified(void* dialog);
+	static void LinePointModified(void* dialog, int row);
+	void CheckDuplicateValue( int row );
 
 private:
 
@@ -155,6 +156,9 @@ private:
 
 	//坐标数据
 	CListCtrlEx m_LineDetailList;
+
+	//显示重复左边点提醒信息
+	CStatic m_StaticDuplicateWraning;
 
 	//操作类型
 	OPER_TYPE m_OperType;

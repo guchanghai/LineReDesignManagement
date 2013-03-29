@@ -2,6 +2,7 @@
 // Microsoft Visual C++ generated include file.
 // Used by LineManageAssistant.rc
 //
+#define IDC_STATIC_DUP_WARNING          1066
 #define IDD_DIALOG1                     10001
 #define IDR_MENU1                       10002
 #define IDR_TOOLBAR_LMA                 10003
@@ -75,7 +76,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        141
 #define _APS_NEXT_COMMAND_VALUE         32804
-#define _APS_NEXT_CONTROL_VALUE         1066
+#define _APS_NEXT_CONTROL_VALUE         1067
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

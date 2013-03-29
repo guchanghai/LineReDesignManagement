@@ -35,16 +35,16 @@ EntryManageDialog::EntryManageDialog(CWnd* pParent,const wstring& entryKind)
 :CDialog( GetDlgID(entryKind), pParent)
 ,m_EntryKind(entryKind)
 {
-	//坐标点控件需要回调
-	m_LineDetailList.m_Callback = EntryManageDialog::LinePointModified;
-	m_LineDetailList.m_ParentDialog = (void*)this;
-
 	//得到当前管理的文档
 	m_fileName = curDoc()->fileName();
 	acutPrintf(L"\n弹出对话框管理【%s】的数据.",m_fileName.c_str());
 
 	//得到实体数据文件中的数据
 	m_EntryFile = LineEntryFileManager::RegisterEntryFile(m_fileName);
+
+	//坐标点控件需要回调
+	m_LineDetailList.m_Callback = EntryManageDialog::LinePointModified;
+	m_LineDetailList.m_ParentDialog = (void*)this;
 }
 
 BOOL EntryManageDialog::OnInitDialog()
@@ -479,6 +479,7 @@ void EntryManageDialog::DoDataExchange(CDataExchange* pDX)
 	//折线段
 	DDX_Control(pDX, IDC_EDIT_POINT, m_PointEdit);
 	DDX_Control(pDX, IDC_LIST_LINE_DETAIL, m_LineDetailList);
+	DDX_Control(pDX, IDC_STATIC_DUP_WARNING, m_StaticDuplicateWraning);
 
 	//按钮
 	DDX_Control(pDX, IDC_BUTTON_ADD, m_ButtonAdd);
@@ -527,7 +528,7 @@ BEGIN_MESSAGE_MAP(EntryManageDialog, CDialog)
 	ON_EN_CHANGE(IDC_EDIT_PLANE_MARK,		OnControlValueChange)
 	ON_EN_CHANGE(IDC_EDIT_CUT_MARK,			OnControlValueChange)
 
-	ON_BN_DOUBLECLICKED(IDC_LIST_LINE_DETAIL ,		OnControlValueChange)
+	ON_BN_DOUBLECLICKED(IDC_LIST_LINE_DETAIL ,	OnControlValueChange)
 
 END_MESSAGE_MAP()
 
@@ -1097,7 +1098,12 @@ void EntryManageDialog::CheckUIData()
 	}
 }
 
-void EntryManageDialog::LinePointModified(void* dialog)
+/// <summary>
+/// Lines the point modified.
+/// </summary>
+/// <param name="dialog">The dialog.</param>
+/// <param name="row">The row.</param>
+void EntryManageDialog::LinePointModified(void* dialog, int row)
 {
 	acutPrintf(L"\n管线管理器回调函数被调用");
 	EntryManageDialog* entryDlg(NULL);
@@ -1105,9 +1111,78 @@ void EntryManageDialog::LinePointModified(void* dialog)
 	if( entryDlg = static_cast<EntryManageDialog*>(dialog) )
 	{
 		acutPrintf(L"\n默认为有值发生了变化");
+		
 		//控件发生了值变化
 		entryDlg->OnControlValueChange();
+			
+		//check whether the is the duplicate point(s) for the editing row
+		if( row != -1 )
+			entryDlg->CheckDuplicateValue( row );
 	}
+}
+
+void EntryManageDialog::CheckDuplicateValue( int row )
+{
+	UpdateData(TRUE);
+
+	//get the editing value firstly
+	CString editX = m_LineDetailList.GetItemText(row, 1);
+	CString editY = m_LineDetailList.GetItemText(row, 2);
+	CString editZ = m_LineDetailList.GetItemText(row, 3);
+
+	CString duplicatPoint;
+
+	//check other rows 
+	CString compX, compY, compZ;
+	for( int i = 0; i < m_LineDetailList.GetItemCount(); i++ )
+	{
+		//exclude current line
+		if( i == row )
+			continue;
+
+		compX = m_LineDetailList.GetItemText(i,1);
+		compY = m_LineDetailList.GetItemText(i,2);
+		compZ = m_LineDetailList.GetItemText(i,3);
+
+		//X,Y,Z are all same
+		if( editX.Compare( compX ) == 0 
+			&& editY.Compare( compY ) == 0
+			&& editZ.Compare( compZ ) == 0 )
+		{
+			//加入到队列中
+			acutPrintf(L"\n第【%d】与第【%d】行坐标点重合", row, i);
+
+			if( duplicatPoint.IsEmpty() )
+			{
+				duplicatPoint.Format(L"%d",i);
+			}
+			else
+			{
+				CString temp(duplicatPoint);
+				duplicatPoint.Format(L"%s, %d",temp.GetBuffer(),i);
+			}
+		}
+	}
+
+	//display the warning message
+	CString duplicateWarningMsg;
+	if( !duplicatPoint.IsEmpty() )
+	{
+		duplicateWarningMsg.Format(L"注意：\n\n第【%s】行与【%d】行\n坐标点重复", duplicatPoint.GetBuffer(), row);
+		m_StaticDuplicateWraning.SetWindowText( duplicateWarningMsg );
+
+		m_StaticDuplicateWraning.ShowWindow(TRUE);
+	}
+	else
+	{
+		duplicateWarningMsg.Empty();
+		m_StaticDuplicateWraning.SetWindowText(duplicateWarningMsg);
+
+		m_StaticDuplicateWraning.ShowWindow(FALSE);
+	}
+
+	//Display
+	UpdateData(FALSE);
 }
 
 UINT EntryManageDialog::GetDlgID( const wstring& entryKind )
