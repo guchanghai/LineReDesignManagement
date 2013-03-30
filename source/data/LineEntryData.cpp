@@ -23,6 +23,7 @@
 #include <LineManageAssitant.h>
 
 using namespace ::com::guch::assistant::config;
+extern wstring gLmaArxLoadPath;
 
 namespace com
 {
@@ -1180,6 +1181,13 @@ BOOL LineEntryFileManager::ImportLMALineFile( const wstring& lineKind )
 	CFileDialog dlg(TRUE, IsLineEdit(lineKind) ? L"ldt" : L"bdt", L"", OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter.GetBuffer(), 
 					CWnd::FromHandle(adsw_acadMainWnd()), 0/*, TRUE*/);
 
+	//If user hasn't export once,use the arx load path
+	if( !HasUserSavedFlagData( LMA_VERSION ) )
+	{
+		acutPrintf(L"\n默认目录为改移设计系统的程序目录.");
+		dlg.m_ofn.lpstrInitialDir = gLmaArxLoadPath.c_str();
+	}
+
 	if (dlg.DoModal() == IDOK) 
 	{
 		//得到当前的文件实体管理器
@@ -1196,6 +1204,13 @@ BOOL LineEntryFileManager::ImportLMALineFile( const wstring& lineKind )
 		//删除临时导入的文件实体
 		delete importFile;
 
+		//Set the exported flag, then next time use the user's last save/open
+		if( !HasUserSavedFlagData( LMA_VERSION ) )
+		{
+			acutPrintf(L"\n用户已重置导入目录.");
+			PlaceUserSavedFlagData( LMA_VERSION );
+		}
+
         return(TRUE);
     }
     else
@@ -1208,17 +1223,19 @@ BOOL LineEntryFileManager::ExportLMALineFile( const wstring& lineKind )
 	wstring fileName( curDoc()->fileName() );
 	fileName = fileName.substr(0, fileName.find_first_of(L"."));
 
-	if( !HasUserSavedFlagData( LMA_VERSION ) )
-	{
-		PlaceUserSavedFlagData( LMA_VERSION );
-	}
-
 	//导出选择对话框
 	CString szFilter;
 	szFilter.Format(L"%s", IsLineEdit(lineKind) ? L"管线数据文件 (*.ldt)|*.ldt||" : L"阻隔体数据文件 (*.bdt)|*.bdt||");
 	CFileDialog dlg(FALSE, IsLineEdit(lineKind) ? L"ldt" : L"bdt", fileName.c_str(), 
 					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter.GetBuffer(), 
 					CWnd::FromHandle(adsw_acadMainWnd()), 0/*, TRUE*/);
+
+	//If user hasn't export once,use the arx load path
+	if( !HasUserSavedFlagData( LMA_VERSION ) )
+	{
+		acutPrintf(L"\n默认目录为改移设计系统的程序目录.");
+		dlg.m_ofn.lpstrInitialDir = gLmaArxLoadPath.c_str();
+	}
 
 	if (dlg.DoModal() == IDOK) 
 	{
@@ -1229,6 +1246,13 @@ BOOL LineEntryFileManager::ExportLMALineFile( const wstring& lineKind )
 
 		if( exportFile )
 			exportFile->ExportTo(expFile.GetBuffer(),lineKind);
+
+		//Set the exported flag, then next time use the user's last save/open
+		if( !HasUserSavedFlagData( LMA_VERSION ) )
+		{
+			acutPrintf(L"\n用户已重置导出目录.");
+			PlaceUserSavedFlagData( LMA_VERSION );
+		}
 
         return(TRUE);
     }
