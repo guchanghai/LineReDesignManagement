@@ -38,3 +38,7 @@ LPCTSTR dbToStr(AcDbDatabase* db, CString& str);
 void rxErrorMsg(Acad::ErrorStatus msgId);
 
 bool IsLineEdit( const wstring& lineKind );
+
+bool PlaceUserSavedFlagData( const wstring& lmaVersion );
+
+bool HasUserSavedFlagData( const wstring& lmaVersion );

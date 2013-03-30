@@ -433,7 +433,7 @@ LMALineDbObject::dwgOutFields(AcDbDwgFiler* pFiler) const
 	dbToStr(this->database(),filename);
 
 #ifdef DEBUG
-	acutPrintf(L"\n保存管线线段实体 序列号【%d】 起点 X:【%lf】Y:【%lf】Z:【%lf】 终点 X:【%lf】Y:【%lf】Z:【%lf】到DWG文件【%s】【%s】.",
+	acutPrintf(L"\n保存管线线段实体 序列号【%d】 起点 X:【%0.2lf】Y:【%0.2lf】Z:【%0.2lf】 终点 X:【%0.2lf】Y:【%0.2lf】Z:【%0.2lf】到DWG文件【%s】.",
 					mSequenceNO,mStartPoint.x,mStartPoint.y,mStartPoint.z,
 					mEndPoint.x,mEndPoint.y,mEndPoint.z,
 					filename.GetBuffer());

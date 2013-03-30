@@ -447,28 +447,27 @@ BOOL CListCtrlEx::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 		CString number;
 
 		int current = this->GetItemCount();
-		int next = current +1;
 
-		number.Format(L"%d",next);
-		this->InsertItem(next,number);
+		number.Format(L"%d", current + 1);
+		this->InsertItem(current, number);
 
-		if( next == 1 )
+		if( current == 0 )
 		{
 			//初始值为0
-			SetItemText(next, 1, L"0.00");
-			SetItemText(next, 2, L"0.00");
-			SetItemText(next, 3, L"0.00");
+			SetItemText(current, 1, L"0.00");
+			SetItemText(current, 2, L"0.00");
+			SetItemText(current, 3, L"0.00");
 		}
 		else
 		{
 			//默认重复上一行的值
-			SetItemText(next, 1, GetItemText(current,1));
-			SetItemText(next, 2, GetItemText(current,2));
-			SetItemText(next, 3, GetItemText(current,3));
+			SetItemText(current, 1, GetItemText(current-1,1));
+			SetItemText(current, 2, GetItemText(current-1,2));
+			SetItemText(current, 3, GetItemText(current-1,3));
 		}
 
 		//默认新增加的一行的X坐标为编辑区域
-		DisplayEditor(next,1);
+		DisplayEditor(current,1);
 
 		//回调父窗口进行处理,但不进行重复值检查，故传行数为-1
 		if( m_Callback != NULL );

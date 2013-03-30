@@ -209,3 +209,82 @@ bool IsLineEdit( const wstring& lineKind )
 		return false;
 	}
 }
+
+bool PlaceUserSavedFlagData( const wstring& lmaVersion )
+{
+	//get user application data folder
+	wchar_t* appData = _wgetenv( L"APPDATA" );
+
+	if( appData )
+	{
+		CString userAppDataFolder;
+		userAppDataFolder.Format(L"%s\\Autodesk\\LMA",appData);
+
+		//make sure directly exist
+		if( !CreateDirectory(userAppDataFolder,NULL) ) 
+		{
+			// directory not already exists
+			if (GetLastError() != ERROR_ALREADY_EXISTS) 
+			{
+				acutPrintf(L"\n创建管线改移设计系统程序数据目录【%s】时出错【%d】",
+					userAppDataFolder.GetBuffer(), GetLastError());
+				return false;
+			}
+		}
+
+		CString userSaveFlagFile;
+		userSaveFlagFile.Format(L"%s\\%s",userAppDataFolder.GetBuffer(), lmaVersion.c_str());
+		acutPrintf(L"\n设置保存标志文件【%s】",userSaveFlagFile.GetBuffer() );
+
+		//create flag file, named with version
+		HANDLE hFlagFile = CreateFile(userSaveFlagFile,
+										GENERIC_WRITE, 0, NULL,
+										OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+
+		if( hFlagFile == INVALID_HANDLE_VALUE )
+		{
+			acutPrintf(L"\n创建保存标志文件时出错【%d】",GetLastError());
+			return false;
+		}
+
+		return true;
+	}
+	else
+	{
+		acutPrintf(L"\n得到用户程序目录时出错【%d】",GetLastError());
+		return false;
+	}
+}
+
+bool HasUserSavedFlagData( const wstring& lmaVersion )
+{
+	bool hasSaveFlag = false;
+
+	//get user application data folder
+	wchar_t* appData = _wgetenv( L"APPDATA" );
+
+	if( appData )
+	{
+		CString userAppDataFolder;
+		userAppDataFolder.Format(L"%s\\Autodesk\\LMA",appData);
+
+		CString userSaveFlagFile;
+		userSaveFlagFile.Format(L"%s\\%s",userAppDataFolder.GetBuffer(), lmaVersion.c_str());
+
+		if( (_waccess( userSaveFlagFile.GetBuffer(), 0 )) != -1 )
+		{
+			acutPrintf(L"\n保存标志文件【%s】已存在",userSaveFlagFile.GetBuffer() );
+			return true;
+		}
+		else
+		{
+			acutPrintf(L"\n尚未设置保存标志文件【%s】",userSaveFlagFile.GetBuffer() );
+			return false;
+		}
+	}
+	else
+	{
+		acutPrintf(L"\n得到保存标志文件时出错【%d】",GetLastError());
+		return false;
+	}
+}

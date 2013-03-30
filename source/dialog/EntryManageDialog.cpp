@@ -630,6 +630,9 @@ void EntryManageDialog::OnBnClickedButtonAdd()
 
 	//设置操作类型
 	SetOperType(OPER_ADD);
+
+	//默认开始输入半径
+	m_EditDynamic_1.GetFocus();
 }
 
 void EntryManageDialog::OnBnClickedButtonDel()
@@ -1114,14 +1117,29 @@ void EntryManageDialog::LinePointModified(void* dialog, int row)
 		
 		//控件发生了值变化
 		entryDlg->OnControlValueChange();
-			
+	
 		//check whether the is the duplicate point(s) for the editing row
-		if( row != -1 )
-			entryDlg->CheckDuplicateValue( row );
+
+		//current status is a row is created
+		if( row == -1 )
+		{
+			//To check second last row instead
+			row = entryDlg->m_LineDetailList.GetItemCount() - 2;
+
+			//Check only when there have more than three row
+			if( row >= 1 )
+			{
+				entryDlg->CheckDuplicateValue( row, true );
+			}
+		}
+		else //normal edit status 
+		{
+			entryDlg->CheckDuplicateValue( row, false );
+		}
 	}
 }
 
-void EntryManageDialog::CheckDuplicateValue( int row )
+void EntryManageDialog::CheckDuplicateValue( int row, BOOL excludeLast )
 {
 	UpdateData(TRUE);
 
@@ -1140,6 +1158,11 @@ void EntryManageDialog::CheckDuplicateValue( int row )
 		if( i == row )
 			continue;
 
+		//for the last row is duplicated from second last, for exclude this when the row is new created
+		if( excludeLast && 
+				i == m_LineDetailList.GetItemCount() - 1 )
+			continue;
+
 		compX = m_LineDetailList.GetItemText(i,1);
 		compY = m_LineDetailList.GetItemText(i,2);
 		compZ = m_LineDetailList.GetItemText(i,3);
@@ -1150,16 +1173,16 @@ void EntryManageDialog::CheckDuplicateValue( int row )
 			&& editZ.Compare( compZ ) == 0 )
 		{
 			//加入到队列中
-			acutPrintf(L"\n第【%d】与第【%d】行坐标点重合", row, i);
+			acutPrintf(L"\n第【%d】与第【%d】行坐标点重合", row+1, i+1);
 
 			if( duplicatPoint.IsEmpty() )
 			{
-				duplicatPoint.Format(L"%d",i);
+				duplicatPoint.Format(L"%d",i+1);
 			}
 			else
 			{
 				CString temp(duplicatPoint);
-				duplicatPoint.Format(L"%s, %d",temp.GetBuffer(),i);
+				duplicatPoint.Format(L"%s, %d",temp.GetBuffer(),i+1);
 			}
 		}
 	}
@@ -1168,7 +1191,7 @@ void EntryManageDialog::CheckDuplicateValue( int row )
 	CString duplicateWarningMsg;
 	if( !duplicatPoint.IsEmpty() )
 	{
-		duplicateWarningMsg.Format(L"注意：\n\n第【%s】行与【%d】行\n坐标点重复", duplicatPoint.GetBuffer(), row);
+		duplicateWarningMsg.Format(L"注意：\n\n第【%s】行与【%d】行\n坐标点重复", duplicatPoint.GetBuffer(), row+1);
 		m_StaticDuplicateWraning.SetWindowText( duplicateWarningMsg );
 
 		m_StaticDuplicateWraning.ShowWindow(TRUE);

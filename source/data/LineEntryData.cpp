@@ -20,6 +20,8 @@
 #include <acdocman.h>
 #include <acutmem.h>
 
+#include <LineManageAssitant.h>
+
 using namespace ::com::guch::assistant::config;
 
 namespace com
@@ -1205,6 +1207,11 @@ BOOL LineEntryFileManager::ExportLMALineFile( const wstring& lineKind )
 	//去除掉文件后缀（dwg）
 	wstring fileName( curDoc()->fileName() );
 	fileName = fileName.substr(0, fileName.find_first_of(L"."));
+
+	if( !HasUserSavedFlagData( LMA_VERSION ) )
+	{
+		PlaceUserSavedFlagData( LMA_VERSION );
+	}
 
 	//导出选择对话框
 	CString szFilter;

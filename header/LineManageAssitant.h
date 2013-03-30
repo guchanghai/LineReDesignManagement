@@ -16,6 +16,8 @@
 #include <string>
 
 #define PI  3.14159265359
+#define LMA_VERSION L"0.1"
+
 /////////////////////////////////////////////////////////////////////////////
 
 // Forward declaration for the entry point function of our application
