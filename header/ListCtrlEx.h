@@ -189,6 +189,7 @@ public:
 	void SetColumnSorting(int nColumn, Sort eSort, PFNLVCOMPARE fnCallBack);
 	BOOL SortOnColumn(int nColumn, BOOL bChangeOrder = FALSE);
 
+	int GetEditColumn() { return m_nEditingColumn; }
 
 protected:
 	afx_msg BOOL OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult);

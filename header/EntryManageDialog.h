@@ -84,6 +84,7 @@ protected:
 	virtual afx_msg void OnCbnShapeChange();
 	virtual afx_msg void OnCbnCategoryChange();
 	virtual afx_msg void OnControlValueChange();
+	virtual afx_msg void OnPointValueChange();
 
 	//¶¯Ì¬¿Ø¼þ
 	virtual void ShowDynamicControl();

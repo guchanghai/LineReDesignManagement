@@ -69,7 +69,6 @@ BOOL EntryManageDialog::OnInitDialog()
 	m_ButtonOK.EnableWindow(false);
 
 	//显示动态元素
-	UpdateData(true);
 	ShowDynamicControl();
 
 	return TRUE;
@@ -529,6 +528,7 @@ BEGIN_MESSAGE_MAP(EntryManageDialog, CDialog)
 	ON_EN_CHANGE(IDC_EDIT_CUT_MARK,			OnControlValueChange)
 
 	ON_BN_DOUBLECLICKED(IDC_LIST_LINE_DETAIL ,	OnControlValueChange)
+	ON_EN_CHANGE(IDC_EDIT_POINT,			OnPointValueChange)
 
 END_MESSAGE_MAP()
 
@@ -919,7 +919,21 @@ PointList* EntryManageDialog::CreateEntryPointList()
 
 		delete newPoints;
 		newPoints = NULL;
+
+		//同时设置右下角“重复点简单检查区域”,方便用户继续编辑
+		CString rightBottomWarning;
+		rightBottomWarning.Format(L"注意：\n\n%s",duplicateMsg.c_str());
+		m_StaticDuplicateWraning.SetWindowText(rightBottomWarning);
+		m_StaticDuplicateWraning.ShowWindow(TRUE);
 	}
+	else
+	{
+		//清空右下角的提醒区域
+		m_StaticDuplicateWraning.SetWindowText(L"");
+		m_StaticDuplicateWraning.ShowWindow(FALSE);
+	}
+
+	UpdateData(FALSE);
 
 	return newPoints;
 }
@@ -1020,6 +1034,13 @@ void EntryManageDialog::OnControlValueChange()
 	m_ButtonOK.EnableWindow(true);
 
 	UpdateData(false);
+}
+
+void EntryManageDialog::OnPointValueChange()
+{
+	CheckDuplicateValue(m_LineDetailList.GetEditColumn(), FALSE );
+
+	OnControlValueChange();
 }
 
 void EntryManageDialog::ShowDynamicControl()
@@ -1153,13 +1174,13 @@ void EntryManageDialog::CheckUIData()
 /// <param name="row">The row.</param>
 void EntryManageDialog::LinePointModified(void* dialog, int row)
 {
-	acutPrintf(L"\n管线管理器回调函数被调用");
+	//acutPrintf(L"\n管线管理器回调函数被调用");
 	EntryManageDialog* entryDlg(NULL);
 
 	if( entryDlg = static_cast<EntryManageDialog*>(dialog) )
 	{
-		acutPrintf(L"\n默认为有值发生了变化");
-		
+		//acutPrintf(L"\n默认为有值发生了变化");
+
 		//控件发生了值变化
 		entryDlg->OnControlValueChange();
 	
@@ -1257,17 +1278,18 @@ bool EntryManageDialog::HasDuplicatePoint( PointList* pointList, wstring& duplic
 {
 	bool hasDuplicate = false;
 
-	typedef vector<wstring> DuplcatePoints;
-	DuplcatePoints duplicatePoint;
-
+	//重复的可能性存在于2个点以上
 	UINT count =  pointList->size();
-
 	if( count <= 1 )
 		return hasDuplicate;
 
 	bool* pointIgnore = new bool[count];
 	memset( pointIgnore, 0, sizeof(bool) * count );
 
+	//清空结果数据
+	duplicateMsg.empty();
+
+	//遍历所有的节点
 	for( int i = 0; i < count; i++ )
 	{
 		//如果该坐标点检查过，则过滤
@@ -1277,21 +1299,25 @@ bool EntryManageDialog::HasDuplicatePoint( PointList* pointList, wstring& duplic
 		const ads_point& pointOutter = pointList->at(i)->m_Point;
 		CString duplicate;
 
+		//从当前节点开始即可
 		for( int j = i + 1; j < count; j++ )
 		{
 			const ads_point& pointIntter = pointList->at(j)->m_Point;
 
+			//坐标点为double
 			if( abs(pointOutter[X] - pointIntter[X]) <= 0.001 
-				&& abs(pointOutter[X] - pointIntter[X]) <= 0.001 
-				&& abs(pointOutter[X] - pointIntter[X]) <= 0.001 )
+				&& abs(pointOutter[Y] - pointIntter[Y]) <= 0.001 
+				&& abs(pointOutter[Z] - pointIntter[Z]) <= 0.001 )
 			{
+				//设置改点为检查过，避免重复比较
 				pointIgnore[j] = true;
 
+				//重复的第一个点
 				if( duplicate.IsEmpty() )
 				{
 					duplicate.Format(L"%d", j+1 );
 				}
-				else
+				else //重复的多点之间以【，】分割
 				{
 					CString temp(duplicate);
 					duplicate.Format(L"%s, %d", temp.GetBuffer(), j+1 );
@@ -1299,27 +1325,22 @@ bool EntryManageDialog::HasDuplicatePoint( PointList* pointList, wstring& duplic
 			}
 		}
 
+		//如果有数据与【i】行重复
 		if( !duplicate.IsEmpty() )
 		{
 			CString oneDuplicatePoints;
-			oneDuplicatePoints.Format(L"第【%d】与第【%s】坐标点重合", i+1, duplicate.GetBuffer() );
-			duplicatePoint.push_back( wstring(oneDuplicatePoints.GetBuffer()) );
+			oneDuplicatePoints.Format(L"第【%d】行与第【%s】行\n", i+1, duplicate.GetBuffer() );
+			duplicateMsg += wstring(oneDuplicatePoints.GetBuffer());
 		}
 	}
 
 	delete []pointIgnore;
 
-	if( duplicatePoint.size() > 0 )
+	//提示语句以“坐标点重复”结尾
+	if( duplicateMsg.length() )
 	{
 		hasDuplicate = true;
-
-		for( int i = 0; i < duplicatePoint.size(); i++ )
-		{
-			duplicateMsg += duplicatePoint[i];
-
-			if( i != duplicatePoint.size() - 1 )
-				duplicateMsg += L"\n";
-		}
+		duplicateMsg += L"坐标点重复";
 	}
 
 	return hasDuplicate;
