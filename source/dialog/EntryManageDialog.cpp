@@ -681,9 +681,7 @@ void EntryManageDialog::OnBnClickedButtonDel()
 BOOL EntryManageDialog::InitEntryData()
 {
 	//选择的行
-	HTREEITEM selectedItem = m_LinesTree.GetSelectedItem();
-
-	UINT selectedID = (UINT)m_LinesTree.GetItemData(selectedItem);
+	UINT selectedID = GetSelectLineID();
 
 	//得到选择的数据
 	LineEntry* pEntry = m_EntryFile->FindLine(selectedID);
@@ -694,6 +692,16 @@ BOOL EntryManageDialog::InitEntryData()
 	return TRUE;
 }
 
+UINT EntryManageDialog::GetSelectLineID() const
+{
+	//选择的行
+	HTREEITEM selectedItem = m_LinesTree.GetSelectedItem();
+		
+	UINT selectedID = (UINT)m_LinesTree.GetItemData(selectedItem);
+
+	return selectedID;
+}
+
 void EntryManageDialog::OnTreeSelChanged(LPNMHDR pnmhdr, LRESULT *pLResult)
 {
 	//如果有某一项被选中
@@ -702,24 +710,38 @@ void EntryManageDialog::OnTreeSelChanged(LPNMHDR pnmhdr, LRESULT *pLResult)
 		//选中其他节点时首先判断
 		CheckUIData();
 
-		//填充选中的数据
-		InitEntryData();
+		//选择的行
+		UINT selectedID = GetSelectLineID();
 
-		//设置确认按钮不可用
-		m_ButtonOK.EnableWindow(false);
-		m_ButtonDel.EnableWindow(true);
+		if( selectedID != 0 )
+		{
+			//填充选中的数据
+			InitEntryData();
 
-		//各控件可用
-		EnableDetailControl(true);
+			//设置确认按钮不可用
+			m_ButtonOK.EnableWindow(false);
+			m_ButtonDel.EnableWindow(true);
 
-		//不可修改种类
-		m_LineCategory.EnableWindow(false);
+			//各控件可用
+			EnableDetailControl(true);
 
-		//显示数据
-		UpdateData(false);
+			//不可修改种类
+			m_LineCategory.EnableWindow(false);
 
-		//动态显示组件
-		ShowDynamicControl();
+			//显示数据
+			UpdateData(false);
+
+			//动态显示组件
+			ShowDynamicControl();
+		}
+		else
+		{	
+			//所有空间可用
+			EnableDetailControl(false);
+
+			//清空所有的页面数据
+			ClearLineData();
+		}
 	}
 }
 
@@ -773,7 +795,7 @@ void EntryManageDialog::FillComobBox(CComboBox& comboBox, const wstring& value)
 
 		if( wstring(entity.GetBuffer()) == value )
 		{
-			acutPrintf(L"\n选中下拉框中的第【%d】项");
+			//acutPrintf(L"\n选中下拉框中的第【%d】项");
 			comboBox.SetCurSel(i);
 		}
 	}

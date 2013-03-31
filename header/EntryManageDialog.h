@@ -72,6 +72,7 @@ protected:
 	HTREEITEM FindKindNode( const UINT& lineID );
 	HTREEITEM InsertTreeNode( const wstring& lineCategory, const wstring& lineName );
 	void RemoveLineFromTree( HTREEITEM& lineTreeNode );
+	UINT GetSelectLineID() const;
 
 	//∞¥≈•œ‡”¶
 	afx_msg void OnBnClickedButtonOK();
