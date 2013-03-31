@@ -541,12 +541,17 @@ void EntryManageDialog::OnBnClickedButtonOK()
 	LineCategoryItemData* detailInfo = CreateEntryDetailInfo();
 	if( detailInfo == NULL )
 	{
-		acutPrintf(L"\n基本信息录入非法数据.");
+		acutPrintf(L"\n基本信息录入不合理.");
 		return;
 	}
 
 	//得到折线段数据
 	PointList* pointList = CreateEntryPointList();
+	if( pointList == NULL )
+	{
+		acutPrintf(L"\n折线段信息录入不合理.");
+		return;
+	}
 
 	if( m_OperType == OPER_ADD )
 	{
@@ -898,6 +903,24 @@ PointList* EntryManageDialog::CreateEntryPointList()
 		newPoints->push_back(point);
 	}
 
+	//Check whether there are endpoint(s) at same position
+	wstring duplicateMsg;
+	if( HasDuplicatePoint( newPoints, duplicateMsg ) )
+	{
+		acutPrintf(L"\n【%s】",duplicateMsg.c_str() );
+		MessageBoxW(duplicateMsg.c_str(), L"警告", MB_OK);
+
+		for( PointIter iter = newPoints->begin();
+			iter != newPoints->end();
+			iter++ )
+		{
+			delete (*iter);
+		}
+
+		delete newPoints;
+		newPoints = NULL;
+	}
+
 	return newPoints;
 }
 
@@ -1228,6 +1251,78 @@ void EntryManageDialog::CheckDuplicateValue( int row, BOOL excludeLast )
 
 	//Display
 	UpdateData(FALSE);
+}
+
+bool EntryManageDialog::HasDuplicatePoint( PointList* pointList, wstring& duplicateMsg )
+{
+	bool hasDuplicate = false;
+
+	typedef vector<wstring> DuplcatePoints;
+	DuplcatePoints duplicatePoint;
+
+	UINT count =  pointList->size();
+
+	if( count <= 1 )
+		return hasDuplicate;
+
+	bool* pointIgnore = new bool[count];
+	memset( pointIgnore, 0, sizeof(bool) * count );
+
+	for( int i = 0; i < count; i++ )
+	{
+		//如果该坐标点检查过，则过滤
+		if( pointIgnore[i] )
+			continue;
+
+		const ads_point& pointOutter = pointList->at(i)->m_Point;
+		CString duplicate;
+
+		for( int j = i + 1; j < count; j++ )
+		{
+			const ads_point& pointIntter = pointList->at(j)->m_Point;
+
+			if( abs(pointOutter[X] - pointIntter[X]) <= 0.001 
+				&& abs(pointOutter[X] - pointIntter[X]) <= 0.001 
+				&& abs(pointOutter[X] - pointIntter[X]) <= 0.001 )
+			{
+				pointIgnore[j] = true;
+
+				if( duplicate.IsEmpty() )
+				{
+					duplicate.Format(L"%d", j+1 );
+				}
+				else
+				{
+					CString temp(duplicate);
+					duplicate.Format(L"%s, %d", temp.GetBuffer(), j+1 );
+				}
+			}
+		}
+
+		if( !duplicate.IsEmpty() )
+		{
+			CString oneDuplicatePoints;
+			oneDuplicatePoints.Format(L"第【%d】与第【%s】坐标点重合", i+1, duplicate.GetBuffer() );
+			duplicatePoint.push_back( wstring(oneDuplicatePoints.GetBuffer()) );
+		}
+	}
+
+	delete []pointIgnore;
+
+	if( duplicatePoint.size() > 0 )
+	{
+		hasDuplicate = true;
+
+		for( int i = 0; i < duplicatePoint.size(); i++ )
+		{
+			duplicateMsg += duplicatePoint[i];
+
+			if( i != duplicatePoint.size() - 1 )
+				duplicateMsg += L"\n";
+		}
+	}
+
+	return hasDuplicate;
 }
 
 UINT EntryManageDialog::GetDlgID( const wstring& entryKind )

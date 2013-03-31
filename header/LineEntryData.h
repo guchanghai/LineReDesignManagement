@@ -61,7 +61,6 @@ struct PointEntry
 	PointEntry( const wstring& data );
 
 	AcDbObjectId m_EntryId;
-	//AcDbEntity* m_pEntry;
 
 	wstring toString() const;
 };

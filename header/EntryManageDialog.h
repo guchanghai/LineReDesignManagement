@@ -110,6 +110,7 @@ protected:
 	//坐标点事件
 	static void LinePointModified(void* dialog, int row);
 	void CheckDuplicateValue( int row, BOOL excludeLast );
+	bool HasDuplicatePoint( PointList* pointList, wstring& duplicateMsg );
 
 private:
 
