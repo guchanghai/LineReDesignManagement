@@ -34,6 +34,7 @@ IMPLEMENT_DYNAMIC(EntryManageDialog, CDialog)
 EntryManageDialog::EntryManageDialog(CWnd* pParent,const wstring& entryKind)
 :CDialog( GetDlgID(entryKind), pParent)
 ,m_EntryKind(entryKind)
+,m_OperType(OPER_INIT)
 {
 	//得到当前管理的文档
 	m_fileName = curDoc()->fileName();
@@ -278,6 +279,9 @@ BOOL EntryManageDialog::InsertLine( LineEntry* lineEntry, BOOL bInitialize )
 	//保持本节点可见
 	m_LinesTree.EnsureVisible(newItem);
 
+	//设置改项的ID
+	m_LinesTree.SetItemData(newItem,(DWORD_PTR)lineEntry->m_LineID);
+
 	//如果不是从数据文件初始化，则是用户手工新增
 	if( !bInitialize )
 	{		
@@ -293,9 +297,6 @@ BOOL EntryManageDialog::InsertLine( LineEntry* lineEntry, BOOL bInitialize )
 		//设置该项为选中
 		m_LinesTree.Select(newItem, TVGN_CARET);
 	}
-
-	//设置改项的ID
-	m_LinesTree.SetItemData(newItem,(DWORD_PTR)lineEntry->m_LineID);
 
 	return TRUE;
 }
@@ -738,6 +739,9 @@ void EntryManageDialog::OnTreeSelChanged(LPNMHDR pnmhdr, LRESULT *pLResult)
 
 			//动态显示组件
 			ShowDynamicControl();
+
+			//设置状态为更新
+			SetOperType( OPER_UPDATE );
 		}
 		else
 		{	
@@ -746,6 +750,9 @@ void EntryManageDialog::OnTreeSelChanged(LPNMHDR pnmhdr, LRESULT *pLResult)
 
 			//清空所有的页面数据
 			ClearLineData();
+
+			//设置状态为初始
+			SetOperType( OPER_INIT );
 		}
 	}
 }
@@ -1207,6 +1214,13 @@ void EntryManageDialog::LinePointModified(void* dialog, int row)
 
 void EntryManageDialog::CheckDuplicateValue( int row, BOOL excludeLast )
 {
+	if( m_LineDetailList.m_bNewRowNotified )
+	{
+		acutPrintf(L"\n当前只是新增行的值在变化，不做重复性检查");
+		m_LineDetailList.m_bNewRowNotified = FALSE;
+		return;
+	}
+
 	UpdateData(TRUE);
 
 	//get the editing value firstly

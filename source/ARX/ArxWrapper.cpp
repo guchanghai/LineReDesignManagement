@@ -1400,6 +1400,70 @@ AcDbObjectId ArxWrapper::CreateMLeader(const AcGePoint3d& start, const int& offs
 	return ArxWrapper::PostToModelSpace(leader,layerName);
 }
 
+void TestViewPort()
+{
+#define VIEW_NAME L"VIEW_TEST"
+
+	AcDbViewportTable* pVPortTable;
+	acdbHostApplicationServices()->workingDatabase()->getViewportTable(pVPortTable,AcDb::kForWrite);
+	AcGePoint2d ptLL, ptUR;
+
+	//Generate viewport table 1
+	AcDbViewportTableRecord* pVPortTRcd1 = new AcDbViewportTableRecord;
+	ptLL.set(0, 0);
+	ptUR.set(0.75, 0.5);
+	pVPortTRcd1->setLowerLeftCorner(ptLL);
+	pVPortTRcd1->setUpperRightCorner(ptUR);
+	pVPortTRcd1->setName(VIEW_NAME);
+
+	//Generate viewport table 2
+	AcDbViewportTableRecord* pVPortTRcd2 = new AcDbViewportTableRecord;
+	ptLL.set(0.75, 0);
+	ptUR.set(1, 0.5);
+	pVPortTRcd2->setLowerLeftCorner(ptLL);
+	pVPortTRcd2->setUpperRightCorner(ptUR);
+	pVPortTRcd2->setName(VIEW_NAME);
+
+	//Generate viewport table 3
+	AcDbViewportTableRecord* pVPortTRcd3 = new AcDbViewportTableRecord;
+	ptLL.set(0, 0.5);
+	ptUR.set(0.5, 1);
+	pVPortTRcd3->setLowerLeftCorner(ptLL);
+	pVPortTRcd3->setUpperRightCorner(ptUR);
+	pVPortTRcd3->setName(VIEW_NAME);
+
+	//Generate viewport table 4
+	AcDbViewportTableRecord* pVPortTRcd4 = new AcDbViewportTableRecord;
+	ptLL.set(0.5, 0.5);
+	ptUR.set(1, 1);
+	pVPortTRcd4->setLowerLeftCorner(ptLL);
+	pVPortTRcd4->setUpperRightCorner(ptUR);
+	pVPortTRcd4->setName(VIEW_NAME);
+
+	pVPortTable->add( pVPortTRcd1);
+	pVPortTable->add( pVPortTRcd2);
+	pVPortTable->add( pVPortTRcd3);
+	pVPortTable->add( pVPortTRcd4);
+
+	pVPortTable->close();
+	pVPortTRcd1->close();
+	pVPortTRcd2->close();
+	pVPortTRcd3->close();
+	pVPortTRcd4->close();
+
+	struct resbuf rb;
+	acedGetVar(L"TILEMODE", &rb);
+
+	if (rb.resval.rint == 1) // 当前工作空间是模型空间
+	{
+		acedCommand(RTSTR, L".-VPORTS", RTSTR, L"R", RTSTR, VIEW_NAME, RTNONE);
+	}
+	else // 当前工作空间是图纸空间
+	{
+		acedCommand(RTSTR, L".-VPORTS", RTSTR, L"R", RTSTR, VIEW_NAME, RTSTR, L"", RTNONE);
+	}
+}
+
 void ArxWrapper::TestFunction()
 {
 	//TestHatch();
@@ -1412,7 +1476,9 @@ void ArxWrapper::TestFunction()
 
 	//TestLayer();
 
-	TestArxPath();
+	//TestArxPath();
+
+	TestViewPort();
 }
 
 void TestArxPath()

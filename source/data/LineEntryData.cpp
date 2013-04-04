@@ -167,6 +167,7 @@ LineEntry::LineEntry(const wstring& rLineName, const wstring& rLineKind,
 LineEntry::LineEntry( const wstring& data)
 {
 	m_PointList = new PointList();
+	m_PrePointList = NULL;
 
 	double temp;
 	int index = 0;
@@ -1000,7 +1001,7 @@ bool LineEntryFileManager::openingDwg = false;
 void LineEntryFileManager::ReadFromCurrentDWG()
 {
 #ifdef DEBUG
-	acutPrintf(L"从当前DWG文件读取数据。");
+	acutPrintf(L"\n从当前DWG文件读取数据。");
 #endif
 
 	//ArxWrapper::PullFromNameObjectsDict();
@@ -1009,7 +1010,7 @@ void LineEntryFileManager::ReadFromCurrentDWG()
 void LineEntryFileManager::RemoveEntryFileOnDWGUnLoad()
 {
 #ifdef DEBUG
-		acutPrintf(L"DWG文件关闭了，删除管理数据。");
+		acutPrintf(L"\nDWG文件关闭了，删除管理数据。");
 
 		if( pEntryFileList )
 		{

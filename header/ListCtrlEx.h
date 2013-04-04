@@ -217,4 +217,5 @@ public:
 
 	void* m_ParentDialog;
 	DoubleClickCallback m_Callback; 
+	BOOL m_bNewRowNotified;
 };

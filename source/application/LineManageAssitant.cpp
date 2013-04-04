@@ -64,7 +64,7 @@ static void unloadApp()
   CommandManager::instance()->UnRegisterCommand();
 
   // 注销自定义类
-  LMADbObjectManager::RegisterClass();
+  LMADbObjectManager::UnRegisterClass();
 }
 
 static void dwgLoaded()

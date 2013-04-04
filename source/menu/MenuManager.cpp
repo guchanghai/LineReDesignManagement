@@ -321,8 +321,9 @@ void MenuManager::RemoveDropdownMenu()
     }
     CATCH(COleDispatchException,e)
     {
-        e->ReportError();
-        e->Delete();
+		acutPrintf(L"\n卸载下拉菜单有异常.");
+        //e->ReportError();
+        //e->Delete();
     }
 
     END_CATCH;

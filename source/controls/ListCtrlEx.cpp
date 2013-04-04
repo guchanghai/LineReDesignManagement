@@ -113,6 +113,7 @@ CListCtrlEx::CListCtrlEx()
 ,m_bInvokeAddNew(FALSE)
 ,m_Callback(NULL)
 ,m_ParentDialog(NULL)
+,m_bNewRowNotified(FALSE)
 {
 #ifndef _WIN32_WCE
 	EnableActiveAccessibility();
@@ -465,6 +466,8 @@ BOOL CListCtrlEx::OnNMDblclk(NMHDR *pNMHDR, LRESULT *pResult)
 			SetItemText(current, 2, GetItemText(current-1,2));
 			SetItemText(current, 3, GetItemText(current-1,3));
 		}
+
+		m_bNewRowNotified = TRUE;
 
 		//默认新增加的一行的X坐标为编辑区域
 		DisplayEditor(current,1);

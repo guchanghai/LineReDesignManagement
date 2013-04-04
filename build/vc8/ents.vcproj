@@ -45,6 +45,7 @@
 				AdditionalIncludeDirectories="..\..\header;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32;..\..\resource;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include"
 				PreprocessorDefinitions=";ACRXAPP;RADPACK;"
 				UsePrecompiledHeader="0"
+				WarnAsError="false"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -115,6 +116,7 @@
 				AdditionalIncludeDirectories="..\..\header;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32;..\..\resource;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include"
 				PreprocessorDefinitions="ACRXAPP;RADPACK;"
 				UsePrecompiledHeader="0"
+				WarnAsError="false"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
