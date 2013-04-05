@@ -76,12 +76,7 @@ public:
     ACRX_DECLARE_MEMBERS(LMALineDbObject);
 
     LMALineDbObject();
-    LMALineDbObject(const wstring& layerName,
-					const LineCategoryItemData& categoryData,
-					const Adesk::Int32& id,
-					const Adesk::Int32& seqNO,
-					const AcGePoint3d& start,
-					const AcGePoint3d& end );
+    LMALineDbObject( PointDBEntityCollection* pPointInfo );
 
     virtual Acad::ErrorStatus dwgInFields (AcDbDwgFiler*);
     virtual Acad::ErrorStatus dwgOutFields(AcDbDwgFiler*)
@@ -105,14 +100,8 @@ protected:
 
 public:
 
-	//the layer to insert
-	wstring mLayerName;
-
-	//line basic info
-	LineCategoryItemData* mCategoryData;
-
-	//Identify the index in the line
-	Adesk::Int32 mSequenceNO;
+	//the point info
+	PointDBEntityCollection* mpPointInfo;
 
 	//the outter radius
 	double mRadius;
@@ -128,17 +117,6 @@ public:
 
 	//handler of the text
 	AcDbHandle mHandleText;
-
-private:
-
-	//Store in database
-	Adesk::Int32 mLineID;
-
-	//the bottom
-	AcGePoint3d mStartPoint;
-
-	//the top
-	AcGePoint3d mEndPoint;
 };
 
 } // end of arx

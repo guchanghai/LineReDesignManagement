@@ -42,9 +42,14 @@ namespace assistant
 namespace data
 {
 
+class LineEntity;
+
 class PointDBEntityCollection
 {
 public:
+
+	PointDBEntityCollection();
+	~PointDBEntityCollection(){}
 
 	void SetLineEntity( const AcDbObjectId entityId ){ m_LineEntryId = entityId; }
 	AcDbObjectId& GetLineEntity() const { return m_LineEntryId; }
@@ -60,21 +65,42 @@ public:
 
 	bool HasEntity( const AcDbObjectId& entityId ) const;
 
-	//cylinder
-	AcDb3dSolid* DrawCylinder( const LineEntry& entry,
-										const UINT& sequenceID,
-										const AcGePoint3d& start,
-										const AcGePoint3d& end );
+	//database object collection
+	bool DrawEntityCollection();
+	void DropEntityCollection();
+
+	//the layer to insert
+	wstring mLayerName;
+
+	//line basic info
+	LineCategoryItemData* mCategoryData;
+
+	//Store in database
+	Adesk::Int32 mLineID;
+
+	//Identify the index in the line
+	Adesk::Int32 mSequenceNO;
+
+	//the bottom
+	AcGePoint3d mStartPoint;
+
+	//the top
+	AcGePoint3d mEndPoint;
+
+	//the real line
+	AcDbObjectId m_LineEntryId;
+
+	//the line contains safe size
+	AcDbObjectId m_SafeLineEntityId;
+
+	//the dimision
+	AcDbObjectId m_DimEntityId;
+
+	//the text mark
+	AcDbObjectId m_MarkEntityId;
 
 private:
 
-	AcDbObjectId m_LineEntryId;
-
-	AcDbObjectId m_SafeLineEntityId;
-
-	AcDbObjectId m_DimEntityId;
-
-	AcDbObjectId m_MarkEntityId;
 };
 
 /**
@@ -96,7 +122,6 @@ struct PointEntry
 	PointEntry( const wstring& data );
 
 	void CreateLineFrom( const LineEntry* lineEntity, const ads_point& start );
-	void DropEntityCollection();
 
 	PointDBEntityCollection m_DbEntityCollection;
 
@@ -127,13 +152,18 @@ public:
 	LineEntry(const wstring& data );
 	~LineEntry();
 
+	UINT GetLineID() const { return m_LineID; }
+
 	void SetName( const wstring& rNewName ) { m_LineName = rNewName; }
+	const wstring& GetName() const { return m_LineName; }
 
 	int InsertPoint( const PointEntry& newPoint );
 	void UpdatePoint( const PointEntry& updatePoint );
 	void DeletePoint( const UINT& PointNO );
 
 	void SetBasicInfo( LineCategoryItemData* m_LineBasiInfo );
+	LineCategoryItemData* GetBasicInfo() const { return m_LineBasiInfo; }
+
 	void SetPoints( PointList* newPoints);
 
 	PointIter FindPoint( const UINT& PointNO ) const;

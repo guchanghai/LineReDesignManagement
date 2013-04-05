@@ -20,8 +20,10 @@
 #include <acdocman.h>
 #include <acutmem.h>
 
+#include <ArxCustomObject.h>
 #include <LineManageAssitant.h>
 
+using namespace ::com::guch::assistant::arx;
 using namespace ::com::guch::assistant::config;
 extern wstring gLmaArxLoadPath;
 
@@ -131,39 +133,39 @@ wstring PointEntry::toString() const
 	return temp.GetBuffer();
 }
 
+/**
+ * 从上一折线段终点开始，绘制所需的管线
+ **/
 void PointEntry::CreateLineFrom(const LineEntry* lineEntity, const ads_point& start )
 {
-	m_DbEntityCollection
-	AcDb3dSolid* pNewLine = DrawCylinder(lineEntry, (*iter)->m_PointNO, *pStart, *pEnd );
+	//准备绘制折线段的所有信息
+	m_DbEntityCollection.mLayerName = lineEntity->GetName();
+	m_DbEntityCollection.mLineID = lineEntity->GetLineID();
+	m_DbEntityCollection.mCategoryData = const_cast<LineCategoryItemData*>(lineEntity->GetBasicInfo());
+	m_DbEntityCollection.mSequenceNO = m_PointNO;
+	m_DbEntityCollection.mStartPoint.set(start[X], start[Y], start[Z]);
+	m_DbEntityCollection.mEndPoint.set(start[X], start[Y], start[Z]);
 
-	//保存实例的ObjectID
-	(*iter)->m_EntryId = pNewLine->objectId();;
+	//绘制折线段
+	m_DbEntityCollection.DrawEntityCollection();
 }
 
 /**
  * 根据起始点队列（向量列表），并放置在特定的层上
  **/
-AcDb3dSolid* PointEntry::DrawCylinder(const LineEntry& lineEntity,
-										const UINT& sequenceID,
-										const AcGePoint3d& start,
-										const AcGePoint3d& end ) 
+bool PointDBEntityCollection::DrawEntityCollection() 
 {
 #ifdef DEBUG
 	acutPrintf(L"\n绘制柱体实例，加入到图层空间\n");
 #endif
 
-	UINT lineID = lineEntity.m_LineID;
-	const LineCategoryItemData* categoryData = lineEntity.m_LineBasiInfo;
-	const wstring& layerName = lineEntity.m_LineName;
+	//创建管线实体
+	LMALineDbObject* lmaLineObj = new LMALineDbObject( this );
 
-	LMALineDbObject* lmaLineObj = new LMALineDbObject( layerName, *categoryData,
-														Adesk::Int32(lineID), Adesk::Int32(sequenceID),
-														start,end);
-	PostToModelSpace(lmaLineObj,layerName);
+	//保存管线实体
+	SetLineEntity( ArxWrapper::PostToModelSpace(lmaLineObj, mLayerName) );
 
-	return lmaLineObj;
-}
-
+	return true;
 }
 
 bool PointDBEntityCollection::HasEntity( const AcDbObjectId& entityId ) const

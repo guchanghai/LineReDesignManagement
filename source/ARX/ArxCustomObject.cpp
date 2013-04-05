@@ -56,38 +56,19 @@ AcDb::kDHL_CURRENT, AcDb::kMReleaseCurrent,
 /// Initializes a new instance of the <see cref="LMALineDbObject"/> class.
 /// </summary>
 LMALineDbObject::LMALineDbObject():
-	mLayerName()
-	,mCategoryData(NULL)
-	,mLineID(-1)
-	,mSequenceNO(-1)
-	,mStartPoint(AcGePoint3d::kOrigin)
-	,mEndPoint(AcGePoint3d::kOrigin)
+	mpPointInfo( NULL )
 	,mRadius(0)
 	,mWidth(0)
 	,mLength(0)
 {
 }
 
-/// <summary>
-/// Initializes a new instance of the <see cref="LMALineDbObject"/> class.
+	/// <summary>
+/// Initializes a new instance of the <see cref="LMALineDbObject" /> class.
 /// </summary>
-/// <param name="id">The id.</param>
-/// <param name="seqNO">The seq NO.</param>
-/// <param name="start">The start.</param>
-/// <param name="end">The end.</param>
-/// <param name="lineEntry">The line entry.</param>
-LMALineDbObject::LMALineDbObject(const wstring& layerName,
-					const LineCategoryItemData& categoryData,
-					const Adesk::Int32& id,
-					const Adesk::Int32& seqNO,
-					const AcGePoint3d& start,
-					const AcGePoint3d& end )
-: mLayerName()
-, mCategoryData( new LineCategoryItemData(categoryData) )
-, mLineID(id)
-, mSequenceNO(seqNO)
-, mStartPoint(start)
-, mEndPoint(end)
+/// <param name="pPointInfo">The p point info.</param>
+LMALineDbObject::LMALineDbObject( PointDBEntityCollection* pPointInfo)
+: mpPointInfo( pPointInfo )
 , mRadius(0)
 , mWidth(0)
 , mLength(0)
@@ -101,24 +82,25 @@ LMALineDbObject::LMALineDbObject(const wstring& layerName,
 /// <returns></returns>
 Acad::ErrorStatus LMALineDbObject::Init()
 {
-	if( mCategoryData == NULL )
+	if( mpPointInfo == NULL ||
+		mpPointInfo->mCategoryData == NULL )
 	{
 		acutPrintf(L"\n配置信息不合法");
 		return Acad::eInvalidInput;
 	}
 
 	//圆形或矩形
-	if( mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
+	if( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
-		acdbDisToF(mCategoryData->mRadius.c_str(), -1, &mRadius);
+		acdbDisToF(mpPointInfo->mCategoryData->mRadius.c_str(), -1, &mRadius);
 
 		//直径的单位是毫米，而距离的单位是米
 		mRadius = mRadius / 1000;
 	}
-	else if ( mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
+	else if ( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
-		acdbDisToF(mCategoryData->mHeight.c_str(), -1, &mLength);
-		acdbDisToF(mCategoryData->mWidth.c_str(), -1, &mWidth);
+		acdbDisToF(mpPointInfo->mCategoryData->mHeight.c_str(), -1, &mLength);
+		acdbDisToF(mpPointInfo->mCategoryData->mWidth.c_str(), -1, &mWidth);
 
 		//直径的单位是毫米，而距离的单位是米
 		mLength = mLength / 1000;
@@ -136,19 +118,22 @@ Acad::ErrorStatus LMALineDbObject::CreatePipe()
 {
 	acutPrintf(L"\n开始绘制管体");
 
+	const AcGePoint3d& startPoint = mpPointInfo->mStartPoint;
+	const AcGePoint3d& endPoint = mpPointInfo->mEndPoint;
+
 	//得到线段的长度
-	double height = mStartPoint.distanceTo(mEndPoint);
+	double height = startPoint.distanceTo( endPoint );
 	if( height < 0.1 )
 		return Acad::eInvalidInput;
 
-	if( mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
+	if( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
 		acutPrintf(L"\n绘制半径为【%0.2lf】高为【%0.2lf】的圆柱",mRadius,height);
 
 		//绘制圆柱体
 		this->createFrustum(height,mRadius,mRadius,mRadius);
 	}
-	else if ( mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
+	else if (  mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
 		acutPrintf(L"\n绘制长【%0.2lf】宽【%0.2lf】高【%0.2lf】的长方体",mLength, mWidth, height);
 
@@ -157,7 +142,7 @@ Acad::ErrorStatus LMALineDbObject::CreatePipe()
 	}
 
 	//得到线段与Z轴的垂直向量
-	AcGeVector3d line3dVector(mEndPoint.x - mStartPoint.x,mEndPoint.y - mStartPoint.y, mEndPoint.z-mStartPoint.z);
+	AcGeVector3d line3dVector(endPoint.x - startPoint.x, endPoint.y - startPoint.y, endPoint.z - startPoint.z);
 	AcGeVector3d rotateVctor = line3dVector.crossProduct(AcGeVector3d::kZAxis);
 
 	//得到旋转的角度
@@ -169,7 +154,7 @@ Acad::ErrorStatus LMALineDbObject::CreatePipe()
 	transformBy(rotateMatrix);
 	
 	//得到线段的中心点
-	AcGePoint3d center(mStartPoint.x + mEndPoint.x, mStartPoint.y + mEndPoint.y, mStartPoint.z + mEndPoint.z); 
+	AcGePoint3d center( startPoint.x + endPoint.x, startPoint.y + endPoint.y, startPoint.z + endPoint.z); 
 	center /= 2;
 	acutPrintf(L"\n得到中心点【%lf】【%lf】【%lf】",center.x,center.y,center.z);
 
@@ -191,6 +176,7 @@ Acad::ErrorStatus LMALineDbObject::CreatePipe()
 /// <returns></returns>
 Acad::ErrorStatus LMALineDbObject::CreateDimensions()
 {
+	/*
 	//创建标注体
     AcDbAlignedDimension* mAlignedDim = new AcDbAlignedDimension;
 
@@ -198,22 +184,22 @@ Acad::ErrorStatus LMALineDbObject::CreateDimensions()
 	AcDbText* mLineDim = new AcDbText;
 	{
 		CString textSeq;
-		textSeq.Format(L"【%d】",mSequenceNO);
+		textSeq.Format(L"【%d】",mpPointInfo->mSequenceNO);
 		mLineDim->setTextString(textSeq);
 	}
 
 	//得到线段长度
-	double length = mStartPoint.distanceTo(mEndPoint);
+	double length = mStartPoint.distanceTo(mpmEndPoint);
 	if( length < 0.1 )
 		return Acad::eInvalidInput;
 
 	//文字的偏移为直径距离
 	double dimAlignTextOff = 0;
-	if ( mLineShape == GlobalData::LINE_SHAPE_CIRCLE )
+	if ( mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
 		dimAlignTextOff = mRadius*2;
 	}
-	else if ( mLineShape == GlobalData::LINE_SHAPE_SQUARE )
+	else if ( mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
 		dimAlignTextOff = mLength + mWidth;
 	}
@@ -227,12 +213,12 @@ Acad::ErrorStatus LMALineDbObject::CreateDimensions()
 	double dimTextOff = 0,dimTextHeight = 0;
 
 	//设置文字的高度，和Y轴位置
-	if ( mLineShape == GlobalData::LINE_SHAPE_CIRCLE )
+	if ( mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
 		dimTextHeight = mRadius;
 		dimTextOff = mRadius/2;
 	}
-	else if ( mLineShape == GlobalData::LINE_SHAPE_SQUARE )
+	else if ( mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
 		dimTextHeight = mLength;
 		dimTextOff = mLength/2;
@@ -293,6 +279,7 @@ Acad::ErrorStatus LMALineDbObject::CreateDimensions()
 
 		mLineDim->transformBy(moveMatrix);
 	}
+	*/
 
 	//以序号来标注
 	/*{
@@ -302,6 +289,7 @@ Acad::ErrorStatus LMALineDbObject::CreateDimensions()
 		mAlignedDim->setDimensionText(textSeq);
 	}*/
 
+	/*
 	//添加到模型空间
 	if( mLineEntry )
 	{
@@ -323,12 +311,13 @@ Acad::ErrorStatus LMALineDbObject::CreateDimensions()
 	}
 
 	return Acad::eOk;
+	*/
 }
 
 AcGePoint3d LMALineDbObject::GetCutCenter( const AcGePlane& cutPlane )
 {
 	//得到起点用终点形成的线段
-	AcGeLineSeg3d lineSeg(this->mStartPoint,this->mEndPoint);
+	AcGeLineSeg3d lineSeg(mpPointInfo->mStartPoint,mpPointInfo->mEndPoint);
 
 	//线段与直线相切的交点
 	AcGePoint3d center;
@@ -336,7 +325,6 @@ AcGePoint3d LMALineDbObject::GetCutCenter( const AcGePlane& cutPlane )
 
 	return center;
 }
-
 
 // Files data in from a DWG file.
 //
@@ -358,14 +346,14 @@ LMALineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
 
 	Adesk::UInt32 lineID;
     pFiler->readItem(&lineID);
-	mLineID = (UINT)lineID;
+	mpPointInfo->mLineID = (UINT)lineID;
 
 	Adesk::UInt32 seqNO;
 	pFiler->readItem(&seqNO);
-	mSequenceNO = (UINT)seqNO;
+	mpPointInfo->mSequenceNO = (UINT)seqNO;
 
-	pFiler->readPoint3d(&mStartPoint);
-	pFiler->readPoint3d(&mEndPoint);
+	pFiler->readPoint3d(&mpPointInfo->mStartPoint);
+	pFiler->readPoint3d(&mpPointInfo->mEndPoint);
 	
 	pFiler->readAcDbHandle(&mHandleDim);
 	pFiler->readAcDbHandle(&mHandleText);
@@ -375,7 +363,7 @@ LMALineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
 
 #ifdef DEBUG
 	acutPrintf(L"\n从DWG文件【%s】得到管线线段实体 ID【%d】序列号【%d】 起点 X:【%lf】Y:【%lf】Z:【%lf】 终点 X:【%lf】Y:【%lf】Z:【%lf】.",
-					filename.GetBuffer(),mLineID,mSequenceNO,
+					filename.GetBuffer(),mpPointInfo->mLineID,mpPointInfo->mSequenceNO,
 					mStartPoint.x,mStartPoint.y,mStartPoint.z,
 					mEndPoint.x,mEndPoint.y,mEndPoint.z);
 #endif
@@ -404,11 +392,11 @@ LMALineDbObject::dwgOutFields(AcDbDwgFiler* pFiler) const
     if (pFiler->filerType() == AcDb::kWblockCloneFiler)
         pFiler->writeHardPointerId((AcDbHardPointerId)ownerId());
 
-    pFiler->writeItem(Adesk::UInt32(mLineID));
-	pFiler->writeItem(Adesk::UInt32(mSequenceNO));
+    pFiler->writeItem(Adesk::UInt32(mpPointInfo->mLineID));
+	pFiler->writeItem(Adesk::UInt32(mpPointInfo->mSequenceNO));
 
-	pFiler->writeItem(mStartPoint);
-	pFiler->writeItem(mEndPoint);
+	pFiler->writeItem(mpPointInfo->mStartPoint);
+	pFiler->writeItem(mpPointInfo->mEndPoint);
 	
 	pFiler->writeAcDbHandle(mHandleDim);
 	pFiler->writeAcDbHandle(mHandleText);
@@ -418,8 +406,9 @@ LMALineDbObject::dwgOutFields(AcDbDwgFiler* pFiler) const
 
 #ifdef DEBUG
 	acutPrintf(L"\n保存管线线段实体 序列号【%d】 起点 X:【%0.2lf】Y:【%0.2lf】Z:【%0.2lf】 终点 X:【%0.2lf】Y:【%0.2lf】Z:【%0.2lf】到DWG文件【%s】.",
-					mSequenceNO,mStartPoint.x,mStartPoint.y,mStartPoint.z,
-					mEndPoint.x,mEndPoint.y,mEndPoint.z,
+					mpPointInfo->mSequenceNO,
+					mpPointInfo->mStartPoint.x, mpPointInfo->mStartPoint.y, mpPointInfo->mStartPoint.z,
+					mpPointInfo->mEndPoint.x, mpPointInfo->mEndPoint.y, mpPointInfo->mEndPoint.z,
 					filename.GetBuffer());
 #endif
 
@@ -452,10 +441,12 @@ LMALineDbObject::dxfInFields(AcDbDxfFiler* pFiler)
 
 			switch ( inbuf.restype )
 			{
-				case AcDb::kDxfInt32:
+				/*case AcDb::kDxfInt32:
 					mLineID = inbuf.resval.rint;
 				case AcDb::kDxfInt32 + 1:
-					mSequenceNO = inbuf.resval.rint;
+					mSequenceNO = inbuf.resval.rint;*/
+				default:
+					break;
 			}
         }
     }
@@ -472,8 +463,8 @@ LMALineDbObject::dxfOutFields(AcDbDxfFiler* pFiler) const
 
     AcDb3dSolid::dxfOutFields(pFiler);
     pFiler->writeItem(AcDb::kDxfSubclass, _T("LMALineDbObject"));
-    pFiler->writeItem(AcDb::kDxfInt32, mLineID);
-	pFiler->writeItem(AcDb::kDxfInt32 + 1, mSequenceNO);
+    pFiler->writeItem(AcDb::kDxfInt32, mpPointInfo->mLineID);
+	pFiler->writeItem(AcDb::kDxfInt32 + 1, mpPointInfo->mSequenceNO);
 
     return pFiler->filerStatus();
 }
