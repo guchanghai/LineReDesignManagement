@@ -55,6 +55,12 @@
     <ClCompile Include="..\..\source\data\LineConfigDataManager.cpp">
       <Filter>src\Data</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\data\LineEntryPointData.cpp">
+      <Filter>src\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\data\LineEntryFileData.cpp">
+      <Filter>src\Data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\header\AsdkAcUiDialogSample.h">

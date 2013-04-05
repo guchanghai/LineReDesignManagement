@@ -76,13 +76,12 @@ public:
     ACRX_DECLARE_MEMBERS(LMALineDbObject);
 
     LMALineDbObject();
-    LMALineDbObject(const Adesk::Int32& id,
+    LMALineDbObject(const wstring& layerName,
+					const LineCategoryItemData& categoryData,
+					const Adesk::Int32& id,
 					const Adesk::Int32& seqNO,
 					const AcGePoint3d& start,
-					const AcGePoint3d& end,
-					LineEntry* lineEntry);
-
-	void setLineEntity( LineEntry* pEntry);
+					const AcGePoint3d& end );
 
     virtual Acad::ErrorStatus dwgInFields (AcDbDwgFiler*);
     virtual Acad::ErrorStatus dwgOutFields(AcDbDwgFiler*)
@@ -90,7 +89,7 @@ public:
     virtual Acad::ErrorStatus dxfInFields (AcDbDxfFiler*);
     virtual Acad::ErrorStatus dxfOutFields(AcDbDxfFiler*)
         const;
-	
+
 	AcGePoint3d GetCutCenter( const AcGePlane& );
 
 protected:
@@ -105,13 +104,13 @@ protected:
 	Acad::ErrorStatus CreateDimensions();
 
 public:
-	
-	//Identify the line
-	LineEntry* mLineEntry;
 
-	//Identify the lineshape
-	wstring mLineShape;
-	
+	//the layer to insert
+	wstring mLayerName;
+
+	//line basic info
+	LineCategoryItemData* mCategoryData;
+
 	//Identify the index in the line
 	Adesk::Int32 mSequenceNO;
 

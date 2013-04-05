@@ -91,22 +91,6 @@ public:
 	//move offset
 	static AcDbEntity* MoveToBottom(AcDbEntity* pEntry);
 
-	//Create LMA Line
-	static void createLMALine( const LineEntry& entry );
-
-	//Polygon cylinder
-	static void DrawPolyCylinder( const LineEntry& lineEntry );
-
-	//cylinder
-	static AcDb3dSolid* DrawCylinder( const UINT& lineID,
-										const UINT& sequenceID,
-										const AcGePoint3d& start,
-										const AcGePoint3d& end,
-										const wstring& layerName,
-										LineEntry& entry);
-
-	static void eraseLMALine(const LineEntry& lineEntry, bool old = false);
-
 	//Change view
 	static void ChangeView(int viewDirection);
 

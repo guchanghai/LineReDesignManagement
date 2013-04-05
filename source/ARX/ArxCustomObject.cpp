@@ -55,16 +55,16 @@ AcDb::kDHL_CURRENT, AcDb::kMReleaseCurrent,
 /// <summary>
 /// Initializes a new instance of the <see cref="LMALineDbObject"/> class.
 /// </summary>
-LMALineDbObject::LMALineDbObject()
-	: mLineID(-1)
+LMALineDbObject::LMALineDbObject():
+	mLayerName()
+	,mCategoryData(NULL)
+	,mLineID(-1)
 	,mSequenceNO(-1)
 	,mStartPoint(AcGePoint3d::kOrigin)
 	,mEndPoint(AcGePoint3d::kOrigin)
-	,mLineEntry(NULL)
 	,mRadius(0)
 	,mWidth(0)
 	,mLength(0)
-	,mLineShape()
 {
 }
 
@@ -76,20 +76,21 @@ LMALineDbObject::LMALineDbObject()
 /// <param name="start">The start.</param>
 /// <param name="end">The end.</param>
 /// <param name="lineEntry">The line entry.</param>
-LMALineDbObject::LMALineDbObject(const Adesk::Int32& id,
+LMALineDbObject::LMALineDbObject(const wstring& layerName,
+					const LineCategoryItemData& categoryData,
+					const Adesk::Int32& id,
 					const Adesk::Int32& seqNO,
 					const AcGePoint3d& start,
-					const AcGePoint3d& end,
-					LineEntry* lineEntry)
-: mLineID(id)
+					const AcGePoint3d& end )
+: mLayerName()
+, mCategoryData( new LineCategoryItemData(categoryData) )
+, mLineID(id)
 , mSequenceNO(seqNO)
 , mStartPoint(start)
 , mEndPoint(end)
-, mLineEntry(lineEntry)
 , mRadius(0)
 , mWidth(0)
 , mLength(0)
-, mLineShape()
 {
 	Init();
 }
@@ -100,45 +101,31 @@ LMALineDbObject::LMALineDbObject(const Adesk::Int32& id,
 /// <returns></returns>
 Acad::ErrorStatus LMALineDbObject::Init()
 {
-	if( !mLineEntry )
+	if( mCategoryData == NULL )
 	{
-		LOG(L"配置线段为空，寻找配置信息");
-		return Acad::eInvalidInput;
-	}
-
-	LineCategoryItemData* lineConfigData = mLineEntry->m_LineBasiInfo;
-	
-	if( lineConfigData == NULL )
-	{
-		acutPrintf(L"\n没有找到类型【%s】的配置数据",mLineEntry->m_LineKind.c_str());
+		acutPrintf(L"\n配置信息不合法");
 		return Acad::eInvalidInput;
 	}
 
 	//圆形或矩形
-	mLineShape = lineConfigData->mShape;
-
-	if( mLineShape == GlobalData::LINE_SHAPE_CIRCLE )
+	if( mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
-		acdbDisToF(lineConfigData->mRadius.c_str(), -1, &mRadius);
+		acdbDisToF(mCategoryData->mRadius.c_str(), -1, &mRadius);
 
 		//直径的单位是毫米，而距离的单位是米
 		mRadius = mRadius / 1000;
 	}
-	else if ( mLineShape == GlobalData::LINE_SHAPE_SQUARE )
+	else if ( mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
-		acdbDisToF(lineConfigData->mHeight.c_str(), -1, &mLength);
-		acdbDisToF(lineConfigData->mWidth.c_str(), -1, &mWidth);
+		acdbDisToF(mCategoryData->mHeight.c_str(), -1, &mLength);
+		acdbDisToF(mCategoryData->mWidth.c_str(), -1, &mWidth);
 
+		//直径的单位是毫米，而距离的单位是米
 		mLength = mLength / 1000;
 		mWidth = mWidth / 1000;
 	}
 
 	return CreatePipe();
-}
-
-void LMALineDbObject::setLineEntity(LineEntry* pEntry)
-{
-	this->mLineEntry = pEntry;
 }
 
 /// <summary>
@@ -153,22 +140,19 @@ Acad::ErrorStatus LMALineDbObject::CreatePipe()
 	double height = mStartPoint.distanceTo(mEndPoint);
 	if( height < 0.1 )
 		return Acad::eInvalidInput;
-	
-	//acutPrintf(L"\n设置线型和所在一致");
-	//setLinetype(acdbHostApplicationServices()->workingDatabase()->byLayerLinetype(),true);
 
-	if( mLineShape == GlobalData::LINE_SHAPE_CIRCLE )
+	if( mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
-		acutPrintf(L"\n绘制半径为【%lf】高为【%lf】的圆柱",mRadius,height);
+		acutPrintf(L"\n绘制半径为【%0.2lf】高为【%0.2lf】的圆柱",mRadius,height);
 
 		//绘制圆柱体
 		this->createFrustum(height,mRadius,mRadius,mRadius);
 	}
-	else if ( mLineShape == GlobalData::LINE_SHAPE_SQUARE )
+	else if ( mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
-		acutPrintf(L"\n绘制长【%lf】宽【%lf】高【%lf】的长方体",mLength, mWidth, height);
-		//绘制圆柱体
+		acutPrintf(L"\n绘制长【%0.2lf】宽【%0.2lf】高【%0.2lf】的长方体",mLength, mWidth, height);
 
+		//绘制圆柱体
 		this->createBox(mLength,mWidth,height);
 	}
 

@@ -182,6 +182,8 @@
     <ClCompile Include="..\..\source\data\LineCategoryItemData.cpp" />
     <ClCompile Include="..\..\source\data\LineConfigDataManager.cpp" />
     <ClCompile Include="..\..\source\data\LineEntryData.cpp" />
+    <ClCompile Include="..\..\source\data\LineEntryFileData.cpp" />
+    <ClCompile Include="..\..\source\data\LineEntryPointData.cpp" />
     <ClCompile Include="..\..\source\dialog\EntryManageDialog.cpp" />
     <ClCompile Include="..\..\source\dialog\AsdkAcUiDialogSample.cpp" />
     <ClCompile Include="..\..\source\dialog\LineCutPosDialog.cpp" />

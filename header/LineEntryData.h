@@ -42,6 +42,41 @@ namespace assistant
 namespace data
 {
 
+class PointDBEntityCollection
+{
+public:
+
+	void SetLineEntity( const AcDbObjectId entityId ){ m_LineEntryId = entityId; }
+	AcDbObjectId& GetLineEntity() const { return m_LineEntryId; }
+
+	void SetSafeLineEntity( const AcDbObjectId entityId ){ m_SafeLineEntityId = entityId; }
+	AcDbObjectId& GetSafeLineEntity() const { return m_SafeLineEntityId; }
+
+	void SetDimEntity( const AcDbObjectId entityId ){ m_DimEntityId = entityId; }
+	AcDbObjectId& GetDimEntity() const { return m_DimEntityId; }
+
+	void SetMarkEntity( const AcDbObjectId entityId ){ m_MarkEntityId = entityId; }
+	AcDbObjectId& GetMarkEntity() const { return m_MarkEntityId; }
+
+	bool HasEntity( const AcDbObjectId& entityId ) const;
+
+	//cylinder
+	AcDb3dSolid* DrawCylinder( const LineEntry& entry,
+										const UINT& sequenceID,
+										const AcGePoint3d& start,
+										const AcGePoint3d& end );
+
+private:
+
+	AcDbObjectId m_LineEntryId;
+
+	AcDbObjectId m_SafeLineEntityId;
+
+	AcDbObjectId m_DimEntityId;
+
+	AcDbObjectId m_MarkEntityId;
+};
+
 /**
  * 管线坐标实体
  */
@@ -60,7 +95,10 @@ struct PointEntry
 	PointEntry( const PointEntry& );
 	PointEntry( const wstring& data );
 
-	AcDbObjectId m_EntryId;
+	void CreateLineFrom( const LineEntry* lineEntity, const ads_point& start );
+	void DropEntityCollection();
+
+	PointDBEntityCollection m_DbEntityCollection;
 
 	wstring toString() const;
 };
@@ -87,7 +125,6 @@ public:
 				LineCategoryItemData* itemdata, PointList* pointList);
 
 	LineEntry(const wstring& data );
-
 	~LineEntry();
 
 	void SetName( const wstring& rNewName ) { m_LineName = rNewName; }
@@ -107,9 +144,19 @@ public:
 	void ClearPoints();
 	void ClearPoints(PointList* pPointList);
 
-//protected:
+	//Create Database Line
+	void CreateDbObjects();
 
+	//Erase Database Line
+	void EraseDbObjects(bool old = false);
+
+	//delete first and draw again
 	void Redraw();
+
+protected:
+
+	//Polygon cylinder
+	void DrawPolyCylinder();
 
 public:
 
