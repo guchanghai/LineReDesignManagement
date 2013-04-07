@@ -144,7 +144,7 @@ void PointEntry::CreateLineFrom(const void* lineEntity, const ads_point& start )
 	m_DbEntityCollection.mCategoryData = const_cast<LineCategoryItemData*>(pLineEntity->GetBasicInfo());
 	m_DbEntityCollection.mSequenceNO = m_PointNO;
 	m_DbEntityCollection.mStartPoint.set(start[X], start[Y], start[Z]);
-	m_DbEntityCollection.mEndPoint.set(start[X], start[Y], start[Z]);
+	m_DbEntityCollection.mEndPoint.set(m_Point[X], m_Point[Y], m_Point[Z]);
 
 	//ªÊ÷∆’€œﬂ∂Œ
 	m_DbEntityCollection.DrawEntityCollection();

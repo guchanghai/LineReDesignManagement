@@ -123,8 +123,11 @@ Acad::ErrorStatus LMALineDbObject::CreatePipe()
 
 	//得到线段的长度
 	double height = startPoint.distanceTo( endPoint );
-	if( height < 0.1 )
+	if( height < 0.01 )
+	{
+		acutPrintf(L"\n高度小于1毫米，暂不考虑这样的管线！",mRadius,height);
 		return Acad::eInvalidInput;
+	}
 
 	if( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{

@@ -280,7 +280,7 @@ void LineEntry::CreateDbObjects()
 		return;
 	}
 
-	acutPrintf(L"\n需要绘制【%d】条折线段",m_PointList->size());
+	acutPrintf(L"\n需要绘制【%d】条折线段",m_PointList->size()-1);
 
 	try
 	{

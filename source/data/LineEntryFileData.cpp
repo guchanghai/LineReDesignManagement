@@ -530,7 +530,7 @@ bool LineEntryFileManager::RegisterLineSegment( const wstring& fileName, UINT li
 #ifdef DEBUG
 		acutPrintf(L"\n序列号为1，这是第一个线段.");
 #endif
-		if( pPointList->size() < 0 )
+		if( pPointList->size() < 2 )
 		{
 			pStart = new PointEntry();
 			pEnd = new PointEntry();
@@ -552,10 +552,17 @@ bool LineEntryFileManager::RegisterLineSegment( const wstring& fileName, UINT li
 #ifdef DEBUG
 		acutPrintf(L"\n普通线段.");
 #endif
-		pEnd = new PointEntry();
-		pEnd->m_PointNO = sequence;
+		if( pPointList->size() <= sequence )
+		{
+			pEnd = new PointEntry();
+			pEnd->m_PointNO = sequence;
 
-		pPointList->push_back( pEnd );
+			pPointList->push_back( pEnd );
+		}
+		else
+		{
+			pEnd = (*pPointList)[sequence];
+		}
 	}
 	else if ( sequence == 0)
 	{
