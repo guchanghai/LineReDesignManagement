@@ -119,10 +119,11 @@ void LineEntryFile::Import()
 		newLine->m_pDbEntry = NULL;
 
 		//创建对应的图层
-		ArxWrapper::createNewLayer( newLine->m_LineName );
+		//ArxWrapper::createNewLayer( newLine->m_LineName );
 
 		//创建相应的柱体
-		ArxWrapper::createLMALine(*newLine );
+		newLine->CreateDbObjects();
+		//ArxWrapper::createLMALine(*newLine );
 
 		//从下一个字符开始查找另外一行
 		lineFrom = linePos + 1;
@@ -506,8 +507,7 @@ LineEntryFile* LineEntryFileManager::SaveFileEntity()
 	return GetLineEntryFile(fileName);
 }
 
-bool LineEntryFileManager::RegisterLineSegment( const wstring& fileName, AcDbEntity* pEntry, UINT lineID, UINT sequence, 
-										const AcGePoint3d& start, const AcGePoint3d& end )
+bool LineEntryFileManager::RegisterLineSegment( const wstring& fileName, UINT lineID, UINT sequence, PointEntry*& pStart, PointEntry*& pEnd )
 {
 	//找到文件管理类
 	LineEntryFile* pFileEntry = RegisterEntryFile(fileName);
@@ -530,62 +530,32 @@ bool LineEntryFileManager::RegisterLineSegment( const wstring& fileName, AcDbEnt
 #ifdef DEBUG
 		acutPrintf(L"\n序列号为1，这是第一个线段.");
 #endif
-		ads_point startPoint;
-		startPoint[X] = start.x;
-		startPoint[Y] = start.y;
-		startPoint[Z] = start.z;
-
-		//第一个点没有数据库实体与其对应
-		PointEntry* tempPoint = new PointEntry(0,startPoint,L"",L"",AcDbObjectId());
-
-		if( lineEntry )
+		if( pPointList->size() < 0 )
 		{
-			lineEntry->InsertPoint( *tempPoint );
-			delete tempPoint;
+			pStart = new PointEntry();
+			pEnd = new PointEntry();
+
+			pStart->m_PointNO = 0;
+			pPointList->push_back( pStart );
+
+			pEnd->m_PointNO = 1;
+			pPointList->push_back( pEnd );
 		}
 		else
 		{
-			pPointList->push_back( tempPoint );
-		}
-
-		ads_point endPoint;
-		endPoint[X] = end.x;
-		endPoint[Y] = end.y;
-		endPoint[Z] = end.z;
-
-		tempPoint = new PointEntry(0,endPoint,L"",L"",pEntry->id());
-
-		if( lineEntry )
-		{
-			lineEntry->InsertPoint( *tempPoint );
-			delete tempPoint;
-		}
-		else
-		{
-			pPointList->push_back( tempPoint );
+			pStart = (*pPointList)[0];
+			pEnd = (*pPointList)[1];
 		}
 	}
-	else if (  sequence > 1 )
+	else if ( sequence > 1 )
 	{
 #ifdef DEBUG
 		acutPrintf(L"\n普通线段.");
 #endif
-		ads_point endPoint;
-		endPoint[X] = end.x;
-		endPoint[Y] = end.y;
-		endPoint[Z] = end.z;
+		pEnd = new PointEntry();
+		pEnd->m_PointNO = sequence;
 
-		PointEntry* tempPoint = new PointEntry(0,endPoint,L"",L"",pEntry->id());
-
-		if( lineEntry )
-		{
-			lineEntry->InsertPoint( *tempPoint );
-			delete tempPoint;
-		}
-		else
-		{
-			pPointList->push_back( tempPoint );
-		}
+		pPointList->push_back( pEnd );
 	}
 	else if ( sequence == 0)
 	{

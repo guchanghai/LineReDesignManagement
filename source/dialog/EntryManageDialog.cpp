@@ -670,7 +670,7 @@ void EntryManageDialog::OnBnClickedButtonDel()
 			ArxWrapper::DeleteFromNameObjectsDict(pEntry->m_dbId,LineEntry::LINE_ENTRY_LAYER);
 
 			//从数据库删除管线所有的线段
-			ArxWrapper::eraseLMALine(*pEntry);
+			pEntry->EraseDbObjects();
 
 			//删除所有的内存节点
 			pEntry->ClearPoints();

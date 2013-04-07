@@ -309,9 +309,8 @@ Acad::ErrorStatus LMALineDbObject::CreateDimensions()
 	{
 		acutPrintf(L"\n该线段归属的直线不存在，可能出错了！");
 	}
-
-	return Acad::eOk;
 	*/
+	return Acad::eOk;
 }
 
 AcGePoint3d LMALineDbObject::GetCutCenter( const AcGePlane& cutPlane )
@@ -344,32 +343,55 @@ LMALineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
         pFiler->readItem(&id);
     }
 
+	//开始和结束端点
+	PointEntry *pStart, *pEnd;
+
 	Adesk::UInt32 lineID;
     pFiler->readItem(&lineID);
-	mpPointInfo->mLineID = (UINT)lineID;
 
 	Adesk::UInt32 seqNO;
 	pFiler->readItem(&seqNO);
-	mpPointInfo->mSequenceNO = (UINT)seqNO;
+
+	//从实体管理器中取出该折线段的
+	CString filename;
+	dbToStr(this->database(),filename);
+	LineEntryFileManager::RegisterLineSegment(filename.GetBuffer(),lineID, seqNO, pStart, pEnd );
+		
+	//读取开始和结束节点
+	mpPointInfo = &pEnd->m_DbEntityCollection;
 
 	pFiler->readPoint3d(&mpPointInfo->mStartPoint);
 	pFiler->readPoint3d(&mpPointInfo->mEndPoint);
-	
-	pFiler->readAcDbHandle(&mHandleDim);
-	pFiler->readAcDbHandle(&mHandleText);
 
-	CString filename;
-	dbToStr(this->database(),filename);
+	if( seqNO == 1 )
+	{
+		//设置开始节点的属性
+		pStart->m_Point[X] = mpPointInfo->mStartPoint.x;
+		pStart->m_Point[Y] = mpPointInfo->mStartPoint.y;
+		pStart->m_Point[Z] = mpPointInfo->mStartPoint.z;
+	}
+
+	//设置结束节点的属性
+	pEnd->m_Point[X] = mpPointInfo->mEndPoint.x;
+	pEnd->m_Point[Y] = mpPointInfo->mEndPoint.y;
+	pEnd->m_Point[Z] = mpPointInfo->mEndPoint.z;
+
+	//设置节点折线段绘制信息
+	mpPointInfo->mLineID = (UINT)lineID;
+	mpPointInfo->mSequenceNO = (UINT)seqNO;
+
+	//设置折线段对象数据库ID
+	mpPointInfo->SetLineEntity(id());
+
+	//pFiler->readAcDbHandle(&mHandleDim);
+	//pFiler->readAcDbHandle(&mHandleText);
 
 #ifdef DEBUG
 	acutPrintf(L"\n从DWG文件【%s】得到管线线段实体 ID【%d】序列号【%d】 起点 X:【%lf】Y:【%lf】Z:【%lf】 终点 X:【%lf】Y:【%lf】Z:【%lf】.",
 					filename.GetBuffer(),mpPointInfo->mLineID,mpPointInfo->mSequenceNO,
-					mStartPoint.x,mStartPoint.y,mStartPoint.z,
-					mEndPoint.x,mEndPoint.y,mEndPoint.z);
+					mpPointInfo->mStartPoint.x,mpPointInfo->mStartPoint.y,mpPointInfo->mStartPoint.z,
+					mpPointInfo->mEndPoint.x,mpPointInfo->mEndPoint.y,mpPointInfo->mEndPoint.z);
 #endif
-
-	LineEntryFileManager::RegisterLineSegment(filename.GetBuffer(),this,mLineID,mSequenceNO,
-												mStartPoint,mEndPoint);
 
     return pFiler->filerStatus();
 }
@@ -398,8 +420,8 @@ LMALineDbObject::dwgOutFields(AcDbDwgFiler* pFiler) const
 	pFiler->writeItem(mpPointInfo->mStartPoint);
 	pFiler->writeItem(mpPointInfo->mEndPoint);
 	
-	pFiler->writeAcDbHandle(mHandleDim);
-	pFiler->writeAcDbHandle(mHandleText);
+	//pFiler->writeAcDbHandle(mHandleDim);
+	//pFiler->writeAcDbHandle(mHandleText);
 
 	CString filename;
 	dbToStr(this->database(),filename);

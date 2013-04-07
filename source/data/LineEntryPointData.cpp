@@ -66,7 +66,7 @@ PointEntry::PointEntry( const UINT& pointNO, const ads_point& point,
 :m_PointNO(pointNO),
 m_LevelKind(levelKind),
 m_Direction(direction),
-m_DbEntityCollection(entityID)
+m_DbEntityCollection()
 {
 	m_Point[X] = point[X];
 	m_Point[Y] = point[Y];
@@ -82,8 +82,6 @@ PointEntry::PointEntry( const PointEntry& pointEntry)
 	this->m_Point[X] = pointEntry.m_Point[X];
 	this->m_Point[Y] = pointEntry.m_Point[Y];
 	this->m_Point[Z] = pointEntry.m_Point[Z];
-
-	this->m_EntryId = pointEntry.m_EntryId;
 }
 
 PointEntry::PointEntry( const wstring& data )
@@ -136,12 +134,14 @@ wstring PointEntry::toString() const
 /**
  * 从上一折线段终点开始，绘制所需的管线
  **/
-void PointEntry::CreateLineFrom(const LineEntry* lineEntity, const ads_point& start )
+void PointEntry::CreateLineFrom(const void* lineEntity, const ads_point& start )
 {
 	//准备绘制折线段的所有信息
-	m_DbEntityCollection.mLayerName = lineEntity->GetName();
-	m_DbEntityCollection.mLineID = lineEntity->GetLineID();
-	m_DbEntityCollection.mCategoryData = const_cast<LineCategoryItemData*>(lineEntity->GetBasicInfo());
+	LineEntry* pLineEntity = (LineEntry*)lineEntity;
+
+	m_DbEntityCollection.mLayerName = pLineEntity->GetName();
+	m_DbEntityCollection.mLineID = pLineEntity->GetLineID();
+	m_DbEntityCollection.mCategoryData = const_cast<LineCategoryItemData*>(pLineEntity->GetBasicInfo());
 	m_DbEntityCollection.mSequenceNO = m_PointNO;
 	m_DbEntityCollection.mStartPoint.set(start[X], start[Y], start[Z]);
 	m_DbEntityCollection.mEndPoint.set(start[X], start[Y], start[Z]);
@@ -186,12 +186,14 @@ bool PointDBEntityCollection::HasEntity( const AcDbObjectId& entityId ) const
 void PointDBEntityCollection::DropEntityCollection()
 {
 	//得到线段的数据库对象ID
-	AcDbObjectId lineObjId = (*iter)->m_EntryId;
+	AcDbObjectId lineObjId = m_LineEntryId;
 	if( lineObjId.isValid() )
 	{
 #ifdef DEBUG
-		acutPrintf(L"\n线段终点 序号【%d】 坐标 x:【%lf】y:【%lf】z:【%lf】被删除",(*iter)->m_PointNO,(*iter)->m_Point[X],(*iter)->m_Point[Y],(*iter)->m_Point[Z]);
+		acutPrintf(L"\n线段终点 序号【%d】 坐标 x:【%0.2lf】y:【%0.2lf】z:【%0.2lf】被删除",
+						mSequenceNO, mEndPoint[X], mEndPoint[Y], mEndPoint[Z]);
 #endif
+
 		//根据objectID从数据库得到直线
 		AcDbEntity* pLineObject(NULL);
 		Acad::ErrorStatus es = acdbOpenAcDbEntity(pLineObject, lineObjId, AcDb::kForWrite);
@@ -207,25 +209,25 @@ void PointDBEntityCollection::DropEntityCollection()
 				//关闭管线实体
 				pLmaLineObject->close();
 
-				AcDbObjectId dimObjId, txtObjId;
+				//AcDbObjectId dimObjId, txtObjId;
 						
 				//得到标注对象的ID
-				acdbHostApplicationServices()->workingDatabase()->getAcDbObjectId(
-					dimObjId,false,handleDim);
+				//acdbHostApplicationServices()->workingDatabase()->getAcDbObjectId(
+				//	dimObjId,false,handleDim);
 						
 				//得到文字说明
-				acdbHostApplicationServices()->workingDatabase()->getAcDbObjectId(
-					txtObjId,false,handleText);
+				//acdbHostApplicationServices()->workingDatabase()->getAcDbObjectId(
+				//	txtObjId,false,handleText);
 
 				//删除线段对象
 				acutPrintf(L"\n删除折线段实体.");
-				RemoveDbObject(lineObjId);
+				ArxWrapper::RemoveDbObject(lineObjId);
 
-				acutPrintf(L"\n删除标注对象.");
-				RemoveDbObject(dimObjId);
+				//acutPrintf(L"\n删除标注对象.");
+				//RemoveDbObject(dimObjId);
 
-				acutPrintf(L"\n删除文字说明.");
-				RemoveDbObject(txtObjId);
+				//acutPrintf(L"\n删除文字说明.");
+				//RemoveDbObject(txtObjId);
 			}
 		}
 		else

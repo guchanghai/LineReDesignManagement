@@ -260,7 +260,7 @@ wstring LineEntry::toString()
 void LineEntry::Redraw()
 {
 	//删除以前的线段(从数据库中)
-	EraseLMALine(true);
+	EraseDbObjects(true);
 
 	//删除以前的线段(从内存中)
 	ClearPoints(m_PrePointList);
@@ -319,7 +319,7 @@ void LineEntry::DrawPolyCylinder()
 		else
 		{
 			//创建3D柱体代表直线
-			(*iter)->CreateLineFrom( this, *pStart );
+			(*iter)->CreateLineFrom( (void*)this, *pStart );
 
 			//继续下一个线段
 			pStart = &(*iter)->m_Point;
@@ -330,7 +330,7 @@ void LineEntry::DrawPolyCylinder()
 /**
  * 根据多线段的配置，删除3D管线
  **/
-void LineEntry::EraseLMALine( bool old )
+void LineEntry::EraseDbObjects( bool old )
 {
 	PointList* pPointList = old ? m_PrePointList : m_PointList;
 	if( pPointList == NULL || pPointList->size() < 2 )
@@ -354,7 +354,7 @@ void LineEntry::EraseLMALine( bool old )
 		}
 		else
 		{
-			(*iter)->DropEntityCollection();
+			(*iter)->m_DbEntityCollection.DropEntityCollection();
 		}
 	}
 

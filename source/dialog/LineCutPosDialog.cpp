@@ -230,15 +230,15 @@ void LineCutPosDialog::GenereateCutRegion(LineEntry* lineEntry)
 #ifdef DEBUG
 		acutPrintf(L"\n对第【%d】个线段进行切图！",pointEntry->m_PointNO);
 #endif
-
-		if( pointEntry->m_EntryId.isNull() )
+		AcDbObjectId lineEntityId = pointEntry->m_DbEntityCollection.GetLineEntity();
+		if( lineEntityId.isNull() )
 		{
 			acutPrintf(L"\n当前线段没有对应的数据库实体，不能切图！");
 			continue;
 		}
 
 		AcDbEntity* pLineObj;
-		Acad::ErrorStatus es = acdbOpenAcDbEntity(pLineObj, pointEntry->m_EntryId, AcDb::kForRead);
+		Acad::ErrorStatus es = acdbOpenAcDbEntity(pLineObj, lineEntityId, AcDb::kForRead);
 
 		if( es == Acad::eOk )
 		{
@@ -259,7 +259,7 @@ void LineCutPosDialog::GenereateCutRegion(LineEntry* lineEntry)
 
 			//设置注释的内容
 			CString markContent;
-			markContent.Format(L"%s#%d",pLMALine->mLineEntry->m_LineName.c_str(), pLMALine->mSequenceNO);
+			markContent.Format(L"%s#%d",lineEntry->m_LineName.c_str(), pointEntry->m_PointNO);
 
 			//关闭实体
 			pLMALine->close();

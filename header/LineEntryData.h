@@ -43,25 +43,40 @@ namespace data
 {
 
 class LineEntity;
+}}}}
+
+namespace com
+{
+
+namespace guch
+{
+
+namespace assistant
+{
+
+namespace data
+{
 
 class PointDBEntityCollection
 {
 public:
 
-	PointDBEntityCollection();
+	typedef enum { DB_LINE, DB_SAFELINE, DB_DIM, DB_MARK } DBEntityKind;
+
+	PointDBEntityCollection(){}
 	~PointDBEntityCollection(){}
 
 	void SetLineEntity( const AcDbObjectId entityId ){ m_LineEntryId = entityId; }
-	AcDbObjectId& GetLineEntity() const { return m_LineEntryId; }
+	const AcDbObjectId& GetLineEntity() const { return m_LineEntryId; }
 
 	void SetSafeLineEntity( const AcDbObjectId entityId ){ m_SafeLineEntityId = entityId; }
-	AcDbObjectId& GetSafeLineEntity() const { return m_SafeLineEntityId; }
+	const AcDbObjectId& GetSafeLineEntity() const { return m_SafeLineEntityId; }
 
 	void SetDimEntity( const AcDbObjectId entityId ){ m_DimEntityId = entityId; }
-	AcDbObjectId& GetDimEntity() const { return m_DimEntityId; }
+	const AcDbObjectId& GetDimEntity() const { return m_DimEntityId; }
 
 	void SetMarkEntity( const AcDbObjectId entityId ){ m_MarkEntityId = entityId; }
-	AcDbObjectId& GetMarkEntity() const { return m_MarkEntityId; }
+	const AcDbObjectId& GetMarkEntity() const { return m_MarkEntityId; }
 
 	bool HasEntity( const AcDbObjectId& entityId ) const;
 
@@ -121,7 +136,7 @@ struct PointEntry
 	PointEntry( const PointEntry& );
 	PointEntry( const wstring& data );
 
-	void CreateLineFrom( const LineEntry* lineEntity, const ads_point& start );
+	void CreateLineFrom( const void* lineEntity, const ads_point& start );
 
 	PointDBEntityCollection m_DbEntityCollection;
 
@@ -317,8 +332,8 @@ public:
 
 	static LineEntryFile* SaveFileEntity();
 
-	static bool RegisterLineSegment( const wstring& fileName, AcDbEntity* pEntry, UINT lineID, UINT sequence, 
-										const AcGePoint3d& start, const AcGePoint3d& end );
+	static bool RegisterLineSegment( const wstring& fileName, UINT lineID, UINT sequence, PointEntry*& pStart, PointEntry*& pEnd );
+
 public:
 	
 	static bool openingDwg;
