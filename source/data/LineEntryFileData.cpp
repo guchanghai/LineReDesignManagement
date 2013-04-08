@@ -97,7 +97,7 @@ void LineEntryFile::Import()
 
 	//查找回车以决定行
 	size_t lineFrom = 0;
-	size_t linePos = wContent.find_first_of(L"\n",lineFrom);
+	size_t linePos = wContent.find_first_of(L"\r\n",lineFrom);
 
 	while( linePos != wstring::npos )
 	{
@@ -118,16 +118,12 @@ void LineEntryFile::Import()
 		newLine->m_dbId = ArxWrapper::PostToNameObjectsDict(newLine->m_pDbEntry,LineEntry::LINE_ENTRY_LAYER);
 		newLine->m_pDbEntry = NULL;
 
-		//创建对应的图层
-		//ArxWrapper::createNewLayer( newLine->m_LineName );
-
 		//创建相应的柱体
 		newLine->CreateDbObjects();
-		//ArxWrapper::createLMALine(*newLine );
 
 		//从下一个字符开始查找另外一行
 		lineFrom = linePos + 1;
-		linePos = wContent.find_first_of(L"\n",lineFrom + 1);
+		linePos = wContent.find_first_of(L"\r\n",lineFrom + 1);
 	}
 
 	//关闭文件
@@ -619,6 +615,12 @@ BOOL LineEntryFileManager::ImportLMALineFile( const wstring& lineKind )
 			acutPrintf(L"\n用户已重置导入目录.");
 			PlaceUserSavedFlagData( LMA_VERSION );
 		}
+
+		//默认进入真实视觉样式
+		acedCommand(RTSTR, _T("._VSCURRENT"), RTSTR, L"R", 0);
+
+		//默认进入XY视图
+		acedCommand(RTSTR, _T("._VIEW"), RTSTR, L"TOP", 0);
 
         return(TRUE);
     }

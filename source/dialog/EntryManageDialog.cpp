@@ -558,7 +558,7 @@ void EntryManageDialog::OnBnClickedButtonOK()
 	{
 		//得到实体名称
 		wstring pipeName = m_EntryFile->GetNewPipeName(detailInfo,L"");
-		acutPrintf(L"\n新增管线【%s】,折线段【%d】条.",pipeName.c_str(),pointList->size());
+		acutPrintf(L"\n新增管线【%s】,折线段【%d】条.",pipeName.c_str(),pointList->size()-1);
 
 		//创建新的管线
 		LineEntry* newLine = new LineEntry(pipeName,m_EntryKind,detailInfo,NULL);
@@ -605,7 +605,7 @@ void EntryManageDialog::OnBnClickedButtonOK()
 	acedCommand(RTSTR, _T("._VSCURRENT"), RTSTR, L"R", 0);
 
 	//默认进入XY视图
-	acedCommand(RTSTR, _T("._-VIEW"), RTSTR, L"TOP", 0);
+	acedCommand(RTSTR, _T("._VIEW"), RTSTR, L"TOP", 0);
 
 	//保存到临时文件(还不需要此功能)
 	//m_EntryFile->Persistent();

@@ -49,9 +49,6 @@
     <ClCompile Include="..\..\source\ARX\ArxWrapper.cpp">
       <Filter>src\ARX</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\source\ARX\ArxCustomObject.cpp">
-      <Filter>src\ARX</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\source\data\LineConfigDataManager.cpp">
       <Filter>src\Data</Filter>
     </ClCompile>
@@ -60,6 +57,12 @@
     </ClCompile>
     <ClCompile Include="..\..\source\data\LineEntryFileData.cpp">
       <Filter>src\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\ARX\LMALineDbObject.cpp">
+      <Filter>src\ARX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\ARX\LMASafeLineDbObject.cpp">
+      <Filter>src\ARX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

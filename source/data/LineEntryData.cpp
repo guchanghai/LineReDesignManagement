@@ -288,7 +288,7 @@ void LineEntry::CreateDbObjects()
 		ArxWrapper::createNewLayer(m_LineName);
 
 		//绘制3D模型
-		DrawPolyCylinder();
+		DrawDBEntity();
 	}
 	catch(const Acad::ErrorStatus es)
 	{
@@ -300,7 +300,7 @@ void LineEntry::CreateDbObjects()
 /**
  * 创建多线段3D折线
  **/
-void LineEntry::DrawPolyCylinder()
+void LineEntry::DrawDBEntity()
 {
 	ads_point *pStart = NULL;
 
@@ -480,8 +480,8 @@ LineDBEntry::dwgInFields(AcDbDwgFiler* pFiler)
 		acutPrintf(L"\n从文件【%s】读出管线实体 ID【%d】名称【%s】类型【%s】.",
 					filename.GetBuffer(),
 					pImplemention->m_LineID,
-					pImplemention->m_LineName,
-					pImplemention->m_LineKind);
+					pImplemention->m_LineName.c_str(),
+					pImplemention->m_LineKind.c_str() );
 #endif
 
 		wstring fileName(filename.GetBuffer());

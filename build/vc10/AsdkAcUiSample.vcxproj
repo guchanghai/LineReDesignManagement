@@ -173,8 +173,9 @@
   <ItemGroup>
     <ClCompile Include="..\..\source\application\LineManageAssitant.cpp" />
     <ClCompile Include="..\..\source\application\StdAfx.cpp" />
-    <ClCompile Include="..\..\source\ARX\ArxCustomObject.cpp" />
+    <ClCompile Include="..\..\source\ARX\LMALineDbObject.cpp" />
     <ClCompile Include="..\..\source\ARX\ArxWrapper.cpp" />
+    <ClCompile Include="..\..\source\ARX\LMASafeLineDbObject.cpp" />
     <ClCompile Include="..\..\source\command\CommandManager.cpp" />
     <ClCompile Include="..\..\source\controls\ListCtrlEx.cpp" />
     <ClCompile Include="..\..\source\controls\MsgHook.cpp" />

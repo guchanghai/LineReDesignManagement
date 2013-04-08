@@ -42,21 +42,6 @@ namespace assistant
 namespace data
 {
 
-class LineEntity;
-}}}}
-
-namespace com
-{
-
-namespace guch
-{
-
-namespace assistant
-{
-
-namespace data
-{
-
 class PointDBEntityCollection
 {
 public:
@@ -200,8 +185,8 @@ public:
 
 protected:
 
-	//Polygon cylinder
-	void DrawPolyCylinder();
+	//Create the 3D database entities
+	void DrawDBEntity();
 
 public:
 

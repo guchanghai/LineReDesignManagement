@@ -90,10 +90,10 @@ public:
 protected:
 
 	// create the line pipe
-	Acad::ErrorStatus Init();
+	virtual Acad::ErrorStatus Init();
 
 	// creat the 3d pipe
-	Acad::ErrorStatus CreatePipe();
+	virtual Acad::ErrorStatus CreateDBObject();
 
 	// create the dimensions
 	Acad::ErrorStatus CreateDimensions();
@@ -117,6 +117,32 @@ public:
 
 	//handler of the text
 	AcDbHandle mHandleText;
+};
+
+
+class LMASafeLineDbObject : public LMALineDbObject
+{
+public:
+
+    ACRX_DECLARE_MEMBERS(LMASafeLineDbObject);
+
+    LMASafeLineDbObject();
+    LMASafeLineDbObject( PointDBEntityCollection* pPointInfo );
+
+    virtual Acad::ErrorStatus dwgInFields (AcDbDwgFiler*);
+    virtual Acad::ErrorStatus dwgOutFields(AcDbDwgFiler*)
+        const;
+    virtual Acad::ErrorStatus dxfInFields (AcDbDxfFiler*);
+    virtual Acad::ErrorStatus dxfOutFields(AcDbDxfFiler*)
+        const;
+
+protected:
+
+	// create the line pipe
+	virtual Acad::ErrorStatus Init();
+
+	// creat the 3d pipe
+	virtual Acad::ErrorStatus CreateDBObject();
 };
 
 } // end of arx

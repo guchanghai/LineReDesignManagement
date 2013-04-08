@@ -139,14 +139,23 @@ void PointEntry::CreateLineFrom(const void* lineEntity, const ads_point& start )
 	//准备绘制折线段的所有信息
 	LineEntry* pLineEntity = (LineEntry*)lineEntity;
 
+	//管线名称既是层名，就是说每根管线都在不同的层
 	m_DbEntityCollection.mLayerName = pLineEntity->GetName();
+	
+	//唯一标示管线的ID，折线段的所有实体都保存此值用于关联折线段与管线
 	m_DbEntityCollection.mLineID = pLineEntity->GetLineID();
+	
+	//绘制管线时所需要的信息
 	m_DbEntityCollection.mCategoryData = const_cast<LineCategoryItemData*>(pLineEntity->GetBasicInfo());
+	
+	//折线段的序号
 	m_DbEntityCollection.mSequenceNO = m_PointNO;
+
+	//折线段的起始和终止点
 	m_DbEntityCollection.mStartPoint.set(start[X], start[Y], start[Z]);
 	m_DbEntityCollection.mEndPoint.set(m_Point[X], m_Point[Y], m_Point[Z]);
 
-	//绘制折线段
+	//绘制折线段所有的数据库实体
 	m_DbEntityCollection.DrawEntityCollection();
 }
 
@@ -164,6 +173,12 @@ bool PointDBEntityCollection::DrawEntityCollection()
 
 	//保存管线实体
 	SetLineEntity( ArxWrapper::PostToModelSpace(lmaLineObj, mLayerName) );
+
+	//创建管线安全范围实体
+	LMASafeLineDbObject* lmaSafeLineObj = new LMASafeLineDbObject( this );
+
+	//保存管线安全范围实体
+	SetLineEntity( ArxWrapper::PostToModelSpace(lmaSafeLineObj, mLayerName) );
 
 	return true;
 }
@@ -222,6 +237,10 @@ void PointDBEntityCollection::DropEntityCollection()
 				//删除线段对象
 				acutPrintf(L"\n删除折线段实体.");
 				ArxWrapper::RemoveDbObject(lineObjId);
+
+				//删除折线段安全范围实体
+				acutPrintf(L"\n删除折线段实体.");
+				ArxWrapper::RemoveDbObject(m_SafeLineEntityId);
 
 				//acutPrintf(L"\n删除标注对象.");
 				//RemoveDbObject(dimObjId);

@@ -6,7 +6,7 @@
 //	ArxWrapper.h
 //	written by Changhai Gu
 // ------------------------------------------------
-// $File:\\LineManageAssitant\main\source\ARX\ArxCustomObject.cpp $
+// $File:\\LineManageAssitant\main\source\ARX\LMALineDbObject.cpp $
 // $Author: Changhai Gu $
 // $DateTime: 2013/1/12 06:13:00
 // $Revision: #1 $
@@ -37,14 +37,16 @@ namespace arx
 
 void LMADbObjectManager::RegisterClass()
 {
-	LMALineDbObject::rxInit();
 	LineDBEntry::rxInit();
+	LMALineDbObject::rxInit();
+	LMASafeLineDbObject::rxInit();
 }
 
 void LMADbObjectManager::UnRegisterClass()
 {
-	deleteAcRxClass(LMALineDbObject::desc());
 	deleteAcRxClass(LineDBEntry::desc());
+	deleteAcRxClass(LMALineDbObject::desc());
+	deleteAcRxClass(LMASafeLineDbObject::desc());
 }
 
 ACRX_DXF_DEFINE_MEMBERS(LMALineDbObject, AcDb3dSolid, 
@@ -107,16 +109,16 @@ Acad::ErrorStatus LMALineDbObject::Init()
 		mWidth = mWidth / 1000;
 	}
 
-	return CreatePipe();
+	return CreateDBObject();
 }
 
 /// <summary>
 /// Creates the pipe.
 /// </summary>
 /// <returns></returns>
-Acad::ErrorStatus LMALineDbObject::CreatePipe()
+Acad::ErrorStatus LMALineDbObject::CreateDBObject()
 {
-	acutPrintf(L"\n开始绘制管体");
+	acutPrintf(L"\n开始绘制实体");
 
 	const AcGePoint3d& startPoint = mpPointInfo->mStartPoint;
 	const AcGePoint3d& endPoint = mpPointInfo->mEndPoint;
@@ -125,20 +127,20 @@ Acad::ErrorStatus LMALineDbObject::CreatePipe()
 	double height = startPoint.distanceTo( endPoint );
 	if( height < 0.01 )
 	{
-		acutPrintf(L"\n高度小于1毫米，暂不考虑这样的管线！",mRadius,height);
+		acutPrintf(L"\n高度小于1毫米，暂不考虑这样的实体！",mRadius,height);
 		return Acad::eInvalidInput;
 	}
 
 	if( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
-		acutPrintf(L"\n绘制半径为【%0.2lf】高为【%0.2lf】的圆柱",mRadius,height);
+		acutPrintf(L"\n绘制半径为【%0.2lf】长为【%0.2lf】的圆柱",mRadius,height);
 
 		//绘制圆柱体
 		this->createFrustum(height,mRadius,mRadius,mRadius);
 	}
 	else if (  mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
-		acutPrintf(L"\n绘制长【%0.2lf】宽【%0.2lf】高【%0.2lf】的长方体",mLength, mWidth, height);
+		acutPrintf(L"\n绘制宽【%0.2lf】高【%0.2lf】长【%0.2lf】的方柱体",mLength, mWidth, height);
 
 		//绘制圆柱体
 		this->createBox(mLength,mWidth,height);
@@ -159,16 +161,14 @@ Acad::ErrorStatus LMALineDbObject::CreatePipe()
 	//得到线段的中心点
 	AcGePoint3d center( startPoint.x + endPoint.x, startPoint.y + endPoint.y, startPoint.z + endPoint.z); 
 	center /= 2;
-	acutPrintf(L"\n得到中心点【%lf】【%lf】【%lf】",center.x,center.y,center.z);
+	acutPrintf(L"\n得到中心点【%0.2lf】【%0.2lf】【%0.2lf】",center.x,center.y,center.z);
 
 	//进行偏移
 	AcGeMatrix3d moveMatrix;
 	moveMatrix.setToTranslation(AcGeVector3d(center.x,center.y,center.z));
 
+	//最终成型
 	transformBy(moveMatrix);
-
-	//创建标注
-	CreateDimensions();
 
 	return Acad::eOk;
 }
@@ -360,9 +360,10 @@ LMALineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
 	dbToStr(this->database(),filename);
 	LineEntryFileManager::RegisterLineSegment(filename.GetBuffer(),lineID, seqNO, pStart, pEnd );
 		
-	//读取开始和结束节点
+	//得到管线信息绘制管理器
 	mpPointInfo = &pEnd->m_DbEntityCollection;
 
+	//读取开始和结束节点
 	pFiler->readPoint3d(&mpPointInfo->mStartPoint);
 	pFiler->readPoint3d(&mpPointInfo->mEndPoint);
 
