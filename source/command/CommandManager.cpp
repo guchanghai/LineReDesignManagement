@@ -29,8 +29,13 @@ const WCHAR* CommandManager::CMD_BLOCK_IMPORT = L"LMA_BLOCK_IMP";
 const WCHAR* CommandManager::CMD_BLOCK_INPUT = L"LMA_BLOCK_INPUT";
 const WCHAR* CommandManager::CMD_BLOCK_EXPORT = L"LMA_BLOCK_EXP";
 
-const WCHAR* CommandManager::CMD_LIEN_CUT = L"LMA_CUT";
+//切剖面图
+const WCHAR* CommandManager::CMD_LINE_CUT = L"LMA_CUT";
 const WCHAR* CommandManager::CMD_LINE_CUT_BACK = L"LMA_CUT_BACK";
+
+//管线相侵
+const WCHAR* CommandManager::CMD_LINE_INTERACT = L"LMA_LINE_INTERACT";
+const WCHAR* CommandManager::CMD_LINE_INTERACT_BACK = L"LMA_LINE_INTERACT_BACK";
 
 const WCHAR* CommandManager::CMD_LINE_TEST = L"LMA_TESTFUN";
 
@@ -65,10 +70,15 @@ CommandManager::CommandManager(void)
 	mSupportCommands[CMD_BLOCK_INPUT] = BlockManage;
 	mSupportCommands[CMD_BLOCK_EXPORT] = ExportBlock;
 
-	//前面生成、恢复
-	mSupportCommands[CMD_LIEN_CUT] = GenerateCut;
+	//切面生成、恢复
+	mSupportCommands[CMD_LINE_CUT] = GenerateCut;
 	mSupportCommands[CMD_LINE_CUT_BACK] = GenerateCutBack;
 
+	//相侵判断、恢复
+	mSupportCommands[CMD_LINE_INTERACT] = GenerateCut;
+	mSupportCommands[CMD_LINE_INTERACT_BACK] = GenerateCutBack;
+
+	//测试功能
 	mSupportCommands[CMD_LINE_TEST] = TestFunction;
 }
 
@@ -107,7 +117,7 @@ void CommandManager::ImportLine()
 	acutPrintf(L"\n导入管线数据");
 #endif
 
-	LineEntryFileManager::ImportLMALineFile(GlobalData::KIND_LINE);
+	LineEntityFileManager::ImportLMALineFile(GlobalData::KIND_LINE);
 }
 
 void CommandManager::LineManage()
@@ -126,7 +136,7 @@ void CommandManager::ExportLine()
 	acutPrintf(L"\n导出管线数据");
 #endif
 
-	LineEntryFileManager::ExportLMALineFile(GlobalData::KIND_LINE);
+	LineEntityFileManager::ExportLMALineFile(GlobalData::KIND_LINE);
 }
 
 void CommandManager::ImportBlock()
@@ -135,7 +145,7 @@ void CommandManager::ImportBlock()
 	acutPrintf(L"\n导入阻隔体数据");
 #endif
 
-	LineEntryFileManager::ImportLMALineFile(GlobalData::KIND_BLOCK);
+	LineEntityFileManager::ImportLMALineFile(GlobalData::KIND_BLOCK);
 }
 
 void CommandManager::BlockManage()
@@ -154,7 +164,7 @@ void CommandManager::ExportBlock()
 	acutPrintf(L"\n导出阻隔体数据");
 #endif
 
-	LineEntryFileManager::ExportLMALineFile(GlobalData::KIND_BLOCK);
+	LineEntityFileManager::ExportLMALineFile(GlobalData::KIND_BLOCK);
 }
 
 void CommandManager::GenerateCut()
@@ -173,6 +183,23 @@ void CommandManager::GenerateCutBack()
 #endif
 
 	LineCutPosDialog::CutBack();
+}
+
+//侵限相关
+void CommandManager::InteractCheck()
+{
+#ifdef DEBUG
+	acutPrintf(L"\n侵限判断");
+#endif
+
+	LineEntityFileManager::CheckInteract();
+}
+
+void CommandManager::InteractCheckBack()
+{
+#ifdef DEBUG
+	acutPrintf(L"\n删除侵限判断临时界面，恢复3D模型窗口");
+#endif
 }
 
 void CommandManager::TestFunction()

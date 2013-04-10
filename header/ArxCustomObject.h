@@ -119,7 +119,6 @@ public:
 	AcDbHandle mHandleText;
 };
 
-
 class LMASafeLineDbObject : public LMALineDbObject
 {
 public:

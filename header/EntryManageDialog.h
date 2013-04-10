@@ -56,7 +56,7 @@ protected:
 	LineCategoryItemData* CreateEntryDetailInfo();
 	PointList* CreateEntryPointList();
 		
-	void FillLineData( LineEntry* lineEntry );
+	void FillLineData( LineEntity* lineEntry );
 	void ClearLineData();
 	void CheckUIData();
 
@@ -65,7 +65,7 @@ protected:
 	BOOL InitEntryDetailControl();
 	BOOL InitEntryPointsControl();
 	BOOL InitEntryData();
-	BOOL InitEntryPointsData(LineEntry* lineEntry);
+	BOOL InitEntryPointsData(LineEntity* lineEntry);
 
 	//左边列表相关操作
 	HTREEITEM GetKindNode( const wstring& category, bool createOnDemand = false );
@@ -100,10 +100,10 @@ protected:
 	void SetOperType( OPER_TYPE type ) { m_OperType = type; }
 
 	//管线操作
-	LineEntry* GetSelectLine();
-	LineEntry* GetLineEntry( const UINT& ID );
-	BOOL InsertLine( LineEntry* lineEntry, BOOL bInitialize = FALSE );
-	BOOL UpdateLine( LineEntry* lineEntry );
+	LineEntity* GetSelectLine();
+	LineEntity* GetLineEntry( const UINT& ID );
+	BOOL InsertLine( LineEntity* lineEntry, BOOL bInitialize = FALSE );
+	BOOL UpdateLine( LineEntity* lineEntry );
 
 	//控件控制
 	void EnableDetailControl(bool enable);
@@ -176,7 +176,7 @@ private:
 	wstring m_fileName;
 
 	//实体文件管理器
-	LineEntryFile* m_EntryFile;
+	LineEntityFile* m_EntryFile;
 };
 
 } // end of config

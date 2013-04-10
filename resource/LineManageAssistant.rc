@@ -45,6 +45,11 @@ BEGIN
             MENUITEM "生成切图",                        ID_GENERATE_CUT
             MENUITEM "恢复视窗",                        ID_GENERATE_BACK
         END
+        POPUP "管线相侵"
+        BEGIN
+            MENUITEM "相侵判断",                        ID_32805
+            MENUITEM "恢复视窗",                        ID_32806
+        END
         MENUITEM "功能测试",                        ID_MENU_TEST
     END
 END

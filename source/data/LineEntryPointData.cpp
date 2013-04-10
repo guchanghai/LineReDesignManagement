@@ -44,13 +44,13 @@ namespace data
 #define POINTS_SEP L"&&"
 
 ///////////////////////////////////////////////////////////////////////////
-// Implementation PointEntry
+// Implementation PointEntity
 
 /**
  * 管线坐标实体
  */
 
-PointEntry::PointEntry()
+PointEntity::PointEntity()
 :m_PointNO(0),
 m_LevelKind(L""),
 m_Direction(L""),
@@ -61,7 +61,7 @@ m_DbEntityCollection()
 	m_Point[Z] = 0;
 }
 
-PointEntry::PointEntry( const UINT& pointNO, const ads_point& point, 
+PointEntity::PointEntity( const UINT& pointNO, const ads_point& point, 
 	const wstring& levelKind, const wstring& direction, const AcDbObjectId& entityID)
 :m_PointNO(pointNO),
 m_LevelKind(levelKind),
@@ -73,7 +73,7 @@ m_DbEntityCollection()
 	m_Point[Z] = point[Z];
 }
 
-PointEntry::PointEntry( const PointEntry& pointEntry)
+PointEntity::PointEntity( const PointEntity& pointEntry)
 {
 	this->m_PointNO = pointEntry.m_PointNO;
 	this->m_LevelKind = pointEntry.m_LevelKind;
@@ -84,7 +84,7 @@ PointEntry::PointEntry( const PointEntry& pointEntry)
 	this->m_Point[Z] = pointEntry.m_Point[Z];
 }
 
-PointEntry::PointEntry( const wstring& data )
+PointEntity::PointEntity( const wstring& data )
 {
 	double temp;
 
@@ -115,7 +115,7 @@ PointEntry::PointEntry( const wstring& data )
 	delete dataColumn;
 }
 
-wstring PointEntry::toString() const
+wstring PointEntity::toString() const
 {
 	CString temp;
 	temp.Format(L"%s%d%s%0.2f%s%0.2f%s%0.2f%s%s%s%s%s%s",
@@ -134,10 +134,10 @@ wstring PointEntry::toString() const
 /**
  * 从上一折线段终点开始，绘制所需的管线
  **/
-void PointEntry::CreateLineFrom(const void* lineEntity, const ads_point& start )
+void PointEntity::CreateLineFrom(const void* lineEntity, const ads_point& start )
 {
 	//准备绘制折线段的所有信息
-	LineEntry* pLineEntity = (LineEntry*)lineEntity;
+	LineEntity* pLineEntity = (LineEntity*)lineEntity;
 
 	//管线名称既是层名，就是说每根管线都在不同的层
 	m_DbEntityCollection.mLayerName = pLineEntity->GetName();

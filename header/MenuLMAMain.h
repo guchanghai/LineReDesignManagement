@@ -45,6 +45,16 @@
 #define MAIN_MENU_LINE_CUT_BACK L"ª÷∏¥ ”¥∞"
 
 /*
+* «÷œﬁ≤Àµ•
+*/
+
+#define MAIN_MENU_LINE_INTERACT_MANAGE L"π‹œﬂœ‡«÷"
+
+#define MAIN_MENU_LINE_INTERACT L"«÷œﬁ≈–∂œ"
+
+#define MAIN_MENU_LINE_INTERACT_BACK L"ª÷∏¥ ”¥∞"
+
+/*
 * ≤‚ ‘
 */
 

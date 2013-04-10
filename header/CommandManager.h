@@ -40,6 +40,11 @@ public:
 
 	static void GenerateCutBack();
 
+	//«÷œﬁœ‡πÿ
+	static void InteractCheck();
+
+	static void InteractCheckBack();
+
 	//≤‚ ‘
 	static void TestFunction();
 
@@ -53,8 +58,11 @@ public:
 	static const WCHAR* CMD_BLOCK_INPUT; 
 	static const WCHAR* CMD_BLOCK_EXPORT; 
 
-	static const WCHAR* CMD_LIEN_CUT;
+	static const WCHAR* CMD_LINE_CUT;
 	static const WCHAR* CMD_LINE_CUT_BACK;
+
+	static const WCHAR* CMD_LINE_INTERACT;
+	static const WCHAR* CMD_LINE_INTERACT_BACK;
 
 	static const WCHAR* CMD_LINE_TEST;
 

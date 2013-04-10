@@ -38,15 +38,15 @@ namespace data
 {
 
 ///////////////////////////////////////////////////////////////////////////
-// Implementation LineEntry
+// Implementation LineEntity
 
-const wstring LineEntry::LINE_ENTRY_LAYER = L"管线实体字典";
+const wstring LineEntity::LINE_ENTRY_LAYER = L"管线实体字典";
 
 /**
  * 管线实体
  */
 
-LineEntry::LineEntry()
+LineEntity::LineEntity()
 	:m_LineID(0),
 	m_LineName(L""),
 	m_LineKind(L""),
@@ -56,7 +56,7 @@ LineEntry::LineEntry()
 	m_PointList(new PointList())
 {}
 
-LineEntry::LineEntry(const wstring& rLineName, const wstring& rLineKind,
+LineEntity::LineEntity(const wstring& rLineName, const wstring& rLineKind,
 						LineCategoryItemData* lineInfo, PointList* pointList)
 	:m_LineID(0),
 	m_LineName(rLineName),
@@ -67,10 +67,10 @@ LineEntry::LineEntry(const wstring& rLineName, const wstring& rLineKind,
 	m_PrePointList(NULL)
 {
 	//创建数据库代理对象
-	m_pDbEntry = new LineDBEntry( this );
+	m_pDbEntry = new LineDBEntity( this );
 }
 
-LineEntry::LineEntry( const wstring& data)
+LineEntity::LineEntity( const wstring& data)
 {
 	m_PointList = new PointList();
 	m_PrePointList = NULL;
@@ -112,27 +112,27 @@ LineEntry::LineEntry( const wstring& data)
 	while( index < size )
 	{
 		column = (*dataColumn)[index++];
-		m_PointList->push_back(new PointEntry(column));
+		m_PointList->push_back(new PointEntity(column));
 	}
 
 	delete dataColumn;
 
 	//创建数据库代理对象
-	m_pDbEntry = new LineDBEntry( this );
+	m_pDbEntry = new LineDBEntity( this );
 }
 
-LineEntry::~LineEntry()
+LineEntity::~LineEntity()
 {
 	//ClearPoints();
 }
 
-void LineEntry::ClearPoints()
+void LineEntity::ClearPoints()
 {
 	ClearPoints(this->m_PrePointList);
 	ClearPoints(this->m_PointList);
 }
 
-void LineEntry::ClearPoints( PointList* pPointList)
+void LineEntity::ClearPoints( PointList* pPointList)
 {
 	if( pPointList )
 	{
@@ -149,7 +149,7 @@ void LineEntry::ClearPoints( PointList* pPointList)
 	}
 }
 
-PointIter LineEntry::FindPoint( const UINT& PointNO ) const
+PointIter LineEntity::FindPoint( const UINT& PointNO ) const
 {
 	for( PointIter iter = this->m_PointList->begin();
 			iter != this->m_PointList->end();
@@ -162,7 +162,7 @@ PointIter LineEntry::FindPoint( const UINT& PointNO ) const
 	return m_PointList->end();
 }
 
-ContstPointIter LineEntry::FindConstPoint( const UINT& PointNO ) const
+ContstPointIter LineEntity::FindConstPoint( const UINT& PointNO ) const
 {
 	for( ContstPointIter iter = this->m_PointList->begin();
 			iter != this->m_PointList->end();
@@ -175,9 +175,9 @@ ContstPointIter LineEntry::FindConstPoint( const UINT& PointNO ) const
 	return m_PointList->end();
 }
 
-int LineEntry::InsertPoint( const PointEntry& newPoint )
+int LineEntity::InsertPoint( const PointEntity& newPoint )
 {
-	pPointEntry point = new PointEntry(newPoint);
+	pPointEntry point = new PointEntity(newPoint);
 
 	point->m_PointNO = m_CurrentPointNO;
 
@@ -188,18 +188,18 @@ int LineEntry::InsertPoint( const PointEntry& newPoint )
 	return (int)m_PointList->size();
 }
 
-void LineEntry::UpdatePoint( const PointEntry& updatePoint )
+void LineEntity::UpdatePoint( const PointEntity& updatePoint )
 {
 	PointIter findPoint = this->FindPoint(updatePoint.m_PointNO);
 
 	if( findPoint != this->m_PointList->end() )
 	{
 		delete *findPoint;
-		*findPoint = new PointEntry(updatePoint);
+		*findPoint = new PointEntity(updatePoint);
 	}
 }
 
-void LineEntry::DeletePoint( const UINT& PointNO )
+void LineEntity::DeletePoint( const UINT& PointNO )
 {
 	PointIter findPoint = this->FindPoint(PointNO);
 
@@ -209,7 +209,7 @@ void LineEntry::DeletePoint( const UINT& PointNO )
 	}
 }
 
-void LineEntry::SetBasicInfo( LineCategoryItemData* lineBasiInfo )
+void LineEntity::SetBasicInfo( LineCategoryItemData* lineBasiInfo )
 {
 	if( m_LineBasiInfo )
 		delete m_LineBasiInfo;
@@ -217,7 +217,7 @@ void LineEntry::SetBasicInfo( LineCategoryItemData* lineBasiInfo )
 	m_LineBasiInfo = lineBasiInfo;
 }
 
-void LineEntry::SetPoints( PointList* newPoints)
+void LineEntity::SetPoints( PointList* newPoints)
 {
 	//保存当前的节点列表，以用于删除以前的对象
 	m_PrePointList = m_PointList;
@@ -228,7 +228,7 @@ void LineEntry::SetPoints( PointList* newPoints)
 	Redraw();
 }
 
-wstring LineEntry::toString()
+wstring LineEntity::toString()
 {
 	wstring lineData;
 
@@ -257,7 +257,7 @@ wstring LineEntry::toString()
 	return lineData;
 }
 
-void LineEntry::Redraw()
+void LineEntity::Redraw()
 {
 	//删除以前的线段(从数据库中)
 	EraseDbObjects(true);
@@ -272,7 +272,7 @@ void LineEntry::Redraw()
 /**
  * 根据导入线段配置，创建多线段3D折线
  **/
-void LineEntry::CreateDbObjects()
+void LineEntity::CreateDbObjects()
 {
 	if( m_PointList == NULL || m_PointList->size() < 2 )
 	{
@@ -300,7 +300,7 @@ void LineEntry::CreateDbObjects()
 /**
  * 创建多线段3D折线
  **/
-void LineEntry::DrawDBEntity()
+void LineEntity::DrawDBEntity()
 {
 	ads_point *pStart = NULL;
 
@@ -330,7 +330,7 @@ void LineEntry::DrawDBEntity()
 /**
  * 根据多线段的配置，删除3D管线
  **/
-void LineEntry::EraseDbObjects( bool old )
+void LineEntity::EraseDbObjects( bool old )
 {
 	PointList* pPointList = old ? m_PrePointList : m_PointList;
 	if( pPointList == NULL || pPointList->size() < 2 )
@@ -363,16 +363,16 @@ void LineEntry::EraseDbObjects( bool old )
 }
 
 ///////////////////////////////////////////////////////////////////////////
-// Implementation LineDBEntry
+// Implementation LineDBEntity
 
-ACRX_DXF_DEFINE_MEMBERS(LineDBEntry, AcDbObject, AcDb::kDHL_CURRENT, AcDb::kMReleaseCurrent, 0, LineDBEntry, LMA);
+ACRX_DXF_DEFINE_MEMBERS(LineDBEntity, AcDbObject, AcDb::kDHL_CURRENT, AcDb::kMReleaseCurrent, 0, LineDBEntity, LMA);
 
-LineDBEntry::LineDBEntry()
+LineDBEntity::LineDBEntity()
 {
-	pImplemention = new LineEntry();
+	pImplemention = new LineEntity();
 }
 
-LineDBEntry::LineDBEntry( LineEntry* implementation )
+LineDBEntity::LineDBEntity( LineEntity* implementation )
 {
 	pImplemention = implementation;
 }
@@ -380,12 +380,12 @@ LineDBEntry::LineDBEntry( LineEntry* implementation )
 // Files data in from a DWG file.
 //
 Acad::ErrorStatus
-LineDBEntry::dwgInFields(AcDbDwgFiler* pFiler)
+LineDBEntity::dwgInFields(AcDbDwgFiler* pFiler)
 {
-	if( LineEntryFileManager::openingDwg == false )
+	if( LineEntityFileManager::openingDwg == false )
 	{
 		acutPrintf(L"\n设置当前状态为正在打开文件");
-		LineEntryFileManager::openingDwg = true;
+		LineEntityFileManager::openingDwg = true;
 	}
 
     assertWriteEnabled();
@@ -485,7 +485,7 @@ LineDBEntry::dwgInFields(AcDbDwgFiler* pFiler)
 #endif
 
 		wstring fileName(filename.GetBuffer());
-		LineEntryFile* entryFile = LineEntryFileManager::RegisterEntryFile(fileName);
+		LineEntityFile* entryFile = LineEntityFileManager::RegisterEntryFile(fileName);
 
 		if( pImplemention->m_PointList )
 			delete pImplemention->m_PointList;
@@ -506,7 +506,7 @@ LineDBEntry::dwgInFields(AcDbDwgFiler* pFiler)
 // Files data out to a DWG file.
 //
 Acad::ErrorStatus
-LineDBEntry::dwgOutFields(AcDbDwgFiler* pFiler) const
+LineDBEntity::dwgOutFields(AcDbDwgFiler* pFiler) const
 {
     assertReadEnabled();
 
@@ -553,7 +553,7 @@ LineDBEntry::dwgOutFields(AcDbDwgFiler* pFiler) const
 // Files data in from a DXF file.
 //
 Acad::ErrorStatus
-LineDBEntry::dxfInFields(AcDbDxfFiler* pFiler)
+LineDBEntity::dxfInFields(AcDbDxfFiler* pFiler)
 {
     assertWriteEnabled();
 
@@ -592,7 +592,7 @@ LineDBEntry::dxfInFields(AcDbDxfFiler* pFiler)
 // Files data out to a DXF file.
 //
 Acad::ErrorStatus
-LineDBEntry::dxfOutFields(AcDbDxfFiler* pFiler) const
+LineDBEntity::dxfOutFields(AcDbDxfFiler* pFiler) const
 {
     assertReadEnabled();
 

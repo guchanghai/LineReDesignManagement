@@ -48,7 +48,7 @@ protected:
 
 	void GenereateCutRegion();
 
-	void GenereateCutRegion(LineEntry* lineEntry);
+	void GenereateCutRegion(LineEntity* lineEntry);
 
 	void ShowCutRegion();
 

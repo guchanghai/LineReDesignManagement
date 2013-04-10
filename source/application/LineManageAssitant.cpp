@@ -70,7 +70,7 @@ static void unloadApp()
 static void dwgLoaded()
 {
 	//从当前DWG文件中读取管线信息
-	//LineEntryFileManager::ReadFromCurrentDWG();
+	//LineEntityFileManager::ReadFromCurrentDWG();
 }
 
 /// <summary>
@@ -104,15 +104,15 @@ static void StoreLMAArxPath( HINSTANCE hInstance )
 static void dwgUnLoaded()
 {
 	acutPrintf(L"\nDWG文件卸载");
-	if( LineEntryFileManager::openingDwg )
+	if( LineEntityFileManager::openingDwg )
 	{
 		acutPrintf(L"\n但当前是打开文件状态，估不做任何处理");
-		LineEntryFileManager::openingDwg = false;
+		LineEntityFileManager::openingDwg = false;
 	}
 	else
 	{
 		acutPrintf(L"\n删除所有管线配置");
-		LineEntryFileManager::RemoveEntryFileOnDWGUnLoad();
+		LineEntityFileManager::RemoveEntryFileOnDWGUnLoad();
 	}
 }
 
@@ -120,7 +120,7 @@ static void dwgSaved()
 {
 	acutPrintf(L"\nDWG文件保存");
 
-	LineEntryFileManager::SaveFileEntity();
+	LineEntityFileManager::SaveFileEntity();
 }
 
 //////////////////////////////////////////////////////////////

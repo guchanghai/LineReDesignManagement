@@ -94,7 +94,7 @@ AcDbObjectId ArxWrapper::PostToNameObjectsDict(AcDbObject* pNameObj,const wstrin
 		pKeyDict->close();
 
 		// New objects to add to the new dictionary, then close them.
-		LineDBEntry* pLineEntry = LineDBEntry::cast(pNameObj);
+		LineDBEntity* pLineEntry = LineDBEntity::cast(pNameObj);
 
 		if( pLineEntry )
 		{
@@ -165,7 +165,7 @@ bool ArxWrapper::DeleteFromNameObjectsDict(AcDbObjectId objToRemoveId,const wstr
 			// Get an iterator for the ASDK_DICT dictionary.
 			AcDbDictionaryIterator* pDictIter= pKeyDict->newIterator();
 
-			LineDBEntry *pLineEntry = NULL;
+			LineDBEntity *pLineEntry = NULL;
 			for (; !pDictIter->done(); pDictIter->next()) 
 			{
 				// Get the current record, open it for read, and
@@ -214,7 +214,7 @@ void ArxWrapper::PullFromNameObjectsDict()
 	{
 		AcDbObjectId dictId;
 		// get at the dictionary entry itself
-		Acad::ErrorStatus es = pNamedobj->getAt(LineEntry::LINE_ENTRY_LAYER.c_str(), dictId);
+		Acad::ErrorStatus es = pNamedobj->getAt(LineEntity::LINE_ENTRY_LAYER.c_str(), dictId);
 		// if ok
 		if (es == Acad::eOk)
 		{
@@ -226,7 +226,7 @@ void ArxWrapper::PullFromNameObjectsDict()
 				// Get an iterator for the ASDK_DICT dictionary.
 				AcDbDictionaryIterator* pDictIter= pDict->newIterator();
 
-				LineEntry *pLineEntry = NULL;
+				LineEntity *pLineEntry = NULL;
 				for (; !pDictIter->done(); pDictIter->next()) 
 				{
 					// Get the current record, open it for read, and

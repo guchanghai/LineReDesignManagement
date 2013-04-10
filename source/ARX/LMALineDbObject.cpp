@@ -37,14 +37,14 @@ namespace arx
 
 void LMADbObjectManager::RegisterClass()
 {
-	LineDBEntry::rxInit();
+	LineDBEntity::rxInit();
 	LMALineDbObject::rxInit();
 	LMASafeLineDbObject::rxInit();
 }
 
 void LMADbObjectManager::UnRegisterClass()
 {
-	deleteAcRxClass(LineDBEntry::desc());
+	deleteAcRxClass(LineDBEntity::desc());
 	deleteAcRxClass(LMALineDbObject::desc());
 	deleteAcRxClass(LMASafeLineDbObject::desc());
 }
@@ -347,7 +347,7 @@ LMALineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
     }
 
 	//开始和结束端点
-	PointEntry *pStart, *pEnd;
+	PointEntity *pStart, *pEnd;
 
 	Adesk::UInt32 lineID;
     pFiler->readItem(&lineID);
@@ -358,7 +358,7 @@ LMALineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
 	//从实体管理器中取出该折线段的
 	CString filename;
 	dbToStr(this->database(),filename);
-	LineEntryFileManager::RegisterLineSegment(filename.GetBuffer(),lineID, seqNO, pStart, pEnd );
+	LineEntityFileManager::RegisterLineSegment(filename.GetBuffer(),lineID, seqNO, pStart, pEnd );
 		
 	//得到管线信息绘制管理器
 	mpPointInfo = &pEnd->m_DbEntityCollection;

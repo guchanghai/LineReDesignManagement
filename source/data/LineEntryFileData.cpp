@@ -22,6 +22,7 @@
 
 #include <LineManageAssitant.h>
 
+using namespace std;
 using namespace ::com::guch::assistant::config;
 extern wstring gLmaArxLoadPath;
 
@@ -38,12 +39,12 @@ namespace data
 {
 
 ///////////////////////////////////////////////////////////////////////////
-// Implementation LineEntryFile
+// Implementation LineEntityFile
 
 /**
  * 管线实体文件
  */
-LineEntryFile::LineEntryFile(const wstring& fileName, bool import)
+LineEntityFile::LineEntityFile(const wstring& fileName, bool import)
 	:m_FileName(fileName)
 {
 	m_LineList = new LineList();
@@ -53,7 +54,7 @@ LineEntryFile::LineEntryFile(const wstring& fileName, bool import)
 		Import();
 }
 
-LineEntryFile::~LineEntryFile()
+LineEntityFile::~LineEntityFile()
 {
 	if( m_LineList )
 	{
@@ -71,7 +72,7 @@ LineEntryFile::~LineEntryFile()
 		delete m_LinePoint;
 }
 
-void LineEntryFile::Import()
+void LineEntityFile::Import()
 {
 	CFile archiveFile;
 
@@ -111,11 +112,11 @@ void LineEntryFile::Import()
 		if(wLine.length() == 0)
 			break;
 
-		LineEntry *newLine = new LineEntry(wLine);
+		LineEntity *newLine = new LineEntity(wLine);
 		m_LineList->push_back( newLine );
 
 		//保存到数据库
-		newLine->m_dbId = ArxWrapper::PostToNameObjectsDict(newLine->m_pDbEntry,LineEntry::LINE_ENTRY_LAYER);
+		newLine->m_dbId = ArxWrapper::PostToNameObjectsDict(newLine->m_pDbEntry,LineEntity::LINE_ENTRY_LAYER);
 		newLine->m_pDbEntry = NULL;
 
 		//创建相应的柱体
@@ -130,14 +131,14 @@ void LineEntryFile::Import()
 	archiveFile.Close();
 }
 
-void LineEntryFile::Persistent() const
+void LineEntityFile::Persistent() const
 {
 	acutPrintf(L"\n持久化管线数据.");
 
 	//ExportTo(this->m_FileName);
 }
 
-void LineEntryFile::ExportTo(const wstring& filename,const wstring& lineKind) const
+void LineEntityFile::ExportTo(const wstring& filename,const wstring& lineKind) const
 {
 	acutPrintf(L"\n导出实体数据.");
 
@@ -150,7 +151,7 @@ void LineEntryFile::ExportTo(const wstring& filename,const wstring& lineKind) co
 			iter != m_LineList->end(); 
 			iter++)
 	{
-		LineEntry* data = *iter;
+		LineEntity* data = *iter;
 
 		if( data 
 			&& data->m_LineKind == lineKind )
@@ -176,13 +177,13 @@ void LineEntryFile::ExportTo(const wstring& filename,const wstring& lineKind) co
 	archiveFile.Close();
 }
 
-void LineEntryFile::InsertLine(LineEntry* lineEntry)
+void LineEntityFile::InsertLine(LineEntity* lineEntry)
 {
 	if( lineEntry )
 		m_LineList->push_back(lineEntry);
 }
 
-void LineEntryFile::InsertLine( LineList* lineList)
+void LineEntityFile::InsertLine( LineList* lineList)
 {
 	if( lineList == NULL || lineList->size() == 0)
 		return;
@@ -195,7 +196,7 @@ void LineEntryFile::InsertLine( LineList* lineList)
 	}
 }
 
-BOOL LineEntryFile::UpdateLine(LineEntry* lineEntry)
+BOOL LineEntityFile::UpdateLine(LineEntity* lineEntry)
 {
 	LineIterator iter = FindLinePos(lineEntry->m_LineID);
 
@@ -208,7 +209,7 @@ BOOL LineEntryFile::UpdateLine(LineEntry* lineEntry)
 	return FALSE;
 }
 
-BOOL LineEntryFile::DeleteLine( const UINT& lineID )
+BOOL LineEntityFile::DeleteLine( const UINT& lineID )
 {
 	LineIterator iter = FindLinePos(lineID);
 
@@ -221,7 +222,7 @@ BOOL LineEntryFile::DeleteLine( const UINT& lineID )
 		return FALSE;
 }
 
-LineIterator LineEntryFile::FindLinePos( const UINT& lineID ) const
+LineIterator LineEntityFile::FindLinePos( const UINT& lineID ) const
 {
 	for( LineIterator iter = this->m_LineList->begin();
 			iter != this->m_LineList->end();
@@ -234,7 +235,7 @@ LineIterator LineEntryFile::FindLinePos( const UINT& lineID ) const
 	return m_LineList->end();
 }
 
-LineIterator LineEntryFile::FindLinePosByNO( const wstring& lineNO ) const
+LineIterator LineEntityFile::FindLinePosByNO( const wstring& lineNO ) const
 {
 	for( LineIterator iter = this->m_LineList->begin();
 			iter != this->m_LineList->end();
@@ -247,7 +248,7 @@ LineIterator LineEntryFile::FindLinePosByNO( const wstring& lineNO ) const
 	return m_LineList->end();
 }
 
-LineIterator LineEntryFile::FindLinePosByName( const wstring& lineName ) const
+LineIterator LineEntityFile::FindLinePosByName( const wstring& lineName ) const
 {
 	for( LineIterator iter = this->m_LineList->begin();
 			iter != this->m_LineList->end();
@@ -260,7 +261,7 @@ LineIterator LineEntryFile::FindLinePosByName( const wstring& lineName ) const
 	return m_LineList->end();
 }
 
-LineEntry* LineEntryFile::FindLine( const UINT& lineID ) const
+LineEntity* LineEntityFile::FindLine( const UINT& lineID ) const
 {
 	LineIterator iter = FindLinePos(lineID);
 
@@ -270,7 +271,7 @@ LineEntry* LineEntryFile::FindLine( const UINT& lineID ) const
 		return NULL;
 }
 
-LineEntry* LineEntryFile::FindLineByName( const wstring& lineName ) const
+LineEntity* LineEntityFile::FindLineByName( const wstring& lineName ) const
 {
 	LineIterator iter = FindLinePosByName(lineName);
 
@@ -280,7 +281,7 @@ LineEntry* LineEntryFile::FindLineByName( const wstring& lineName ) const
 		return NULL;
 }
 
-LineEntry* LineEntryFile::FindLineByNO( const wstring& lineNO ) const
+LineEntity* LineEntityFile::FindLineByNO( const wstring& lineNO ) const
 {
 	LineIterator iter = FindLinePosByNO(lineNO);
 
@@ -290,7 +291,7 @@ LineEntry* LineEntryFile::FindLineByNO( const wstring& lineNO ) const
 		return NULL;
 }
 
-LineEntry* LineEntryFile::HasAnotherLineByNO( const UINT& lineID, const wstring& lineNO  ) const
+LineEntity* LineEntityFile::HasAnotherLineByNO( const UINT& lineID, const wstring& lineNO  ) const
 {
 	for( LineIterator iter = this->m_LineList->begin();
 			iter != this->m_LineList->end();
@@ -303,7 +304,7 @@ LineEntry* LineEntryFile::HasAnotherLineByNO( const UINT& lineID, const wstring&
 	return NULL;
 }
 
-LineEntry* LineEntryFile::HasAnotherLineByByName( const UINT& lineID, const wstring& lineName  ) const
+LineEntity* LineEntityFile::HasAnotherLineByByName( const UINT& lineID, const wstring& lineName  ) const
 {
 	for( LineIterator iter = this->m_LineList->begin();
 			iter != this->m_LineList->end();
@@ -316,7 +317,7 @@ LineEntry* LineEntryFile::HasAnotherLineByByName( const UINT& lineID, const wstr
 	return NULL;
 }
 
-PointList* LineEntryFile::GetTempLine( const UINT& lineID )
+PointList* LineEntityFile::GetTempLine( const UINT& lineID )
 {
 	LinePointMap::iterator iter = m_LinePoint->find(lineID);
 
@@ -333,7 +334,7 @@ PointList* LineEntryFile::GetTempLine( const UINT& lineID )
 	}
 }
 
-PointList* LineEntryFile::TransferTempLine( const UINT& lineID )
+PointList* LineEntityFile::TransferTempLine( const UINT& lineID )
 {
 	LinePointMap::iterator iter = m_LinePoint->find(lineID);
 
@@ -350,7 +351,7 @@ PointList* LineEntryFile::TransferTempLine( const UINT& lineID )
 	}
 }
 
-wstring LineEntryFile::GetNewPipeName( const LineCategoryItemData* pipeCategoryData, const wstring& orinalName )
+wstring LineEntityFile::GetNewPipeName( const LineCategoryItemData* pipeCategoryData, const wstring& orinalName )
 {
 	//Find name exist, plus sequence
 	int index = 1;
@@ -403,7 +404,7 @@ wstring LineEntryFile::GetNewPipeName( const LineCategoryItemData* pipeCategoryD
 	return pipeCategory;
 }
 
-LineList LineEntryFile::GetList( const wstring& entityKind )
+LineList LineEntityFile::GetList( const wstring& entityKind )
 {
 	LineList kindList;
 
@@ -421,12 +422,119 @@ LineList LineEntryFile::GetList( const wstring& entityKind )
 	return kindList;
 }
 
+bool LineEntityFile::CheckLineInteract()
+{
+	bool ret(true);
+
+	//清空已比较集合
+	m_CheckedEntities.clear();
+
+	if( m_LineList == NULL 
+		|| m_LineList->size() <= 1 )
+	{
+		acutPrintf(L"\n当前管线数目小于2条，可以不进行相侵检查");
+	}
+
+	for( LineIterator line = m_LineList->begin();
+			line != m_LineList->end();
+			line++ )
+	{
+		PointList* pointList = (*line)->m_PointList;
+		if( pointList == NULL 
+			|| pointList->size() == 0 )
+		{
+			acutPrintf(L"\n当前管线没有折线段，可以不进行检查");
+			continue;
+		}
+
+		for( PointIter point = pointList->begin();
+				point != pointList->end();
+				point++ )
+		{
+			//与当前文件中所有的其他直线做侵限判断
+			CheckLineInteract( *point );
+
+			//加入已比较队列，避免重复比较
+			m_CheckedEntities.insert( LinePointID((*point)->m_DbEntityCollection.mLineID, (*point)->m_DbEntityCollection.mSequenceNO) );
+		}
+	}
+
+	return ret;
+}
+
+//判断一条管线与其他管线的相侵情况
+//bool LineEntityFile::CheckLineInteract( LineEntity* line )
+//{
+//}
+
+//判断一条折线段与其他管线的相侵情况
+void LineEntityFile::CheckLineInteract( PointEntity* checkPoint )
+{
+	wstring& lineName = checkPoint->m_DbEntityCollection.mLayerName;
+	Adesk::Int32& checkLineID = checkPoint->m_DbEntityCollection.mLineID;
+	Adesk::Int32& checkSeqNO = checkPoint->m_DbEntityCollection.mSequenceNO;
+
+#ifdef DEBUG
+	acutPrintf(L"\n对【%s】的第【%d】条进行相侵判断.",lineName.c_str(), checkSeqNO);
+#endif
+
+	AcDbObjectId beCheckedSafeLine = checkPoint->m_DbEntityCollection.GetSafeLineEntity();
+	AcDbEntity *pCheckSafeLine;
+	acdbOpenAcDbEntity(pCheckSafeLine, beCheckedSafeLine, AcDb::kForRead);
+
+	if( pCheckSafeLine == NULL )
+	{
+		acutPrintf(L"\n被检查对象没有数据库实例.");
+		return;
+	}
+
+	for( LineIterator line = m_LineList->begin();
+			line != m_LineList->end();
+			line++ )
+	{
+		PointList* pointList = (*line)->m_PointList;
+		if( pointList == NULL 
+			|| pointList->size() == 0 )
+		{
+			acutPrintf(L"\n当前管线没有折线段，不需要与此折线段进行相侵判断");
+			continue;
+		}
+
+		for( PointIter point = pointList->begin();
+				point != pointList->end();
+				point++ )
+		{
+			Adesk::Int32& lineID = (*point)->m_DbEntityCollection.mLineID;
+			Adesk::Int32& sqeNO = (*point)->m_DbEntityCollection.mSequenceNO;
+
+			if( lineID == checkLineID && abs( sqeNO - checkSeqNO ) <= 1 )
+			{
+				acutPrintf(L"\n与同一管线的相邻线段不进行相侵判断");
+				continue;
+			}
+
+			if( m_CheckedEntities.find(LinePointID(lineID,sqeNO)) != m_CheckedEntities.end() )
+			{
+				acutPrintf(L"\n此折线段已被比较过");
+				continue;
+			}
+
+			//得到两个线段的数据库安全范围对象
+			AcDbObjectId safeLine = (*point)->m_DbEntityCollection.GetSafeLineEntity();
+			AcDbEntity *pSafeLine;
+			acdbOpenAcDbEntity(pSafeLine, safeLine, AcDb::kForRead);
+			
+			//if( pSafeLine && pSafeLine->intersectWith(
+		}
+	}
+}
+
 /////////////////////////////////////////////////////////////////////////
 
-EntryFileList* LineEntryFileManager::pEntryFileList = NULL;
-bool LineEntryFileManager::openingDwg = false;
+EntryFileList* LineEntityFileManager::pEntryFileList = NULL;
+bool LineEntityFileManager::openingDwg = false;
 
-void LineEntryFileManager::ReadFromCurrentDWG()
+void LineEntityFileManager::ReadFromCurrentDWG()
 {
 #ifdef DEBUG
 	acutPrintf(L"\n从当前DWG文件读取数据。");
@@ -435,7 +543,7 @@ void LineEntryFileManager::ReadFromCurrentDWG()
 	//ArxWrapper::PullFromNameObjectsDict();
 }
 
-void LineEntryFileManager::RemoveEntryFileOnDWGUnLoad()
+void LineEntityFileManager::RemoveEntryFileOnDWGUnLoad()
 {
 #ifdef DEBUG
 		acutPrintf(L"\nDWG文件关闭了，删除管理数据。");
@@ -454,7 +562,9 @@ void LineEntryFileManager::RemoveEntryFileOnDWGUnLoad()
 #endif
 }
 
-LineEntryFile* LineEntryFileManager::GetLineEntryFile( const wstring& fileName )
+
+
+LineEntityFile* LineEntityFileManager::GetLineEntryFile( const wstring& fileName )
 {
 	if( pEntryFileList == NULL )
 	{
@@ -480,21 +590,21 @@ LineEntryFile* LineEntryFileManager::GetLineEntryFile( const wstring& fileName )
 	return NULL;
 }
 
-LineEntryFile* LineEntryFileManager::RegisterEntryFile(const wstring& fileName)
+LineEntityFile* LineEntityFileManager::RegisterEntryFile(const wstring& fileName)
 {
-	LineEntryFile* entryFile = GetLineEntryFile(fileName);
+	LineEntityFile* entryFile = GetLineEntryFile(fileName);
 	if( entryFile == NULL )
 	{
 		acutPrintf(L"\n创建【%s】对应的管线实体.",fileName.c_str());
 
-		entryFile = new LineEntryFile(fileName);
+		entryFile = new LineEntityFile(fileName);
 		pEntryFileList->push_back( entryFile );
 	}
 
 	return entryFile;
 }
 
-LineEntryFile* LineEntryFileManager::SaveFileEntity()
+LineEntityFile* LineEntityFileManager::SaveFileEntity()
 {
 	wstring fileName( curDoc()->fileName() );
 
@@ -503,14 +613,14 @@ LineEntryFile* LineEntryFileManager::SaveFileEntity()
 	return GetLineEntryFile(fileName);
 }
 
-bool LineEntryFileManager::RegisterLineSegment( const wstring& fileName, UINT lineID, UINT sequence, PointEntry*& pStart, PointEntry*& pEnd )
+bool LineEntityFileManager::RegisterLineSegment( const wstring& fileName, UINT lineID, UINT sequence, PointEntity*& pStart, PointEntity*& pEnd )
 {
 	//找到文件管理类
-	LineEntryFile* pFileEntry = RegisterEntryFile(fileName);
+	LineEntityFile* pFileEntry = RegisterEntryFile(fileName);
 	acutPrintf(L"\n添加线段时，找到管线实体文件管理器【%s】.",fileName.c_str());
 
 	//找到实体类
-	LineEntry* lineEntry = pFileEntry->FindLine(lineID);
+	LineEntity* lineEntry = pFileEntry->FindLine(lineID);
 	PointList* pPointList = NULL;
 
 	if( lineEntry == NULL )
@@ -528,8 +638,8 @@ bool LineEntryFileManager::RegisterLineSegment( const wstring& fileName, UINT li
 #endif
 		if( pPointList->size() < 2 )
 		{
-			pStart = new PointEntry();
-			pEnd = new PointEntry();
+			pStart = new PointEntity();
+			pEnd = new PointEntity();
 
 			pStart->m_PointNO = 0;
 			pPointList->push_back( pStart );
@@ -550,7 +660,7 @@ bool LineEntryFileManager::RegisterLineSegment( const wstring& fileName, UINT li
 #endif
 		if( pPointList->size() <= sequence )
 		{
-			pEnd = new PointEntry();
+			pEnd = new PointEntity();
 			pEnd->m_PointNO = sequence;
 
 			pPointList->push_back( pEnd );
@@ -568,7 +678,7 @@ bool LineEntryFileManager::RegisterLineSegment( const wstring& fileName, UINT li
 	return true;
 }
 
-LineEntryFile* LineEntryFileManager::GetCurrentLineEntryFile()
+LineEntityFile* LineEntityFileManager::GetCurrentLineEntryFile()
 {
 	//Get current filename
 	wstring fileName = curDoc()->fileName();
@@ -578,7 +688,7 @@ LineEntryFile* LineEntryFileManager::GetCurrentLineEntryFile()
 	return RegisterEntryFile(fileName);
 }
 
-BOOL LineEntryFileManager::ImportLMALineFile( const wstring& lineKind )
+BOOL LineEntityFileManager::ImportLMALineFile( const wstring& lineKind )
 {
 	//导入选择对话框
 	CString szFilter;
@@ -596,12 +706,12 @@ BOOL LineEntryFileManager::ImportLMALineFile( const wstring& lineKind )
 	if (dlg.DoModal() == IDOK) 
 	{
 		//得到当前的文件实体管理器
-		LineEntryFile* currentFile = GetCurrentLineEntryFile();
+		LineEntityFile* currentFile = GetCurrentLineEntryFile();
 
 		//得到导入文件
         CString impFile = dlg.GetPathName();
 		acutPrintf(L"\n导入管线文件【%s】.",impFile.GetBuffer());
-		LineEntryFile* importFile = new LineEntryFile(impFile.GetBuffer(),true);
+		LineEntityFile* importFile = new LineEntityFile(impFile.GetBuffer(),true);
 
 		//插入其中的管线
 		currentFile->InsertLine( importFile->GetList() );
@@ -628,7 +738,7 @@ BOOL LineEntryFileManager::ImportLMALineFile( const wstring& lineKind )
         return(FALSE);
 }
 
-BOOL LineEntryFileManager::ExportLMALineFile( const wstring& lineKind )
+BOOL LineEntityFileManager::ExportLMALineFile( const wstring& lineKind )
 {
 	//去除掉文件后缀（dwg）
 	wstring fileName( curDoc()->fileName() );
@@ -653,7 +763,7 @@ BOOL LineEntryFileManager::ExportLMALineFile( const wstring& lineKind )
         CString expFile = dlg.GetPathName();
 		acutPrintf(L"\n导出管线数据到文件【%s】.",expFile.GetBuffer());
 
-		LineEntryFile* exportFile = GetLineEntryFile(wstring(curDoc()->fileName()));
+		LineEntityFile* exportFile = GetLineEntryFile(wstring(curDoc()->fileName()));
 
 		if( exportFile )
 			exportFile->ExportTo(expFile.GetBuffer(),lineKind);
@@ -669,6 +779,17 @@ BOOL LineEntryFileManager::ExportLMALineFile( const wstring& lineKind )
     }
     else
         return(FALSE);
+}
+
+void LineEntityFileManager::CheckInteract()
+{
+	//得到管线实体文件管理器
+	LineEntityFile* pLineEntityFile = GetCurrentLineEntryFile();
+
+	acutPrintf(L"\n对管线文件【%s】进行亲限判断.",pLineEntityFile->m_FileName.c_str());
+
+	//对各条管线进行判断
+	pLineEntityFile->CheckLineInteract();
 }
 
 } // end of data

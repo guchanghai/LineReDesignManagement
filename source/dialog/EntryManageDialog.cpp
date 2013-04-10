@@ -41,7 +41,7 @@ EntryManageDialog::EntryManageDialog(CWnd* pParent,const wstring& entryKind)
 	acutPrintf(L"\n弹出对话框管理【%s】的数据.",m_fileName.c_str());
 
 	//得到实体数据文件中的数据
-	m_EntryFile = LineEntryFileManager::RegisterEntryFile(m_fileName);
+	m_EntryFile = LineEntityFileManager::RegisterEntryFile(m_fileName);
 
 	//坐标点控件需要回调
 	m_LineDetailList.m_Callback = EntryManageDialog::LinePointModified;
@@ -248,7 +248,7 @@ HTREEITEM EntryManageDialog::FindKindNode( const UINT& lineID)
 	return hCurrent;
 }
 
-BOOL EntryManageDialog::InsertLine( LineEntry* lineEntry, BOOL bInitialize )
+BOOL EntryManageDialog::InsertLine( LineEntity* lineEntry, BOOL bInitialize )
 {
 	//判断其合法性
 	try
@@ -286,7 +286,7 @@ BOOL EntryManageDialog::InsertLine( LineEntry* lineEntry, BOOL bInitialize )
 	if( !bInitialize )
 	{		
 		//保存到数据库
-		lineEntry->m_dbId = ArxWrapper::PostToNameObjectsDict(lineEntry->m_pDbEntry,LineEntry::LINE_ENTRY_LAYER);
+		lineEntry->m_dbId = ArxWrapper::PostToNameObjectsDict(lineEntry->m_pDbEntry,LineEntity::LINE_ENTRY_LAYER);
 
 		//清空数据库对象指针，由AutoCAD管理
 		lineEntry->m_pDbEntry = NULL;
@@ -301,7 +301,7 @@ BOOL EntryManageDialog::InsertLine( LineEntry* lineEntry, BOOL bInitialize )
 	return TRUE;
 }
 
-BOOL EntryManageDialog::UpdateLine( LineEntry* lineEntry )
+BOOL EntryManageDialog::UpdateLine( LineEntity* lineEntry )
 {
 	//判断其合法性
 	try
@@ -338,13 +338,13 @@ BOOL EntryManageDialog::UpdateLine( LineEntry* lineEntry )
 		m_LinesTree.SetItemText(hItem, lineEntry->m_LineName.c_str());
 
 		//首先移除原有的数据库代理对象
-		ArxWrapper::DeleteFromNameObjectsDict(lineEntry->m_dbId, LineEntry::LINE_ENTRY_LAYER);
+		ArxWrapper::DeleteFromNameObjectsDict(lineEntry->m_dbId, LineEntity::LINE_ENTRY_LAYER);
 
 		//新建新的数据库代理对象
-		lineEntry->m_pDbEntry = new LineDBEntry( lineEntry );
+		lineEntry->m_pDbEntry = new LineDBEntity( lineEntry );
 
 		//保存到数据库
-		lineEntry->m_dbId = ArxWrapper::PostToNameObjectsDict(lineEntry->m_pDbEntry,LineEntry::LINE_ENTRY_LAYER);
+		lineEntry->m_dbId = ArxWrapper::PostToNameObjectsDict(lineEntry->m_pDbEntry,LineEntity::LINE_ENTRY_LAYER);
 
 		//保存数据
 		m_EntryFile->UpdateLine(lineEntry);
@@ -381,7 +381,7 @@ BOOL EntryManageDialog::InitEntryPointsControl()
 	return TRUE;
 }
 
-BOOL EntryManageDialog::InitEntryPointsData(LineEntry* lineEntry)
+BOOL EntryManageDialog::InitEntryPointsData(LineEntity* lineEntry)
 {
 	m_LineDetailList.DeleteAllItems();
 
@@ -488,7 +488,7 @@ void EntryManageDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDOK, m_ButtonOK);
 }
 
-LineEntry* EntryManageDialog::GetLineEntry( const UINT& ID )
+LineEntity* EntryManageDialog::GetLineEntry( const UINT& ID )
 {
 	return m_EntryFile->FindLine(ID);
 }
@@ -561,7 +561,7 @@ void EntryManageDialog::OnBnClickedButtonOK()
 		acutPrintf(L"\n新增管线【%s】,折线段【%d】条.",pipeName.c_str(),pointList->size()-1);
 
 		//创建新的管线
-		LineEntry* newLine = new LineEntry(pipeName,m_EntryKind,detailInfo,NULL);
+		LineEntity* newLine = new LineEntity(pipeName,m_EntryKind,detailInfo,NULL);
 
 		//生成该项的ID
 		newLine->m_LineID = (UINT)GetTickCount();
@@ -578,7 +578,7 @@ void EntryManageDialog::OnBnClickedButtonOK()
 	else /*if( m_OperType == OPER_UPDATE )*/
 	{
 		//得到当前编辑的直线
-		LineEntry* selectLine = GetSelectLine();
+		LineEntity* selectLine = GetSelectLine();
 
 		//设置新的数据
 		if( selectLine )
@@ -611,7 +611,7 @@ void EntryManageDialog::OnBnClickedButtonOK()
 	//m_EntryFile->Persistent();
 }
 
-LineEntry* EntryManageDialog::GetSelectLine()
+LineEntity* EntryManageDialog::GetSelectLine()
 {
 	HTREEITEM selectedItem = m_LinesTree.GetSelectedItem();
 
@@ -652,7 +652,7 @@ void EntryManageDialog::OnBnClickedButtonDel()
 	UINT selectedID = (UINT)m_LinesTree.GetItemData(selectedItem);
 
 	//得到选择的数据
-	LineEntry* pEntry = m_EntryFile->FindLine(selectedID);
+	LineEntity* pEntry = m_EntryFile->FindLine(selectedID);
 
 	if( pEntry )
 	{
@@ -667,7 +667,7 @@ void EntryManageDialog::OnBnClickedButtonDel()
 		if ( result == IDOK )
 		{
 			//从数据库删除管线本身
-			ArxWrapper::DeleteFromNameObjectsDict(pEntry->m_dbId,LineEntry::LINE_ENTRY_LAYER);
+			ArxWrapper::DeleteFromNameObjectsDict(pEntry->m_dbId,LineEntity::LINE_ENTRY_LAYER);
 
 			//从数据库删除管线所有的线段
 			pEntry->EraseDbObjects();
@@ -690,7 +690,7 @@ BOOL EntryManageDialog::InitEntryData()
 	UINT selectedID = GetSelectLineID();
 
 	//得到选择的数据
-	LineEntry* pEntry = m_EntryFile->FindLine(selectedID);
+	LineEntity* pEntry = m_EntryFile->FindLine(selectedID);
 
 	//填充数据
 	FillLineData(pEntry);
@@ -757,7 +757,7 @@ void EntryManageDialog::OnTreeSelChanged(LPNMHDR pnmhdr, LRESULT *pLResult)
 	}
 }
 
-void EntryManageDialog::FillLineData( LineEntry* lineEntry )
+void EntryManageDialog::FillLineData( LineEntity* lineEntry )
 {
 	if( lineEntry )
 	{
@@ -892,7 +892,7 @@ PointList* EntryManageDialog::CreateEntryPointList()
 	CString temp;
 	for( int i = 0; i < m_LineDetailList.GetItemCount(); i++ )
 	{
-		PointEntry* point = new PointEntry();
+		PointEntity* point = new PointEntity();
 
 		//得到当前编号（及其在列表中的序列号）
 		point->m_PointNO = (UINT)i;

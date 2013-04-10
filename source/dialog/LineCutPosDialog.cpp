@@ -172,7 +172,7 @@ void LineCutPosDialog::GenereateCutRegion()
 	GenerateCutPlane();
 
 	//得到当前的实体文件管理器
-	LineEntryFile* pLineFile = LineEntryFileManager::GetCurrentLineEntryFile();
+	LineEntityFile* pLineFile = LineEntityFileManager::GetCurrentLineEntryFile();
 	if( pLineFile == NULL )
 	{
 		acutPrintf(L"\n没能找到管线文件管理器，检查下吧！");
@@ -203,7 +203,7 @@ void LineCutPosDialog::GenereateCutRegion()
 	ArxWrapper::UnLockCurDoc();
 }
 
-void LineCutPosDialog::GenereateCutRegion(LineEntry* lineEntry)
+void LineCutPosDialog::GenereateCutRegion(LineEntity* lineEntry)
 {
 	PointList* pointList = lineEntry->m_PointList;
 	if( pointList == NULL )
@@ -219,7 +219,7 @@ void LineCutPosDialog::GenereateCutRegion(LineEntry* lineEntry)
 		if( pointIter == pointList->begin() )
 			continue;
 
-		PointEntry* pointEntry = (*pointIter);
+		PointEntity* pointEntry = (*pointIter);
 
 		if( pointEntry == NULL )
 		{

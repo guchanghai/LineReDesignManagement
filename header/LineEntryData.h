@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 
 #include <dbsymtb.h>
 #include <dbapserv.h>
@@ -106,7 +107,7 @@ private:
 /**
  * 管线坐标实体
  */
-struct PointEntry
+struct PointEntity
 {
 	//点号
 	UINT m_PointNO;
@@ -115,11 +116,11 @@ struct PointEntry
 	wstring m_LevelKind;
 	wstring m_Direction;
 
-	PointEntry();
-	PointEntry( const UINT& pointNO, const ads_point& point, 
+	PointEntity();
+	PointEntity( const UINT& pointNO, const ads_point& point, 
 		const wstring& levelKind, const wstring& direction, const AcDbObjectId& entityID);
-	PointEntry( const PointEntry& );
-	PointEntry( const wstring& data );
+	PointEntity( const PointEntity& );
+	PointEntity( const wstring& data );
 
 	void CreateLineFrom( const void* lineEntity, const ads_point& start );
 
@@ -128,7 +129,7 @@ struct PointEntry
 	wstring toString() const;
 };
 
-typedef PointEntry *pPointEntry;
+typedef PointEntity *pPointEntry;
 
 typedef vector<pPointEntry> PointList;
 typedef PointList::iterator PointIter;
@@ -137,28 +138,28 @@ typedef PointList::const_iterator ContstPointIter;
 /**
  * 管线实体
  */
-class LineDBEntry;
+class LineDBEntity;
 
-class LineEntry
+class LineEntity
 {
 public:
 
 	static const wstring LINE_ENTRY_LAYER;
 
-	LineEntry();
-	LineEntry(const wstring& rLineName, const wstring& rLineKind,
+	LineEntity();
+	LineEntity(const wstring& rLineName, const wstring& rLineKind,
 				LineCategoryItemData* itemdata, PointList* pointList);
 
-	LineEntry(const wstring& data );
-	~LineEntry();
+	LineEntity(const wstring& data );
+	~LineEntity();
 
 	UINT GetLineID() const { return m_LineID; }
 
 	void SetName( const wstring& rNewName ) { m_LineName = rNewName; }
 	const wstring& GetName() const { return m_LineName; }
 
-	int InsertPoint( const PointEntry& newPoint );
-	void UpdatePoint( const PointEntry& updatePoint );
+	int InsertPoint( const PointEntity& newPoint );
+	void UpdatePoint( const PointEntity& updatePoint );
 	void DeletePoint( const UINT& PointNO );
 
 	void SetBasicInfo( LineCategoryItemData* m_LineBasiInfo );
@@ -207,7 +208,7 @@ public:
 	PointList* m_PointList;
 
 	//数据库代理对象(既限于新建对象时使用)
-	LineDBEntry* m_pDbEntry;
+	LineDBEntity* m_pDbEntry;
 
 	//保存其ID
 	AcDbObjectId m_dbId;
@@ -216,16 +217,16 @@ public:
 /**
  * 管线数据库实体
  */
-class LineDBEntry : public AcDbObject
+class LineDBEntity : public AcDbObject
 {
 public:
 
-	ACRX_DECLARE_MEMBERS(LineDBEntry);
+	ACRX_DECLARE_MEMBERS(LineDBEntity);
 
-	LineDBEntry();
-	LineDBEntry( LineEntry* implementation );
+	LineDBEntity();
+	LineDBEntity( LineEntity* implementation );
 
-	LineEntry* pImplemention;
+	LineEntity* pImplemention;
 
 	virtual Acad::ErrorStatus dwgInFields (AcDbDwgFiler*);
     virtual Acad::ErrorStatus dwgOutFields(AcDbDwgFiler*)
@@ -236,37 +237,38 @@ public:
         const;
 };
 
-typedef vector<LineEntry*> LineList;
+typedef vector<LineEntity*> LineList;
 typedef LineList::iterator LineIterator;
 typedef LineList::const_iterator ConstLineIterator;
 
 typedef map<UINT,PointList*> LinePointMap;
+typedef pair<Adesk::Int32, Adesk::Int32> LinePointID;
 
 /**
  * 管线实体文件
  */
-class LineEntryFile
+class LineEntityFile
 {
 public:
-	LineEntryFile(const wstring& fileName, bool import = false);
-	~LineEntryFile();
+	LineEntityFile(const wstring& fileName, bool import = false);
+	~LineEntityFile();
 
-	void InsertLine( LineEntry* lineEntry);
+	void InsertLine( LineEntity* lineEntry);
 	void InsertLine( LineList* lineList);
 
-	BOOL UpdateLine( LineEntry* lineEntry);
+	BOOL UpdateLine( LineEntity* lineEntry);
 	BOOL DeleteLine( const UINT& lineID );
 
 	LineIterator FindLinePos( const UINT& lineID ) const;
 	LineIterator FindLinePosByNO( const wstring& lineNO ) const;
 	LineIterator FindLinePosByName( const wstring& lineName ) const;
 
-	LineEntry* FindLine( const UINT& lineID ) const;
-	LineEntry* FindLineByNO( const wstring& lineNO  ) const;
-	LineEntry* FindLineByName( const wstring& lineName  ) const;
+	LineEntity* FindLine( const UINT& lineID ) const;
+	LineEntity* FindLineByNO( const wstring& lineNO  ) const;
+	LineEntity* FindLineByName( const wstring& lineName  ) const;
 
-	LineEntry* HasAnotherLineByNO( const UINT& lineID, const wstring& lineNO  ) const;
-	LineEntry* HasAnotherLineByByName( const UINT& lineID, const wstring& lineName  ) const;
+	LineEntity* HasAnotherLineByNO( const UINT& lineID, const wstring& lineNO  ) const;
+	LineEntity* HasAnotherLineByByName( const UINT& lineID, const wstring& lineName  ) const;
 
 	PointList* GetTempLine( const UINT& lineID );
 	PointList* TransferTempLine( const UINT& lineID );
@@ -280,6 +282,15 @@ public:
 	LineList* GetList() const {return m_LineList;}
 	LineList GetList( const wstring& entityKind );
 
+	//判断本文件里的管线相侵情况
+	bool CheckLineInteract();
+
+	//判断一条管线与其他管线的相侵情况
+	//bool CheckLineInteract( LineEntity* line );
+
+	//判断一条折线段与其他管线的相侵情况
+	void CheckLineInteract( PointEntity* point );
+
 	wstring m_FileName;
 
 private:
@@ -288,16 +299,19 @@ private:
 
 	//临时实体管理器
 	LinePointMap* m_LinePoint;
+
+	//已相侵比较的折线段
+	set<LinePointID> m_CheckedEntities;
 };
 
 /**
  * 多文件管线实体管理对象
  */
 
-typedef vector<LineEntryFile*> EntryFileList;
+typedef vector<LineEntityFile*> EntryFileList;
 typedef EntryFileList::iterator EntryFileIter;
 
-class LineEntryFileManager
+class LineEntityFileManager
 {
 public:
 
@@ -309,15 +323,17 @@ public:
 
 	static BOOL ExportLMALineFile( const wstring& lineKind );
 
-	static LineEntryFile* GetCurrentLineEntryFile();
+	static LineEntityFile* GetCurrentLineEntryFile();
 
-	static LineEntryFile* GetLineEntryFile( const wstring& fileName );
+	static LineEntityFile* GetLineEntryFile( const wstring& fileName );
 
-	static LineEntryFile* RegisterEntryFile(const wstring& fileName);
+	static LineEntityFile* RegisterEntryFile(const wstring& fileName);
 
-	static LineEntryFile* SaveFileEntity();
+	static LineEntityFile* SaveFileEntity();
 
-	static bool RegisterLineSegment( const wstring& fileName, UINT lineID, UINT sequence, PointEntry*& pStart, PointEntry*& pEnd );
+	static void CheckInteract();
+
+	static bool RegisterLineSegment( const wstring& fileName, UINT lineID, UINT sequence, PointEntity*& pStart, PointEntity*& pEnd );
 
 public:
 	
