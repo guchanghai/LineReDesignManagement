@@ -380,6 +380,56 @@ Acad::ErrorStatus ArxWrapper::UnLockCurDoc()
 	return es;
 }
 
+//得到两个实体是否有交集
+AcDb3dSolid* ArxWrapper::GetInterset( AcDbEntity* pEntityA, AcDbEntity* pEntityB )
+{
+	if( pEntityA == NULL || pEntityB == NULL )
+		return false;
+
+	AcDb3dSolid* pCheck3dSolid = AcDb3dSolid::cast(pEntityA);
+	AcDb3dSolid* pCompare3dSolid = AcDb3dSolid::cast(pEntityB);
+
+	if( pCheck3dSolid == NULL || pCompare3dSolid == NULL )
+	{
+		acutPrintf(L"\n得到交集的对象不是合法的3D对象!");
+		return NULL;
+	}
+
+	//判断是否有相交的部分
+	Adesk::Boolean boolInter;
+	AcDb3dSolid *commonVolumeSolid;
+	Acad::ErrorStatus es = pCheck3dSolid->checkInterference(pCompare3dSolid,Adesk::kTrue,boolInter,commonVolumeSolid);
+
+	if( es == Acad::eOk)
+	{
+		if(boolInter == Adesk::kFalse)
+		{
+			acutPrintf(L"\n两个3D对象无交集!");
+			return NULL;
+		}
+		else
+		{
+			acutPrintf(L"\n两个3D对象存在交集!");
+			if( commonVolumeSolid )
+			{
+				return commonVolumeSolid;
+			}
+			else
+			{
+				acutPrintf(L"\n没有创建交集对象，可能出错了!");
+				return NULL;
+			}
+		}
+	}
+	else
+	{
+		acutPrintf(L"\n得到两个3D对象的交集失败!");
+		rxErrorMsg(es);
+
+		return NULL;
+	}
+}
+
 
 /**
  * 将对象从模型空间中的某一层上删除

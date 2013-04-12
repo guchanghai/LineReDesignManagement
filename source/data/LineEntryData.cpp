@@ -312,6 +312,9 @@ void LineEntity::DrawDBEntity()
 		{
 			//多线段的第一个起点
 			pStart = &(*iter)->m_Point;
+			
+			//初始化绘制信息
+			(*iter)->m_DbEntityCollection.mSequenceNO = 0;
 
 			//不需要创建该3D模型
 			continue;

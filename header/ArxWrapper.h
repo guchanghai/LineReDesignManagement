@@ -109,6 +109,9 @@ public:
 	//解锁当前文档
 	static Acad::ErrorStatus UnLockCurDoc();
 
+	//得到两个实体是否有交集
+	static AcDb3dSolid* GetInterset( AcDbEntity* pEntityA, AcDbEntity* pEntityB );
+
 	//测试函数
 	static void TestFunction();
 };

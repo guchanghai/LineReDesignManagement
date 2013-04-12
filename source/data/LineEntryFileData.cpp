@@ -451,6 +451,12 @@ bool LineEntityFile::CheckLineInteract()
 				point != pointList->end();
 				point++ )
 		{
+			if( (*point)->m_DbEntityCollection.mSequenceNO == 0 )
+			{
+				acutPrintf(L"\n第一个点没有管线，它只是个起点.");
+				continue;
+			}
+
 			//与当前文件中所有的其他直线做侵限判断
 			CheckLineInteract( *point );
 
@@ -480,7 +486,13 @@ void LineEntityFile::CheckLineInteract( PointEntity* checkPoint )
 
 	AcDbObjectId beCheckedSafeLine = checkPoint->m_DbEntityCollection.GetSafeLineEntity();
 	AcDbEntity *pCheckSafeLine;
-	acdbOpenAcDbEntity(pCheckSafeLine, beCheckedSafeLine, AcDb::kForRead);
+	Acad::ErrorStatus es = acdbOpenAcDbEntity(pCheckSafeLine, beCheckedSafeLine, AcDb::kForRead);
+
+	if( es != Acad::eOk )
+	{
+		acutPrintf(L"\n得到被检查侵限的管线的安全范围实体时出错");
+		rxErrorMsg(es);
+	}
 
 	if( pCheckSafeLine == NULL )
 	{
@@ -505,17 +517,24 @@ void LineEntityFile::CheckLineInteract( PointEntity* checkPoint )
 				point++ )
 		{
 			Adesk::Int32& lineID = (*point)->m_DbEntityCollection.mLineID;
-			Adesk::Int32& sqeNO = (*point)->m_DbEntityCollection.mSequenceNO;
-
-			if( lineID == checkLineID && abs( sqeNO - checkSeqNO ) <= 1 )
+			Adesk::Int32& seqNO = (*point)->m_DbEntityCollection.mSequenceNO;
+			if( seqNO == 0 )
 			{
-				acutPrintf(L"\n与同一管线的相邻线段不进行相侵判断");
+				acutPrintf(L"\n管线起始点，不需要判断");
 				continue;
 			}
 
-			if( m_CheckedEntities.find(LinePointID(lineID,sqeNO)) != m_CheckedEntities.end() )
+			acutPrintf(L"\n与【%s】的第【%d】条折线段进行判断",(*point)->m_DbEntityCollection.mLayerName.c_str(), seqNO );
+
+			if( lineID == checkLineID && abs( seqNO - checkSeqNO ) <= 1 )
 			{
-				acutPrintf(L"\n此折线段已被比较过");
+				acutPrintf(L"\n相邻线段,不进行相侵判断");
+				continue;
+			}
+
+			if( m_CheckedEntities.find(LinePointID(lineID,seqNO)) != m_CheckedEntities.end() )
+			{
+				acutPrintf(L"\n此折线段已被比较过,忽略");
 				continue;
 			}
 
@@ -523,10 +542,33 @@ void LineEntityFile::CheckLineInteract( PointEntity* checkPoint )
 			AcDbObjectId safeLine = (*point)->m_DbEntityCollection.GetSafeLineEntity();
 			AcDbEntity *pSafeLine;
 			acdbOpenAcDbEntity(pSafeLine, safeLine, AcDb::kForRead);
+
+			if( es != Acad::eOk )
+			{
+				acutPrintf(L"\n遍历检查侵限的管线的安全范围实体时出错");
+				rxErrorMsg(es);
+			}
+
+			AcDb3dSolid* intersetObj = ArxWrapper::GetInterset( pSafeLine, pCheckSafeLine );
 			
-			//if( pSafeLine && pSafeLine->intersectWith(
+			if( intersetObj != NULL )
+			{
+				acutPrintf(L"\n侵限，设置为红色！",(*point)->m_DbEntityCollection.mLayerName.c_str(), seqNO );
+
+				pCheckSafeLine->upgradeOpen();
+				pSafeLine->upgradeOpen();
+
+				pCheckSafeLine->setColorIndex(1);
+				pSafeLine->setColorIndex(1);
+
+				ArxWrapper::PostToModelSpace( (AcDbEntity *)intersetObj, lineName );
+			}
+
+			pSafeLine->close();
 		}
 	}
+
+	pCheckSafeLine->close();
 }
 
 /////////////////////////////////////////////////////////////////////////

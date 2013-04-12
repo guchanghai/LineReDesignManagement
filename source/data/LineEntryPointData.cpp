@@ -178,7 +178,7 @@ bool PointDBEntityCollection::DrawEntityCollection()
 	LMASafeLineDbObject* lmaSafeLineObj = new LMASafeLineDbObject( this );
 
 	//保存管线安全范围实体
-	SetLineEntity( ArxWrapper::PostToModelSpace(lmaSafeLineObj, mLayerName) );
+	SetSafeLineEntity( ArxWrapper::PostToModelSpace(lmaSafeLineObj, mLayerName) );
 
 	return true;
 }

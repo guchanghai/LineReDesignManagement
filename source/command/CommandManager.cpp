@@ -75,8 +75,8 @@ CommandManager::CommandManager(void)
 	mSupportCommands[CMD_LINE_CUT_BACK] = GenerateCutBack;
 
 	//œ‡«÷≈–∂œ°¢ª÷∏¥
-	mSupportCommands[CMD_LINE_INTERACT] = GenerateCut;
-	mSupportCommands[CMD_LINE_INTERACT_BACK] = GenerateCutBack;
+	mSupportCommands[CMD_LINE_INTERACT] = InteractCheck;
+	mSupportCommands[CMD_LINE_INTERACT_BACK] = InteractCheckBack;
 
 	//≤‚ ‘π¶ƒ‹
 	mSupportCommands[CMD_LINE_TEST] = TestFunction;

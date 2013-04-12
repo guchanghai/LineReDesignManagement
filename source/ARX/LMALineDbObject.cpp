@@ -373,6 +373,8 @@ LMALineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
 		pStart->m_Point[X] = mpPointInfo->mStartPoint.x;
 		pStart->m_Point[Y] = mpPointInfo->mStartPoint.y;
 		pStart->m_Point[Z] = mpPointInfo->mStartPoint.z;
+
+		pStart->m_DbEntityCollection.mSequenceNO = 0;
 	}
 
 	//设置结束节点的属性
