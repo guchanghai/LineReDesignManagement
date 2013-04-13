@@ -153,26 +153,11 @@ void LineIntersectManage::CheckLineInteract( PointEntity* checkPoint )
 	wstring& lineName = checkPoint->m_DbEntityCollection.mLayerName;
 	Adesk::Int32& checkLineID = checkPoint->m_DbEntityCollection.mLineID;
 	Adesk::Int32& checkSeqNO = checkPoint->m_DbEntityCollection.mSequenceNO;
+	Acad::ErrorStatus es;
 
 #ifdef DEBUG
 	acutPrintf(L"\n对【%s】的第【%d】条进行相侵判断.",lineName.c_str(), checkSeqNO);
 #endif
-
-	AcDbObjectId beCheckedSafeLine = checkPoint->m_DbEntityCollection.GetSafeLineEntity();
-	AcDbEntity *pCheckSafeLine;
-	Acad::ErrorStatus es = acdbOpenAcDbEntity(pCheckSafeLine, beCheckedSafeLine, AcDb::kForRead);
-
-	if( es != Acad::eOk )
-	{
-		acutPrintf(L"\n得到被检查侵限的管线的安全范围实体时出错");
-		rxErrorMsg(es);
-	}
-
-	if( pCheckSafeLine == NULL )
-	{
-		acutPrintf(L"\n被检查对象没有数据库实例.");
-		return;
-	}
 
 	LineList* lineList = m_pCheckLine->GetList();
 	for( LineIterator line = lineList->begin();
@@ -195,38 +180,54 @@ void LineIntersectManage::CheckLineInteract( PointEntity* checkPoint )
 			Adesk::Int32& seqNO = (*point)->m_DbEntityCollection.mSequenceNO;
 			if( seqNO == 0 )
 			{
-				acutPrintf(L"\n管线起始点，不需要判断");
+				//acutPrintf(L"\n管线起始点，不需要判断");
 				continue;
 			}
 
-			acutPrintf(L"\n与【%s】的第【%d】条折线段进行判断",(*point)->m_DbEntityCollection.mLayerName.c_str(), seqNO );
+			//acutPrintf(L"\n与【%s】的第【%d】条折线段进行判断",(*point)->m_DbEntityCollection.mLayerName.c_str(), seqNO );
 
 			if( lineID == checkLineID && abs( seqNO - checkSeqNO ) <= 1 )
 			{
-				acutPrintf(L"\n相邻线段,不进行相侵判断");
+				//acutPrintf(L"\n相邻线段,不进行相侵判断");
 				continue;
 			}
 
 			if( m_CheckedEntities.find(LinePointID(lineID,seqNO)) != m_CheckedEntities.end() )
 			{
-				acutPrintf(L"\n此折线段已被比较过,忽略");
+				//acutPrintf(L"\n此折线段已被比较过,忽略");
 				continue;
 			}
+
+			ArxWrapper::LockCurDoc();
 
 			//得到两个线段的数据库安全范围对象
 			AcDbObjectId safeLine = (*point)->m_DbEntityCollection.GetSafeLineEntity();
 			AcDbEntity *pSafeLine;
-			acdbOpenAcDbEntity(pSafeLine, safeLine, AcDb::kForRead);
+			es = acdbOpenAcDbEntity(pSafeLine, safeLine, AcDb::kForWrite);
 
 			if( es != Acad::eOk )
 			{
 				acutPrintf(L"\n遍历检查侵限的管线的安全范围实体时出错");
 				rxErrorMsg(es);
+				ArxWrapper::UnLockCurDoc();
+				continue;
+			}
+
+			AcDbObjectId beCheckedSafeLine = checkPoint->m_DbEntityCollection.GetSafeLineEntity();
+			AcDbEntity *pCheckSafeLine;
+			es = acdbOpenAcDbEntity(pCheckSafeLine, beCheckedSafeLine, AcDb::kForWrite);
+
+			if( es != Acad::eOk )
+			{
+				acutPrintf(L"\n得到被检查侵限的管线的安全范围实体时出错");
+				rxErrorMsg(es);
+				ArxWrapper::UnLockCurDoc();
+				continue;
 			}
 
 			//得到2者的相侵的部位
 			AcDb3dSolid* intersetObj = ArxWrapper::GetInterset( pSafeLine, pCheckSafeLine );
-			
+
 			if( intersetObj != NULL )
 			{
 				acutPrintf(L"\n与【%s】的第【%d】条折线段侵限，设置为警告色！",(*point)->m_DbEntityCollection.mLayerName.c_str(), seqNO );
@@ -237,13 +238,17 @@ void LineIntersectManage::CheckLineInteract( PointEntity* checkPoint )
 				pIntersect->intersetcB = (*point);
 
 				//隐藏的安全范围管线可见，设置为红色
-				pSafeLine->upgradeOpen();
-				pSafeLine->setColorIndex(1);
-				pSafeLine->setVisibility(AcDb::kVisible);
+				if( pSafeLine->visibility() == AcDb::kInvisible )
+				{
+					pSafeLine->setColorIndex(1);
+					pSafeLine->setVisibility(AcDb::kVisible);
+				}
 
-				pCheckSafeLine->upgradeOpen();
-				pCheckSafeLine->setColorIndex(1);
-				pCheckSafeLine->setVisibility(AcDb::kVisible);
+				if( pCheckSafeLine->visibility() == AcDb::kInvisible )
+				{
+					pCheckSafeLine->setColorIndex(1);
+					pCheckSafeLine->setVisibility(AcDb::kVisible);
+				}
 
 				intersetObj->setColorIndex(3);
 				pIntersect->intersctcId = ArxWrapper::PostToModelSpace( intersetObj, lineName );
@@ -253,10 +258,11 @@ void LineIntersectManage::CheckLineInteract( PointEntity* checkPoint )
 			}
 
 			pSafeLine->close();
+			pCheckSafeLine->close();
+
+			ArxWrapper::UnLockCurDoc();
 		}
 	}
-
-	pCheckSafeLine->close();
 }
 
 void LineIntersectManage::Reset()

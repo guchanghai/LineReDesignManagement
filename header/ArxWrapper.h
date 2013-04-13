@@ -33,7 +33,6 @@ using namespace std;
 typedef vector<AcGePoint3d*> Point3dVector;
 typedef Point3dVector::const_iterator Point3dIter;
 
-
 class ArxWrapper
 {
 public:
@@ -53,16 +52,6 @@ public:
 	static bool ShowLayer(const wstring& theOnly);
 
 	static bool DeleteLayer(const wstring& layerName, bool deleteChildren = true);
-
-	static AcDbObjectId createLine( const AcGePoint3d& start,
-							const AcGePoint3d& end,
-							const wstring& layerName );
-
-	static void createLine( const Point3dVector& points3d,
-							const wstring& layerName );
-
-	static void createLine ( const PointList& points,
-							const wstring& layerName);
 
 	//Add entity to dictionary
 	static AcDbObjectId PostToModelSpace(AcDbEntity* pEnt,const wstring& layerName );
@@ -96,15 +85,6 @@ public:
 
 	//Change view
 	static void ChangeView(int viewDirection);
-
-	//设置填充
-	static AcDbObjectId CreateHatch(AcDbObjectId entityId,const wstring& patName, bool bAssociative, const wstring& layerName, const AcGePlane& plane, const double& distance );
-
-	static AcDbObjectId CreateHatch(AcDbObjectIdArray objIds,const wstring& patName, bool bAssociative, const wstring& layerName, const AcGeVector3d& normal, const double& elevation);
-
-	//添加注释
-	static AcDbObjectId CreateMLeader(const AcGePoint3d& center, const int& offset, const int& direction,
-											const wstring& content, const wstring& layerName);
 
 	//锁住当前文档
 	static Acad::ErrorStatus LockCurDoc();

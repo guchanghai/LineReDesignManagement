@@ -184,7 +184,7 @@ void CommandManager::GenerateCutBack()
 	acutPrintf(L"\n通过点击菜单恢复视窗");
 #endif
 
-	LineCutPosDialog::CutBack();
+	LineCutPosDialog::Reset();
 }
 
 //侵限相关

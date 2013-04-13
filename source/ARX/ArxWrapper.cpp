@@ -435,12 +435,12 @@ AcDb3dSolid* ArxWrapper::GetInterset( AcDbEntity* pEntityA, AcDbEntity* pEntityB
 	{
 		if(boolInter == Adesk::kFalse)
 		{
-			acutPrintf(L"\n两个3D对象无交集!");
+			//acutPrintf(L"\n两个3D对象无交集!");
 			return NULL;
 		}
 		else
 		{
-			acutPrintf(L"\n两个3D对象存在交集!");
+			//acutPrintf(L"\n两个3D对象存在交集!");
 			if( commonVolumeSolid )
 			{
 				return commonVolumeSolid;
@@ -851,11 +851,6 @@ bool ArxWrapper::DeleteLayer(const wstring& layerName, bool deleteChildren)
 
 			if( pLayerRecord )
 			{
-				//if( deleteChildren )
-				//{
-					//RemoveFromModelSpace(layerName);
-				//}
-
 				pLayerRecord->erase();
 				pLayerRecord->close();
 
@@ -964,85 +959,6 @@ bool ArxWrapper::ShowLayer(const wstring& layerName)
 }
 
 /**
- * 根据起始点创建线段，并放置在特定的层上
- **/
-AcDbObjectId ArxWrapper::createLine( const AcGePoint3d& start,
-							const AcGePoint3d& end,
-							const wstring& layerName )
-{
-    AcDbLine *pLine = new AcDbLine(start, end);
-    return ArxWrapper::PostToModelSpace(pLine,layerName);
-}
-
-/**
- * 根据起始点队列（向量列表），并放置在特定的层上
- **/
-void ArxWrapper::createLine( const Point3dVector& points3d,
-							const wstring& layerName )
-{
-	if( points3d.size() < 2 )
-		return;
-
-	AcGePoint3d *pStart = NULL;
-
-	for( Point3dIter iter = points3d.begin();
-		iter != points3d.end();
-		iter++)
-	{
-		if( pStart == NULL )
-		{
-			pStart = *iter;
-			continue;
-		}
-		else
-		{
-			createLine( *pStart, *(*iter), layerName );
-			pStart = *iter;
-		}
-	}
-}
-
-/**
- * 根据管线实体起始点队列（向量列表），并放置在特定的层上
- **/
-void ArxWrapper::createLine( const PointList& points,
-							const wstring& layerName )
-{
-	if( points.size() < 2 )
-		return;
-
-	AcGePoint3d *pStart = NULL;
-
-	for( ContstPointIter iter = points.begin();
-		iter != points.end();
-		iter++)
-	{
-		if( pStart == NULL )
-		{
-			pStart = new AcGePoint3d((*iter)->m_Point[X],
-										(*iter)->m_Point[Y],
-										(*iter)->m_Point[Z]);
-			continue;
-		}
-		else
-		{
-			AcGePoint3d *pEnd = new AcGePoint3d((*iter)->m_Point[X],
-										(*iter)->m_Point[Y],
-										(*iter)->m_Point[Z]);
-
-			createLine( *pStart, *pEnd, layerName );
-
-			delete pStart;
-
-			pStart = pEnd;
-		}
-	}
-
-	if( pStart != NULL )
-		delete pStart;
-}
-
-/**
  * 根据起始点队列（向量列表），并放置在特定的层上
  **/
 AcDbEntity* ArxWrapper::MoveToBottom(AcDbEntity* pEntry)
@@ -1118,178 +1034,6 @@ void ArxWrapper::ChangeView(int viewDirection)
 
 	// 将视图对象设置为当前视图
 	//Acad::ErrorStatus es = acedSetCurrentView(&view, NULL);
-}
-
-AcDbObjectId ArxWrapper::CreateHatch(AcDbObjectIdArray objIds,const wstring& patName, bool bAssociative, const wstring& layerName, const AcGeVector3d& normal, const double& elevation)
-{
-	Acad::ErrorStatus es;
-	AcDbHatch *pHatch = new AcDbHatch();
-	
-	// 设置填充平面
-	pHatch->setNormal(normal);
-	pHatch->setElevation(elevation);
-	
-	// 设置关联性
-	pHatch->setAssociative(bAssociative);
-	
-	// 设置填充图案
-#ifdef DEBUG
-	acutPrintf(L"\n设置填充图案为【%s】",patName.c_str());
-#endif
-
-	pHatch->setPattern(AcDbHatch::kPreDefined, patName.c_str());
-	
-	// 添加填充边界
-	es = pHatch->appendLoop(AcDbHatch::kExternal, objIds);
-	
-	// 显示填充对象
-	es = pHatch->evaluateHatch();
-	
-	// 添加到模型空间
-	AcDbObjectId hatchId;
-	hatchId = PostToModelSpace(pHatch,layerName);
-	
-	// 如果是关联性的填充，将填充对象与边界绑定，以便使其能获得边界对象修改的通知
-	if (bAssociative)
-	{
-		AcDbEntity *pEnt;
-		for (int i = 0; i < objIds.length(); i++)
-		{
-			es = acdbOpenAcDbEntity(pEnt, objIds[i], AcDb::kForWrite);
-			if (es == Acad::eOk)
-			{
-				// 添加一个永久反应器
-				pEnt->addPersistentReactor(hatchId);
-				pEnt->close();
-			}
-		}
-	}
-
-	return hatchId;
-}
-
-AcDbObjectId ArxWrapper::CreateHatch(AcDbObjectId entityId,const wstring& patName, bool bAssociative, const wstring& layerName, const AcGePlane& plane, const double& distance  )
-{
-	if( !entityId.isValid() )
-		return 0;
-
-	AcGeVector3d normal = plane.normal();
-	//double distance = plane.distanceTo(AcGePoint3d::kOrigin);
-
-#ifdef DEBUG
-		acutPrintf(L"\n该平面到原点的距离是【%lf】",distance);
-#endif
-
-	AcDbObjectIdArray objIds;
-	objIds.append(entityId);
-
-	return ArxWrapper::CreateHatch(objIds,patName,bAssociative,layerName,normal,distance);
-}
-
-AcDbObjectId ArxWrapper::CreateMLeader(const AcGePoint3d& start, const int& offset, const int& direction,
-											const wstring& content, const wstring& layerName)
-{
-	static int leaderOffset = 6;
-
-	//标注的起点
-	AcGePoint3d startPoint(start);
-
-		//进行相应的转换
-	{
-		if( direction == 1 )
-		{
-#ifdef DEBUG
-			acutPrintf(L"\n切面与X轴垂直,把Z轴位置转换为Y，把Y轴位置转换为X");
-#endif
-			startPoint.y = start.z;
-			startPoint.x = start.y;
-		}
-		else if ( direction == 2 )
-		{
-#ifdef DEBUG
-			acutPrintf(L"\n切面与Y轴垂直，把Z轴位置转换为Y轴位置");
-#endif		
-			startPoint.y = start.z;
-			startPoint.z = 0;
-		} 
-	}
-
-	//折点为编译6个单位，且位置在左下方
-	AcGePoint3d endPoint(start.x - leaderOffset, start.y - leaderOffset, start.z);
-
-    AcDbMLeader* leader = new AcDbMLeader;
-
-	//设置标注的内容
-	{
-		int index = 0;
-		leader->addLeaderLine(startPoint,index);
-
-		leader->addLastVertex(index,endPoint);
-		leader->setLastVertex(index,endPoint);
-
-		leader->setContentType(AcDbMLeaderStyle::kMTextContent);
-
-		//设置标注的文字
-		AcDbMText* mtext = new AcDbMText;
-		mtext->setContents(content.c_str());
-
-		mtext->setTextHeight(mtext->textHeight()/2);
-
-		leader->setMText(mtext);
-	}
-
-	//进行相应的转换
-	{
-		if( direction == 1 )
-		{
-#ifdef DEBUG
-			acutPrintf(L"\n切面与X轴垂直,先沿X轴翻转到XZ平面，然后绕Z轴翻转到ZY平面，最后沿X轴平移");
-#endif
-			//进行翻转到XZ平面
-			AcGeMatrix3d rotateMatrix = AcGeMatrix3d::rotation( ArxWrapper::kRad90, AcGeVector3d::kYAxis, AcGePoint3d::kOrigin);
-			leader->transformBy(rotateMatrix);
-
-			//进行翻转到YZ平面
-			rotateMatrix = AcGeMatrix3d::rotation( ArxWrapper::kRad90, AcGeVector3d::kXAxis, AcGePoint3d::kOrigin);
-			leader->transformBy(rotateMatrix);
-
-			//进行偏移
-			AcGeMatrix3d moveMatrix;
-			moveMatrix.setToTranslation(AcGeVector3d(offset,0,0));
-
-			leader->transformBy(moveMatrix);
-		}
-		else if ( direction == 2 )
-		{
-#ifdef DEBUG
-			acutPrintf(L"\n切面与Y轴垂直,先沿X轴翻转到XZ平面，然后沿Y轴平移");
-#endif		
-			//进行翻转
-			AcGeMatrix3d rotateMatrix = AcGeMatrix3d::rotation( ArxWrapper::kRad90, AcGeVector3d::kXAxis, AcGePoint3d::kOrigin);
-			leader->transformBy(rotateMatrix);
-
-			//进行偏移
-			AcGeMatrix3d moveMatrix;
-			moveMatrix.setToTranslation(AcGeVector3d(0,offset,0));
-
-			leader->transformBy(moveMatrix);
-		} 
-		else if ( direction == 3 )
-		{
-#ifdef DEBUG
-			acutPrintf(L"\n切面与Z轴垂直，因此标注进行偏移即可");
-#endif		
-			//进行偏移
-			AcGeMatrix3d moveMatrix;
-			moveMatrix.setToTranslation(AcGeVector3d(0,0,offset));
-
-			leader->transformBy(moveMatrix);
-		}
-	}
-
-	//添加到模型空间中
-	//leader->setLinetype( acdbHostApplicationServices()->workingDatabase()->byLayerLinetype() );
-	return ArxWrapper::PostToModelSpace(leader,layerName);
 }
 
 void TestViewPort()
@@ -1448,7 +1192,7 @@ void TestHatch()
 
 	acedSSFree(ss); // 释放选择集
 
-	ArxWrapper::CreateHatch(objIds, L"JIS_LC_20", true, L"0", AcGeVector3d(0,0,1), 0);
+	//ArxWrapper::CreateHatch(objIds, L"JIS_LC_20", true, L"0", AcGeVector3d(0,0,1), 0);
 }
 
 static AcDbObjectId CreateText(const AcGePoint3d& ptInsert,
