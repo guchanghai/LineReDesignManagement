@@ -19,6 +19,7 @@
 #include <ArxWrapper.h>
 #include <acdocman.h>
 #include <acutmem.h>
+#include <dbsol3d.h>
 
 #include <LineManageAssitant.h>
 
@@ -422,155 +423,6 @@ LineList LineEntityFile::GetList( const wstring& entityKind )
 	return kindList;
 }
 
-bool LineEntityFile::CheckLineInteract()
-{
-	bool ret(true);
-
-	//清空已比较集合
-	m_CheckedEntities.clear();
-
-	if( m_LineList == NULL 
-		|| m_LineList->size() <= 1 )
-	{
-		acutPrintf(L"\n当前管线数目小于2条，可以不进行相侵检查");
-	}
-
-	for( LineIterator line = m_LineList->begin();
-			line != m_LineList->end();
-			line++ )
-	{
-		PointList* pointList = (*line)->m_PointList;
-		if( pointList == NULL 
-			|| pointList->size() == 0 )
-		{
-			acutPrintf(L"\n当前管线没有折线段，可以不进行检查");
-			continue;
-		}
-
-		for( PointIter point = pointList->begin();
-				point != pointList->end();
-				point++ )
-		{
-			if( (*point)->m_DbEntityCollection.mSequenceNO == 0 )
-			{
-				acutPrintf(L"\n第一个点没有管线，它只是个起点.");
-				continue;
-			}
-
-			//与当前文件中所有的其他直线做侵限判断
-			CheckLineInteract( *point );
-
-			//加入已比较队列，避免重复比较
-			m_CheckedEntities.insert( LinePointID((*point)->m_DbEntityCollection.mLineID, (*point)->m_DbEntityCollection.mSequenceNO) );
-		}
-	}
-
-	return ret;
-}
-
-//判断一条管线与其他管线的相侵情况
-//bool LineEntityFile::CheckLineInteract( LineEntity* line )
-//{
-//}
-
-//判断一条折线段与其他管线的相侵情况
-void LineEntityFile::CheckLineInteract( PointEntity* checkPoint )
-{
-	wstring& lineName = checkPoint->m_DbEntityCollection.mLayerName;
-	Adesk::Int32& checkLineID = checkPoint->m_DbEntityCollection.mLineID;
-	Adesk::Int32& checkSeqNO = checkPoint->m_DbEntityCollection.mSequenceNO;
-
-#ifdef DEBUG
-	acutPrintf(L"\n对【%s】的第【%d】条进行相侵判断.",lineName.c_str(), checkSeqNO);
-#endif
-
-	AcDbObjectId beCheckedSafeLine = checkPoint->m_DbEntityCollection.GetSafeLineEntity();
-	AcDbEntity *pCheckSafeLine;
-	Acad::ErrorStatus es = acdbOpenAcDbEntity(pCheckSafeLine, beCheckedSafeLine, AcDb::kForRead);
-
-	if( es != Acad::eOk )
-	{
-		acutPrintf(L"\n得到被检查侵限的管线的安全范围实体时出错");
-		rxErrorMsg(es);
-	}
-
-	if( pCheckSafeLine == NULL )
-	{
-		acutPrintf(L"\n被检查对象没有数据库实例.");
-		return;
-	}
-
-	for( LineIterator line = m_LineList->begin();
-			line != m_LineList->end();
-			line++ )
-	{
-		PointList* pointList = (*line)->m_PointList;
-		if( pointList == NULL 
-			|| pointList->size() == 0 )
-		{
-			acutPrintf(L"\n当前管线没有折线段，不需要与此折线段进行相侵判断");
-			continue;
-		}
-
-		for( PointIter point = pointList->begin();
-				point != pointList->end();
-				point++ )
-		{
-			Adesk::Int32& lineID = (*point)->m_DbEntityCollection.mLineID;
-			Adesk::Int32& seqNO = (*point)->m_DbEntityCollection.mSequenceNO;
-			if( seqNO == 0 )
-			{
-				acutPrintf(L"\n管线起始点，不需要判断");
-				continue;
-			}
-
-			acutPrintf(L"\n与【%s】的第【%d】条折线段进行判断",(*point)->m_DbEntityCollection.mLayerName.c_str(), seqNO );
-
-			if( lineID == checkLineID && abs( seqNO - checkSeqNO ) <= 1 )
-			{
-				acutPrintf(L"\n相邻线段,不进行相侵判断");
-				continue;
-			}
-
-			if( m_CheckedEntities.find(LinePointID(lineID,seqNO)) != m_CheckedEntities.end() )
-			{
-				acutPrintf(L"\n此折线段已被比较过,忽略");
-				continue;
-			}
-
-			//得到两个线段的数据库安全范围对象
-			AcDbObjectId safeLine = (*point)->m_DbEntityCollection.GetSafeLineEntity();
-			AcDbEntity *pSafeLine;
-			acdbOpenAcDbEntity(pSafeLine, safeLine, AcDb::kForRead);
-
-			if( es != Acad::eOk )
-			{
-				acutPrintf(L"\n遍历检查侵限的管线的安全范围实体时出错");
-				rxErrorMsg(es);
-			}
-
-			AcDb3dSolid* intersetObj = ArxWrapper::GetInterset( pSafeLine, pCheckSafeLine );
-			
-			if( intersetObj != NULL )
-			{
-				acutPrintf(L"\n侵限，设置为红色！",(*point)->m_DbEntityCollection.mLayerName.c_str(), seqNO );
-
-				pCheckSafeLine->upgradeOpen();
-				pSafeLine->upgradeOpen();
-
-				pCheckSafeLine->setColorIndex(1);
-				pSafeLine->setColorIndex(1);
-
-				ArxWrapper::PostToModelSpace( (AcDbEntity *)intersetObj, lineName );
-			}
-
-			pSafeLine->close();
-		}
-	}
-
-	pCheckSafeLine->close();
-}
-
 /////////////////////////////////////////////////////////////////////////
 
 EntryFileList* LineEntityFileManager::pEntryFileList = NULL;
@@ -821,17 +673,6 @@ BOOL LineEntityFileManager::ExportLMALineFile( const wstring& lineKind )
     }
     else
         return(FALSE);
-}
-
-void LineEntityFileManager::CheckInteract()
-{
-	//得到管线实体文件管理器
-	LineEntityFile* pLineEntityFile = GetCurrentLineEntryFile();
-
-	acutPrintf(L"\n对管线文件【%s】进行亲限判断.",pLineEntityFile->m_FileName.c_str());
-
-	//对各条管线进行判断
-	pLineEntityFile->CheckLineInteract();
 }
 
 } // end of data

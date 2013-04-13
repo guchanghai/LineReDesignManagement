@@ -79,6 +79,9 @@ public:
 	//Remove the object from Database
 	static Acad::ErrorStatus RemoveDbObject(AcDbObjectId id);
 
+	//Show/Hide the database object
+	static Adesk::Boolean ShowDbObject( AcDbObjectId& objectId, AcDb::Visibility show = AcDb::kVisible );
+
 	//Add object to name dictionary
 	static AcDbObjectId PostToNameObjectsDict( AcDbObject* pNameObj,const wstring& key );
 

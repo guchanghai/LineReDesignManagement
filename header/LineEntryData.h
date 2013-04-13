@@ -282,15 +282,6 @@ public:
 	LineList* GetList() const {return m_LineList;}
 	LineList GetList( const wstring& entityKind );
 
-	//判断本文件里的管线相侵情况
-	bool CheckLineInteract();
-
-	//判断一条管线与其他管线的相侵情况
-	//bool CheckLineInteract( LineEntity* line );
-
-	//判断一条折线段与其他管线的相侵情况
-	void CheckLineInteract( PointEntity* point );
-
 	wstring m_FileName;
 
 private:
@@ -299,9 +290,6 @@ private:
 
 	//临时实体管理器
 	LinePointMap* m_LinePoint;
-
-	//已相侵比较的折线段
-	set<LinePointID> m_CheckedEntities;
 };
 
 /**
@@ -330,8 +318,6 @@ public:
 	static LineEntityFile* RegisterEntryFile(const wstring& fileName);
 
 	static LineEntityFile* SaveFileEntity();
-
-	static void CheckInteract();
 
 	static bool RegisterLineSegment( const wstring& fileName, UINT lineID, UINT sequence, PointEntity*& pStart, PointEntity*& pEnd );
 

@@ -5,6 +5,7 @@
 
 #include <LineCutPosDialog.h>
 #include <EntryManageDialog.h>
+#include <LineIntersectManage.h>
 #include <ArxWrapper.h>
 #include <GlobalDataConfig.h>
 
@@ -14,6 +15,7 @@
 using namespace com::guch::assistant::config;
 using namespace com::guch::assistant::entry;
 using namespace com::guch::assistant::data;
+using namespace com::guch::assistant::Intersect;
 
 typedef map<wstring,AcRxFunctionPtr>::const_iterator CommandIterator;
 
@@ -192,14 +194,16 @@ void CommandManager::InteractCheck()
 	acutPrintf(L"\n侵限判断");
 #endif
 
-	LineEntityFileManager::CheckInteract();
+	LineIntersectManage::Instance()->CheckInteract();
 }
 
 void CommandManager::InteractCheckBack()
 {
 #ifdef DEBUG
-	acutPrintf(L"\n删除侵限判断临时界面，恢复3D模型窗口");
+	acutPrintf(L"\n删除侵限判断结果，恢复3D模型窗口");
 #endif
+
+	LineIntersectManage::Instance()->Reset();
 }
 
 void CommandManager::TestFunction()

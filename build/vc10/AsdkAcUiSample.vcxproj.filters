@@ -64,6 +64,9 @@
     <ClCompile Include="..\..\source\ARX\LMASafeLineDbObject.cpp">
       <Filter>src\ARX</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\intersect\LineIntersectManage.cpp">
+      <Filter>src\Intersect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\header\AsdkAcUiDialogSample.h">
@@ -147,6 +150,9 @@
     <ClInclude Include="..\..\header\ArxCustomObject.h">
       <Filter>inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\header\LineIntersectManage.h">
+      <Filter>inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\doc\ReadMe.txt">
@@ -199,6 +205,9 @@
     </Filter>
     <Filter Include="src\ARX">
       <UniqueIdentifier>{82259ad8-fb6e-4c4b-b532-641ac55ea297}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Intersect">
+      <UniqueIdentifier>{bdec6514-72c5-4630-b460-c575f5c4cee8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

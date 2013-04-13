@@ -189,6 +189,7 @@
     <ClCompile Include="..\..\source\dialog\AsdkAcUiDialogSample.cpp" />
     <ClCompile Include="..\..\source\dialog\LineCutPosDialog.cpp" />
     <ClCompile Include="..\..\source\exception\LMAException.cpp" />
+    <ClCompile Include="..\..\source\intersect\LineIntersectManage.cpp" />
     <ClCompile Include="..\..\source\menu\MenuLMAMain.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -220,6 +221,7 @@
     <ClInclude Include="..\..\header\LineConfigDataManager.h" />
     <ClInclude Include="..\..\header\LineCutPosDialog.h" />
     <ClInclude Include="..\..\header\LineEntryData.h" />
+    <ClInclude Include="..\..\header\LineIntersectManage.h" />
     <ClInclude Include="..\..\header\LineManageAssitant.h" />
     <ClInclude Include="..\..\header\ListCtrlEx.h" />
     <ClInclude Include="..\..\header\LMAException.h" />

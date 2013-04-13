@@ -338,6 +338,37 @@ Acad::ErrorStatus ArxWrapper::RemoveDbObject(AcDbObjectId id)
 	return es;
 }
 
+Adesk::Boolean ArxWrapper::ShowDbObject( AcDbObjectId& objectId, AcDb::Visibility show )
+{
+	Acad::ErrorStatus es = Acad::eOk;
+
+	if( objectId.isValid())
+	{
+		AcDbEntity* ent;
+        es = acdbOpenAcDbEntity(ent, objectId, AcDb::kForWrite);
+
+        if (es == Acad::eOk) 
+		{
+			ent->setVisibility(show);
+			ent->setColorIndex(2);
+			ent->close();
+
+			acutPrintf(L"\n成功%s.", show == AcDb::kVisible ? L"显示" : L"隐藏" );
+        }
+		else
+		{
+			acutPrintf(L"\n在设置对象可见性时，打开数据库对象失败.");
+			rxErrorMsg(es);
+		}
+    }
+	else
+	{
+		acutPrintf(L"\n在设置对象可见性时，数据库对象不合法.");
+	}
+
+	return Adesk::kTrue;
+}
+
 Acad::ErrorStatus ArxWrapper::LockCurDoc()
 {
 	if (acDocManager->curDocument() == NULL)
