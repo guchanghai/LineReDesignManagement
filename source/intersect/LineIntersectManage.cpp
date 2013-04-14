@@ -108,16 +108,15 @@ void LineIntersectManage::CheckLineInteract()
 	//清空已比较集合
 	m_CheckedEntities.clear();
 
-	LineList* lineList = m_pCheckLine->GetList();
-
-	if( lineList == NULL 
-		|| lineList->size() <= 1 )
+	LineList lineList = m_pCheckLine->GetList(GlobalData::KIND_LINE);
+	if( lineList.size() == 0 )
 	{
-		acutPrintf(L"\n当前管线数目小于2条，可以不进行相侵检查");
+		acutPrintf(L"\n当前文件内无管线，可以不进行相侵检查");
+		return;
 	}
 
-	for( LineIterator line = lineList->begin();
-			line != lineList->end();
+	for( LineIterator line = lineList.begin();
+			line != lineList.end();
 			line++ )
 	{
 		PointList* pointList = (*line)->m_PointList;

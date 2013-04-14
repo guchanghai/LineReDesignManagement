@@ -145,12 +145,13 @@ class LineEntity
 public:
 
 	static const wstring LINE_ENTRY_LAYER;
+	static const wstring LINE_DATA_BEGIN;
 
 	LineEntity();
 	LineEntity(const wstring& rLineName, const wstring& rLineKind,
 				LineCategoryItemData* itemdata, PointList* pointList);
 
-	LineEntity(const wstring& data );
+	LineEntity(wstring& data );
 	~LineEntity();
 
 	UINT GetLineID() const { return m_LineID; }
@@ -280,7 +281,7 @@ public:
 	void ExportTo(const wstring& filename,const wstring& lineKind) const;
 
 	LineList* GetList() const {return m_LineList;}
-	LineList GetList( const wstring& entityKind );
+	LineList GetList( const wstring& entityKind ) const;
 
 	wstring m_FileName;
 

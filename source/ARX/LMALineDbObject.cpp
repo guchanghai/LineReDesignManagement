@@ -389,6 +389,9 @@ LMALineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
 	//设置折线段对象数据库ID
 	mpPointInfo->SetLineEntity(id());
 
+	//设置折线段所在层名
+	mpPointInfo->mLayerName = wstring(layer());
+
 	//pFiler->readAcDbHandle(&mHandleDim);
 	//pFiler->readAcDbHandle(&mHandleText);
 

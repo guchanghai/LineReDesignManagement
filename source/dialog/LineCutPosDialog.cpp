@@ -285,6 +285,22 @@ void LineCutPosDialog::GenerateCutRegion(LineEntity* lineEntry)
 		return;
 	}
 
+	//创建截图区域的注释
+	double markOffset = 0;
+	if( lineEntry->m_LineBasiInfo->mShape == GlobalData::LINE_SHAPE_CIRCLE )
+	{
+		double radius;
+		acdbDisToF(lineEntry->m_LineBasiInfo->mRadius.c_str(), -1, &radius);
+		markOffset = ( radius * 1.5 ) / 1000 ;
+	}
+	else if ( lineEntry->m_LineBasiInfo->mShape == GlobalData::LINE_SHAPE_SQUARE )
+	{
+		double width,height;
+		acdbDisToF(lineEntry->m_LineBasiInfo->mWidth.c_str(), -1, &width);
+		acdbDisToF(lineEntry->m_LineBasiInfo->mHeight.c_str(), -1, &height);
+		markOffset = ( width / 2 + height / 2 ) / 1000;
+	}
+
 	//对所有的线段进行遍历
 	PointIter pointIter = pointList->begin();
 	for(;pointIter != pointList->end();pointIter++)
@@ -304,11 +320,11 @@ void LineCutPosDialog::GenerateCutRegion(LineEntity* lineEntry)
 		acutPrintf(L"\n对第【%d】条线段进行切图！",pointEntity->m_PointNO);
 #endif
 
-		GenerateCutRegion( pointEntity );
+		GenerateCutRegion( pointEntity, markOffset );
 	}
 }
 
-void LineCutPosDialog::GenerateCutRegion(PointEntity* pointEntity)
+void LineCutPosDialog::GenerateCutRegion(PointEntity* pointEntity, double markOffset)
 {
 	//得到其对应的管线实体对象
 	AcDbObjectId lineEntityId = pointEntity->m_DbEntityCollection.GetLineEntity();
@@ -367,9 +383,8 @@ void LineCutPosDialog::GenerateCutRegion(PointEntity* pointEntity)
 			transformObjs.append(hatchId);
 			TransformToXY( transformObjs );
 
-			//创建截图区域的注释
-			//AcDbObjectId mLeaderId = CreateMLeader(centerPoint, markContent.GetBuffer());
-			//m_CutObjects.append(mLeaderId);
+			AcDbObjectId mLeaderId = CreateMLeader(centerPoint, markContent.GetBuffer(), markOffset);
+			m_CutObjects.append(mLeaderId);
 		}
 		else
 		{
@@ -420,12 +435,10 @@ AcDbObjectId LineCutPosDialog::CreateHatch( AcDbObjectId entityId )
 	return ArxWrapper::PostToModelSpace(pHatch, m_CutLayerName.GetBuffer());
 }
 
-AcDbObjectId LineCutPosDialog::CreateMLeader(const AcGePoint3d& start, const wstring& content)
+AcDbObjectId LineCutPosDialog::CreateMLeader(const AcGePoint3d& start, const wstring& content, double markOffset)
 {
-	static int leaderOffset = 6;
-
 	//标注的起点
-	AcGePoint3d startPoint(start);
+	AcGePoint3d startPoint(start.x, start.y, 0);
 
 	//进行相应的转换
 	{
@@ -443,33 +456,45 @@ AcDbObjectId LineCutPosDialog::CreateMLeader(const AcGePoint3d& start, const wst
 			acutPrintf(L"\n切面与Y轴垂直，把Z轴位置转换为Y轴位置");
 #endif		
 			startPoint.y = start.z;
-			startPoint.z = 0;
 		} 
 	}
 
 	//折点为编译6个单位，且位置在左下方
-	AcGePoint3d endPoint(start.x - leaderOffset, start.y - leaderOffset, start.z);
+	AcGePoint3d endPointCorner(startPoint.x + markOffset, startPoint.y - markOffset, 0);
+		
+	//保证标注字体在允许范围内
+	double textHeight = markOffset;
+	if( textHeight > 2 )
+		textHeight = 2;
 
-	//创建标注
-    AcDbMLeader* leader = new AcDbMLeader;
+	AcGePoint3d endPointText(endPointCorner.x + textHeight, endPointCorner.y, 0);
 
-	//设置标注的内容
+	AcDbObjectId textId;
 	{
-		int index = 0;
-		leader->addLeaderLine(startPoint,index);
-
-		leader->addLastVertex(index,endPoint);
-		leader->setLastVertex(index,endPoint);
-
-		leader->setContentType(AcDbMLeaderStyle::kMTextContent);
-
 		//设置标注的文字
 		AcDbMText* mtext = new AcDbMText;
 		mtext->setContents(content.c_str());
+		mtext->setAttachment(AcDbMText::AttachmentPoint::kBottomLeft);
+		mtext->setLocation(endPointText);
 
-		mtext->setTextHeight(mtext->textHeight()/2);
+		//文字的高度为半径（或者高/宽）
+		acutPrintf(L"\n【%s】的高度为【%0.2lf】",content.c_str(), textHeight/2);
+		mtext->setTextHeight(textHeight/2);
 
-		leader->setMText(mtext);
+		textId = ArxWrapper::PostToModelSpace(mtext, m_CutLayerName.GetBuffer());
+		m_CutObjects.append(textId);
+	}
+
+	AcDbLeader* leader = new AcDbLeader;
+
+	//设置标注的内容
+	{
+		leader->appendVertex(startPoint);
+		leader->appendVertex(endPointCorner);
+		leader->appendVertex(endPointText);
+
+		leader->attachAnnotation(textId);
+		leader->evaluateLeader();
 	}
 
 	//添加到模型空间中

@@ -57,7 +57,7 @@ private:
 	void GenerateCutRegion(LineEntity* lineEntry);
 
 	//对一个折线段进行切图
-	void GenerateCutRegion(PointEntity* pointEntity);
+	void GenerateCutRegion(PointEntity* pointEntity, double markOffset);
 
 	//生成切面图所在的图层
 	void GenerateCutPlane();
@@ -72,7 +72,7 @@ private:
 	AcDbObjectId CreateHatch(AcDbObjectId entityId);
 
 	//添加注释
-	AcDbObjectId CreateMLeader(const AcGePoint3d& center, const wstring& content );
+	AcDbObjectId CreateMLeader(const AcGePoint3d& center, const wstring& content, double markOffset);
 
 	//删除上次切图中产生的结果对象
 	static void CutBack();

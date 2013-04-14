@@ -27,6 +27,8 @@ using namespace std;
 using namespace ::com::guch::assistant::config;
 extern wstring gLmaArxLoadPath;
 
+#define NEW_LINE L"\r\n"
+
 namespace com
 {
 
@@ -98,13 +100,26 @@ void LineEntityFile::Import()
 	wstring wContent = StringToWString( strCnt );
 
 	//查找回车以决定行
-	size_t lineFrom = 0;
-	size_t linePos = wContent.find_first_of(L"\r\n",lineFrom);
+	size_t lineFrom(0), linePos(0);
 
-	while( linePos != wstring::npos )
+	do
 	{
-		//得到一行数据
-		wstring& wLine = wContent.substr(lineFrom, linePos-lineFrom);
+		//从下一个字符开始查找另一个管线数据
+		linePos = wContent.find(LineEntity::LINE_DATA_BEGIN,lineFrom + 1);
+
+		//得到一个管线数据
+		if( linePos == wstring::npos )
+			linePos = wContent.length();
+
+		wstring wLine = wContent.substr(lineFrom, linePos-lineFrom);
+
+		//删除其中的回车换行
+		wstring::size_type pos = 0;
+		while ( (pos = wLine.find(NEW_LINE, pos)) != wstring::npos ) 
+		{
+			wLine.replace( pos, wstring(NEW_LINE).length(), L"" );
+			pos++;
+		}
 
 #ifdef DEBUG
 		acutPrintf(L"\n得到一行管线实体数据【%s】.",wLine.c_str());
@@ -123,10 +138,10 @@ void LineEntityFile::Import()
 		//创建相应的柱体
 		newLine->CreateDbObjects();
 
-		//从下一个字符开始查找另外一行
-		lineFrom = linePos + 1;
-		linePos = wContent.find_first_of(L"\r\n",lineFrom + 1);
+		//记住当前的位置
+		lineFrom = linePos;
 	}
+	while( lineFrom != wContent.length() );
 
 	//关闭文件
 	archiveFile.Close();
@@ -405,7 +420,7 @@ wstring LineEntityFile::GetNewPipeName( const LineCategoryItemData* pipeCategory
 	return pipeCategory;
 }
 
-LineList LineEntityFile::GetList( const wstring& entityKind )
+LineList LineEntityFile::GetList( const wstring& entityKind ) const
 {
 	LineList kindList;
 

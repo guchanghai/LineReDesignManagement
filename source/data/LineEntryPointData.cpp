@@ -39,9 +39,9 @@ namespace assistant
 namespace data
 {
 
-#define POINT_START L"PS"
-#define POINT_END L"PE"
-#define POINTS_SEP L"&&"
+#define POINT_START L"зјБъ:"
+#define POINT_END L""
+#define POINTS_SEP L"-"
 
 ///////////////////////////////////////////////////////////////////////////
 // Implementation PointEntity
@@ -89,11 +89,11 @@ PointEntity::PointEntity( const wstring& data )
 	double temp;
 
 	const static size_t start = wcslen(POINT_START);
-	size_t end = data.find_first_of(POINT_END);
+	//size_t end = data.find_first_of(POINT_END);
 
 	int index = 0;
 
-	wstrVector* dataColumn = vectorContructor(data,POINTS_SEP,start,end);
+	wstrVector* dataColumn = vectorContructor(data,POINTS_SEP,start,data.length());
 	wstring& column = (*dataColumn)[index++];
 
 	acdbDisToF(column.c_str(), -1, &temp);
@@ -108,9 +108,8 @@ PointEntity::PointEntity( const wstring& data )
 	column = (*dataColumn)[index++];
 	acdbDisToF(column.c_str(), -1, &m_Point[Z]);
 
-	m_LevelKind = (*dataColumn)[index++];
-
-	m_Direction = (*dataColumn)[index++];
+	//m_LevelKind = (*dataColumn)[index++];
+	//m_Direction = (*dataColumn)[index++];
 
 	delete dataColumn;
 }
@@ -118,14 +117,11 @@ PointEntity::PointEntity( const wstring& data )
 wstring PointEntity::toString() const
 {
 	CString temp;
-	temp.Format(L"%s%d%s%0.2f%s%0.2f%s%0.2f%s%s%s%s%s%s",
-				POINT_START,
-				m_PointNO, POINTS_SEP,
+	temp.Format(L"%s%d%s%0.2f%s%0.2f%s%0.2f%s%s",
+				POINT_START, m_PointNO, POINTS_SEP,
 				m_Point[X], POINTS_SEP,
 				m_Point[Y], POINTS_SEP,
 				m_Point[Z], POINTS_SEP,
-				m_LevelKind.c_str(),POINTS_SEP,
-				m_Direction.c_str(),POINTS_SEP,
 				POINT_END);
 
 	return temp.GetBuffer();

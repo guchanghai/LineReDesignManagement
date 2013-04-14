@@ -41,6 +41,7 @@ namespace data
 // Implementation LineEntity
 
 const wstring LineEntity::LINE_ENTRY_LAYER = L"管线实体字典";
+const wstring LineEntity::LINE_DATA_BEGIN = L"实体数据：\r\n";
 
 /**
  * 管线实体
@@ -70,7 +71,7 @@ LineEntity::LineEntity(const wstring& rLineName, const wstring& rLineKind,
 	m_pDbEntry = new LineDBEntity( this );
 }
 
-LineEntity::LineEntity( const wstring& data)
+LineEntity::LineEntity( wstring& data)
 {
 	m_PointList = new PointList();
 	m_PrePointList = NULL;
@@ -78,7 +79,8 @@ LineEntity::LineEntity( const wstring& data)
 	double temp;
 	int index = 0;
 
-	wstrVector* dataColumn = vectorContructor(data,L"\t");
+	const static size_t start = wcslen(LINE_DATA_BEGIN.c_str());
+	wstrVector* dataColumn = vectorContructor(data,L"\t",start,data.length());
 
 	//得到线的相关属性
 	wstring& column = (*dataColumn)[index++];
@@ -112,7 +114,9 @@ LineEntity::LineEntity( const wstring& data)
 	while( index < size )
 	{
 		column = (*dataColumn)[index++];
-		m_PointList->push_back(new PointEntity(column));
+
+		if( column.length() > 3 )
+			m_PointList->push_back(new PointEntity(column));
 	}
 
 	delete dataColumn;
@@ -230,26 +234,22 @@ void LineEntity::SetPoints( PointList* newPoints)
 
 wstring LineEntity::toString()
 {
-	wstring lineData;
+	wstring lineData(LINE_DATA_BEGIN);
 
 	CString temp;
-	temp.Format(L"%d\t%s\t%s\t%s\t%d",m_LineID,m_LineName.c_str(),m_LineKind.c_str(),
+	temp.Format(L"%d\t%s\t%s\t%s\t%d",
+					m_LineID,m_LineName.c_str(),m_LineKind.c_str(),
 					m_LineBasiInfo->toString().c_str(),
-					m_CurrentPointNO);
+					(m_PointList != NULL ? m_PointList->size() : 0 ) );
 
-#ifdef DEBUG
-	//acutPrintf(L"\n管线实体序列化为【%s】",temp.GetBuffer());
-#endif
-
-	lineData = temp;
-
-	if( this->m_PointList )
+	lineData += wstring(temp.GetBuffer());
+	if( m_PointList )
 	{
-		for( ContstPointIter iter = this->m_PointList->begin();
-				iter != this->m_PointList->end();
+		for( ContstPointIter iter = m_PointList->begin();
+				iter != m_PointList->end();
 				iter++)
 		{
-			lineData += L"\t";
+			lineData += L"\t\r\n";
 			lineData += (*iter)->toString();
 		}
 	}
