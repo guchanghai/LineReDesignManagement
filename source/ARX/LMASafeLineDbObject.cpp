@@ -78,15 +78,15 @@ Acad::ErrorStatus LMASafeLineDbObject::Init()
 	//圆形或矩形
 	if( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
-		acdbDisToF(mpPointInfo->mCategoryData->mRadius.c_str(), -1, &mRadius);
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mRadius.c_str(), -1, &mRadius);
 		
 		//直径的单位是毫米，而距离的单位是米
 		mRadius = (mRadius + safeSize) / 1000;
 	}
-	else if ( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
+	else //if ( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
-		acdbDisToF(mpPointInfo->mCategoryData->mHeight.c_str(), -1, &mLength);
-		acdbDisToF(mpPointInfo->mCategoryData->mWidth.c_str(), -1, &mWidth);
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mHeight.c_str(), -1, &mLength);
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mWidth.c_str(), -1, &mWidth);
 
 		//直径的单位是毫米，而距离的单位是米
 		mLength = ( mLength + safeSize )/ 1000;

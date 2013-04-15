@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "LineCategoryItemData.h"
-#include <LMAUtils.h>
 
 #pragma warning (disable : 4996 )
 
@@ -16,12 +15,50 @@ namespace assistant
 namespace config
 {
 
+LineSizeData::LineSizeData():
+	mRadius(L"0"),
+	mWidth(L"0"),
+	mHeight(L"0"),
+	mReservedA(L"0"),
+	mReservedB(L"0")
+{
+}
+
+LineSizeData::LineSizeData( const wstring& rRadius,
+							const wstring& rWidth,
+							const wstring& rHeight,
+							const wstring& rReservedA,
+							const wstring& rReservedB):
+	mRadius(rRadius),
+	mWidth(rWidth),
+	mHeight(rHeight),
+	mReservedA(rReservedA),
+	mReservedB(rReservedB)
+{
+}
+
+LineSizeData::LineSizeData( const LineSizeData& rData ):
+	mRadius(rData.mRadius),
+	mWidth(rData.mWidth),
+	mHeight(rData.mHeight),
+	mReservedA(rData.mReservedA),
+	mReservedB(rData.mReservedB)
+{
+}
+
+wstring LineSizeData::toString() const
+{
+	return mRadius + L"\t"
+		+ mWidth + L"\t"
+		+ mHeight + L"\t"
+		+ mReservedA + L"\t"
+		+ mReservedB;
+}
+
 LineCategoryItemData::LineCategoryItemData(void)
 :mCategory(L""),
 mShape(L""),
-mRadius(L"0"),
-mWidth(L"0"),
-mHeight(L"0"),
+mSize(),
 mWallSize(L"0"),
 mSafeSize(L"0"),
 mPlaneMark(L""),
@@ -32,9 +69,7 @@ mThroughDirection(L"")
 
 LineCategoryItemData::LineCategoryItemData( const wstring& rCategory,
 											const wstring& rShape,
-											const wstring& rRadius,
-											const wstring& rWidth,
-											const wstring& rHeight,
+											const LineSizeData& rSize,
 											const wstring& rWallSize,
 											const wstring& rSafeSize,
 											const wstring& rPlaneMark,
@@ -42,9 +77,7 @@ LineCategoryItemData::LineCategoryItemData( const wstring& rCategory,
 											const wstring& rThroughDirection)
 :mCategory(rCategory),
 mShape(rShape),
-mRadius(rRadius),
-mWidth(rWidth),
-mHeight(rHeight),
+mSize(rSize),
 mWallSize(rWallSize),
 mSafeSize(rSafeSize),
 mPlaneMark(rPlaneMark),
@@ -54,8 +87,7 @@ mThroughDirection(rThroughDirection)
 
 LineCategoryItemData::LineCategoryItemData( const LineCategoryItemData& rData)
 :mCategory(rData.mCategory),
-mWidth(rData.mWidth),
-mHeight(rData.mHeight),
+mSize(rData.mSize),
 mWallSize(rData.mWallSize),
 mSafeSize(rData.mSafeSize),
 mPlaneMark(rData.mPlaneMark),
@@ -68,24 +100,13 @@ wstring LineCategoryItemData::toString() const
 {
 	return mCategory + L"\t"
 			+ mShape + L"\t"
-			+ mRadius + L"\t"
-			+ mWidth + L"\t"
-			+ mHeight + L"\t"
+			+ mSize.toString() + L"\t"
 			+ mWallSize + L"\t"
 			+ mSafeSize + L"\t"
 			+ mPlaneMark + L"\t"
 			+ mCutMark + L"\t"
 			+ mThroughDirection;
 }
-
-LineCategoryItemData::~LineCategoryItemData(void){}
-
-/*
-std::ostream & operator<<(std::ostream &os, const LineCategoryItemData &itemData)
-{
-	return os << itemData.mID << itemData.mName << itemData.mKind;
-}
-*/
 
 } // end of data
 

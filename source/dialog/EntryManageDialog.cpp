@@ -167,7 +167,6 @@ BOOL EntryManageDialog::InitEntryDetailControl()
 		m_LineShape.InsertString(index++,GlobalData::LINE_SHAPE_GZQYG.c_str());
 		m_LineShape.InsertString(index++,GlobalData::LINE_SHAPE_QQMTX.c_str());
 
-		
 		m_LineShape.SetCurSel(0);
 	}
 
@@ -514,6 +513,8 @@ BEGIN_MESSAGE_MAP(EntryManageDialog, CDialog)
 	ON_EN_CHANGE(IDC_EDIT_DANAMIC_1,		OnControlValueChange)
 	ON_EN_CHANGE(IDC_EDIT_DANAMIC_2,		OnControlValueChange)
 	ON_EN_CHANGE(IDC_EDIT_DANAMIC_3,		OnControlValueChange)
+	ON_EN_CHANGE(IDC_EDIT_DANAMIC_4,		OnControlValueChange)
+	ON_EN_CHANGE(IDC_EDIT_DANAMIC_5,		OnControlValueChange)
 
 	ON_BN_CLICKED(IDC_THROUGH_LEFT,			OnControlValueChange)
 	ON_BN_CLICKED(IDC_THROUGH_RIGHT,		OnControlValueChange)
@@ -768,17 +769,34 @@ void EntryManageDialog::FillLineData( LineEntity* lineEntry )
 		//填充数据
 		if( lineEntry->m_LineBasiInfo->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 		{
-			m_EditDynamic_1.SetWindowText(lineEntry->m_LineBasiInfo->mRadius.c_str());
+			m_EditDynamic_1.SetWindowText(lineEntry->m_LineBasiInfo->mSize.mRadius.c_str());
 		}
 		else if ( lineEntry->m_LineBasiInfo->mShape == GlobalData::LINE_SHAPE_SQUARE )
 		{
-			m_EditDynamic_1.SetWindowText(lineEntry->m_LineBasiInfo->mWidth.c_str());
-			m_EditDynamic_2.SetWindowText(lineEntry->m_LineBasiInfo->mHeight.c_str());
+			m_EditDynamic_1.SetWindowText(lineEntry->m_LineBasiInfo->mSize.mWidth.c_str());
+			m_EditDynamic_2.SetWindowText(lineEntry->m_LineBasiInfo->mSize.mHeight.c_str());
 		}
-
-		m_EditDynamic_3.SetWindowText(L"0");
-		m_EditDynamic_4.SetWindowText(L"0");
-		m_EditDynamic_5.SetWindowText(L"0");
+		else if ( lineEntry->m_LineBasiInfo->mShape == GlobalData::LINE_SHAPE_GZQPD )
+		{
+			m_EditDynamic_1.SetWindowText(lineEntry->m_LineBasiInfo->mSize.mRadius.c_str());
+			m_EditDynamic_2.SetWindowText(lineEntry->m_LineBasiInfo->mSize.mWidth.c_str());
+			m_EditDynamic_3.SetWindowText(lineEntry->m_LineBasiInfo->mSize.mHeight.c_str());
+		}
+		else if ( lineEntry->m_LineBasiInfo->mShape == GlobalData::LINE_SHAPE_GZQYG )
+		{
+			m_EditDynamic_1.SetWindowText(lineEntry->m_LineBasiInfo->mSize.mRadius.c_str());
+			m_EditDynamic_2.SetWindowText(lineEntry->m_LineBasiInfo->mSize.mWidth.c_str());
+			m_EditDynamic_3.SetWindowText(lineEntry->m_LineBasiInfo->mSize.mHeight.c_str());
+			m_EditDynamic_4.SetWindowText(lineEntry->m_LineBasiInfo->mSize.mReservedA.c_str());
+		}
+		else if( lineEntry->m_LineBasiInfo->mShape == GlobalData::LINE_SHAPE_QQMTX )
+		{
+			m_EditDynamic_1.SetWindowText(lineEntry->m_LineBasiInfo->mSize.mRadius.c_str());
+			m_EditDynamic_2.SetWindowText(lineEntry->m_LineBasiInfo->mSize.mWidth.c_str());
+			m_EditDynamic_3.SetWindowText(lineEntry->m_LineBasiInfo->mSize.mHeight.c_str());
+			m_EditDynamic_4.SetWindowText(lineEntry->m_LineBasiInfo->mSize.mReservedA.c_str());
+			m_EditDynamic_5.SetWindowText(lineEntry->m_LineBasiInfo->mSize.mReservedB.c_str());
+		}
 
 		m_LineWallSize.SetWindowText(lineEntry->m_LineBasiInfo->mWallSize.c_str());
 		m_LineSafeSize.SetWindowText(lineEntry->m_LineBasiInfo->mSafeSize.c_str());
@@ -817,7 +835,7 @@ LineCategoryItemData* EntryManageDialog::CreateEntryDetailInfo()
 {
 	UpdateData(TRUE);
 
-	CString lineCategory,lineShape,lineRadius,lineWidth,lineHeight,
+	CString lineCategory,lineShape,lineRadius,lineWidth,lineHeight,lineReservedA,lineReservedB,
 			lineSafeSize,lineWallSize,lineThroughDirect,
 			linePlaneDesc,lineCutDesc;
 
@@ -828,6 +846,8 @@ LineCategoryItemData* EntryManageDialog::CreateEntryDetailInfo()
 	lineRadius = L"0";
 	lineWidth = L"0";
 	lineHeight = L"0";
+	lineReservedA = L"0";
+	lineReservedB = L"0";
 
 	if( wstring(lineShape.GetBuffer()) == GlobalData::LINE_SHAPE_CIRCLE )
 	{
@@ -850,6 +870,45 @@ LineCategoryItemData* EntryManageDialog::CreateEntryDetailInfo()
 			return NULL;
 		}
 	}
+	else if ( wstring(lineShape.GetBuffer()) == GlobalData::LINE_SHAPE_GZQPD )
+	{
+		m_EditDynamic_1.GetWindowTextW(lineRadius);
+		m_EditDynamic_2.GetWindowTextW(lineWidth);
+		m_EditDynamic_3.GetWindowTextW(lineHeight);
+
+		if( lineRadius == L"0" || lineWidth == L"0" || lineHeight == L"0" )
+		{
+			MessageBoxW(L"净宽、矢高、墙高必须都大于零", GlobalData::ERROR_DIALOG_CAPTION.c_str(), MB_OK);
+			return NULL;
+		}
+	}
+	else if ( wstring(lineShape.GetBuffer()) == GlobalData::LINE_SHAPE_SQUARE )
+	{
+		m_EditDynamic_1.GetWindowTextW(lineRadius);
+		m_EditDynamic_2.GetWindowTextW(lineWidth);
+		m_EditDynamic_3.GetWindowTextW(lineHeight);
+		m_EditDynamic_4.GetWindowTextW(lineReservedA);
+
+		if( lineRadius == L"0" || lineWidth == L"0" || lineHeight == L"0" || lineReservedA == L"0" )
+		{
+			MessageBoxW(L"净宽、上矢高、下矢高、墙高必须都大于零", GlobalData::ERROR_DIALOG_CAPTION.c_str(), MB_OK);
+			return NULL;
+		}
+	}
+	else if ( wstring(lineShape.GetBuffer()) == GlobalData::LINE_SHAPE_SQUARE )
+	{
+		m_EditDynamic_1.GetWindowTextW(lineRadius);
+		m_EditDynamic_2.GetWindowTextW(lineWidth);
+		m_EditDynamic_3.GetWindowTextW(lineHeight);
+		m_EditDynamic_4.GetWindowTextW(lineReservedA);
+		m_EditDynamic_5.GetWindowTextW(lineReservedB);
+
+		if( lineRadius == L"0" || lineWidth == L"0" || lineHeight == L"0" || lineReservedA == L"0" || lineReservedB == L"0" )
+		{
+			MessageBoxW(L"上矢宽、下矢宽、上矢高、下矢高、墙高必须都大于零", GlobalData::ERROR_DIALOG_CAPTION.c_str(), MB_OK);
+			return NULL;
+		}
+	}
 
 	m_LineWallSize.GetWindowTextW(lineWallSize);
 	m_LineSafeSize.GetWindowTextW(lineSafeSize);
@@ -868,9 +927,11 @@ LineCategoryItemData* EntryManageDialog::CreateEntryDetailInfo()
 	categoryData->mCategory = wstring(lineCategory.GetBuffer());
 	categoryData->mShape = wstring(lineShape.GetBuffer());
 
-	categoryData->mRadius = wstring(lineRadius.GetBuffer());
-	categoryData->mWidth = wstring(lineWidth.GetBuffer());
-	categoryData->mHeight = wstring(lineHeight.GetBuffer());
+	categoryData->mSize.mRadius = wstring(lineRadius.GetBuffer());
+	categoryData->mSize.mWidth = wstring(lineWidth.GetBuffer());
+	categoryData->mSize.mHeight = wstring(lineHeight.GetBuffer());
+	categoryData->mSize.mReservedA = wstring(lineReservedA.GetBuffer());
+	categoryData->mSize.mReservedB = wstring(lineReservedB.GetBuffer());
 
 	categoryData->mWallSize = wstring(lineWallSize.GetBuffer());
 	categoryData->mSafeSize = wstring(lineSafeSize.GetBuffer());

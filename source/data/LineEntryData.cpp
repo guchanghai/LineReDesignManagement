@@ -92,11 +92,16 @@ LineEntity::LineEntity( wstring& data)
 
 	//得到详细信息
 	m_LineBasiInfo = new LineCategoryItemData();
+
 	m_LineBasiInfo->mCategory = (*dataColumn)[index++];
 	m_LineBasiInfo->mShape = (*dataColumn)[index++];
-	m_LineBasiInfo->mRadius = (*dataColumn)[index++];
-	m_LineBasiInfo->mWidth = (*dataColumn)[index++];
-	m_LineBasiInfo->mHeight = (*dataColumn)[index++];
+
+	m_LineBasiInfo->mSize.mRadius = (*dataColumn)[index++];
+	m_LineBasiInfo->mSize.mWidth = (*dataColumn)[index++];
+	m_LineBasiInfo->mSize.mHeight = (*dataColumn)[index++];
+	m_LineBasiInfo->mSize.mReservedA = (*dataColumn)[index++];
+	m_LineBasiInfo->mSize.mReservedB = (*dataColumn)[index++];
+
 	m_LineBasiInfo->mWallSize = (*dataColumn)[index++];
 	m_LineBasiInfo->mSafeSize = (*dataColumn)[index++];
 	m_LineBasiInfo->mPlaneMark = (*dataColumn)[index++];
@@ -434,17 +439,27 @@ LineDBEntity::dwgInFields(AcDbDwgFiler* pFiler)
 
 			tmpStr = NULL;    // must explicitly set to NULL or readItem() crashes!
 			pFiler->readItem(&tmpStr);
-			pImplemention->m_LineBasiInfo->mRadius = wstring(tmpStr);
+			pImplemention->m_LineBasiInfo->mSize.mRadius = wstring(tmpStr);
 			acutDelString(tmpStr);
 		
 			tmpStr = NULL;    // must explicitly set to NULL or readItem() crashes!
 			pFiler->readItem(&tmpStr);
-			pImplemention->m_LineBasiInfo->mWidth = wstring(tmpStr);
+			pImplemention->m_LineBasiInfo->mSize.mWidth = wstring(tmpStr);
 			acutDelString(tmpStr);
 
 			tmpStr = NULL;    // must explicitly set to NULL or readItem() crashes!
 			pFiler->readItem(&tmpStr);
-			pImplemention->m_LineBasiInfo->mHeight = wstring(tmpStr);
+			pImplemention->m_LineBasiInfo->mSize.mHeight = wstring(tmpStr);
+			acutDelString(tmpStr);
+
+			tmpStr = NULL;    // must explicitly set to NULL or readItem() crashes!
+			pFiler->readItem(&tmpStr);
+			pImplemention->m_LineBasiInfo->mSize.mReservedA = wstring(tmpStr);
+			acutDelString(tmpStr);
+
+			tmpStr = NULL;    // must explicitly set to NULL or readItem() crashes!
+			pFiler->readItem(&tmpStr);
+			pImplemention->m_LineBasiInfo->mSize.mReservedB = wstring(tmpStr);
 			acutDelString(tmpStr);
 
 			tmpStr = NULL;    // must explicitly set to NULL or readItem() crashes!
@@ -538,9 +553,11 @@ LineDBEntity::dwgOutFields(AcDbDwgFiler* pFiler) const
 	pFiler->writeItem(pImplemention->m_LineBasiInfo->mCategory.c_str());
 	pFiler->writeItem(pImplemention->m_LineBasiInfo->mShape.c_str());
 
-	pFiler->writeItem(pImplemention->m_LineBasiInfo->mRadius.c_str());
-	pFiler->writeItem(pImplemention->m_LineBasiInfo->mWidth.c_str());
-	pFiler->writeItem(pImplemention->m_LineBasiInfo->mHeight.c_str());
+	pFiler->writeItem(pImplemention->m_LineBasiInfo->mSize.mRadius.c_str());
+	pFiler->writeItem(pImplemention->m_LineBasiInfo->mSize.mWidth.c_str());
+	pFiler->writeItem(pImplemention->m_LineBasiInfo->mSize.mHeight.c_str());
+	pFiler->writeItem(pImplemention->m_LineBasiInfo->mSize.mReservedA.c_str());
+	pFiler->writeItem(pImplemention->m_LineBasiInfo->mSize.mReservedB.c_str());
 
 	pFiler->writeItem(pImplemention->m_LineBasiInfo->mWallSize.c_str());
 	pFiler->writeItem(pImplemention->m_LineBasiInfo->mSafeSize.c_str());

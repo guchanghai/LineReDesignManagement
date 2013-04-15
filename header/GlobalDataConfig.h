@@ -53,11 +53,11 @@ public:
 	/**
 	* 管道形状
 	**/
-	static const wstring LINE_SHAPE_CIRCLE;
-	static const wstring LINE_SHAPE_SQUARE;
-	static const wstring LINE_SHAPE_GZQPD;
-	static const wstring LINE_SHAPE_GZQYG;
-	static const wstring LINE_SHAPE_QQMTX;
+	static const wstring LINE_SHAPE_CIRCLE;		//圆形
+	static const wstring LINE_SHAPE_SQUARE;		//矩形
+	static const wstring LINE_SHAPE_GZQPD;		//拱直墙平底
+	static const wstring LINE_SHAPE_GZQYG;		//拱直墙仰拱
+	static const wstring LINE_SHAPE_QQMTX;		//曲墙(马蹄形)
 
 	/**
 	* 管道单位

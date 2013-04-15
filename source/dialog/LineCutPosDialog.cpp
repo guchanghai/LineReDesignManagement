@@ -290,14 +290,14 @@ void LineCutPosDialog::GenerateCutRegion(LineEntity* lineEntry)
 	if( lineEntry->m_LineBasiInfo->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
 		double radius;
-		acdbDisToF(lineEntry->m_LineBasiInfo->mRadius.c_str(), -1, &radius);
+		acdbDisToF(lineEntry->m_LineBasiInfo->mSize.mRadius.c_str(), -1, &radius);
 		markOffset = ( radius * 1.5 ) / 1000 ;
 	}
-	else if ( lineEntry->m_LineBasiInfo->mShape == GlobalData::LINE_SHAPE_SQUARE )
+	else// if ( lineEntry->m_LineBasiInfo->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
 		double width,height;
-		acdbDisToF(lineEntry->m_LineBasiInfo->mWidth.c_str(), -1, &width);
-		acdbDisToF(lineEntry->m_LineBasiInfo->mHeight.c_str(), -1, &height);
+		acdbDisToF(lineEntry->m_LineBasiInfo->mSize.mWidth.c_str(), -1, &width);
+		acdbDisToF(lineEntry->m_LineBasiInfo->mSize.mHeight.c_str(), -1, &height);
 		markOffset = ( width / 2 + height / 2 ) / 1000;
 	}
 

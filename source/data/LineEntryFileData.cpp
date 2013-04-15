@@ -381,17 +381,17 @@ wstring LineEntityFile::GetNewPipeName( const LineCategoryItemData* pipeCategory
 		CString shape;
 		if( pipeCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 		{
-			shape.Format(L"%s_%s",pipeCategoryData->mShape.c_str(),pipeCategoryData->mRadius.c_str());
+			shape.Format(L"%s_%s",pipeCategoryData->mShape.c_str(),pipeCategoryData->mSize.mRadius.c_str());
 		}
-		else if( pipeCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
+		else //if( pipeCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 		{
 			shape.Format(L"%s_%sx%s",pipeCategoryData->mShape.c_str(),
-				pipeCategoryData->mWidth.c_str(),pipeCategoryData->mHeight.c_str());
+				pipeCategoryData->mSize.mWidth.c_str(),pipeCategoryData->mSize.mHeight.c_str());
 		}
-		else
-		{
-			shape.Format(L"%s",pipeCategoryData->mShape.c_str());
-		}
+		//else
+		//{
+		//	shape.Format(L"%s",pipeCategoryData->mShape.c_str());
+		//}
 
 		pipeName.Format(L"%s_%s_%d",pipeCategory.c_str(),shape.GetBuffer(),index);
 
