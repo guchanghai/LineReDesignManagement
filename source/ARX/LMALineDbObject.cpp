@@ -3,7 +3,7 @@
 // Copyright 2012-2013, Chengyong Yang & Changhai Gu. 
 //               All rights reserved.
 // ------------------------------------------------
-//	ArxWrapper.h
+//	LMALineDbObject.cpp
 //	written by Changhai Gu
 // ------------------------------------------------
 // $File:\\LineManageAssitant\main\source\ARX\LMALineDbObject.cpp $
@@ -40,6 +40,7 @@ void LMADbObjectManager::RegisterClass()
 	LineDBEntity::rxInit();
 	LMALineDbObject::rxInit();
 	LMASafeLineDbObject::rxInit();
+	LMAWallLineDbObject::rxInit();
 }
 
 void LMADbObjectManager::UnRegisterClass()
@@ -47,6 +48,7 @@ void LMADbObjectManager::UnRegisterClass()
 	deleteAcRxClass(LineDBEntity::desc());
 	deleteAcRxClass(LMALineDbObject::desc());
 	deleteAcRxClass(LMASafeLineDbObject::desc());
+	deleteAcRxClass(LMAWallLineDbObject::desc());
 }
 
 ACRX_DXF_DEFINE_MEMBERS(LMALineDbObject, AcDb3dSolid, 
@@ -84,6 +86,8 @@ LMALineDbObject::LMALineDbObject( PointDBEntityCollection* pPointInfo)
 /// <returns></returns>
 Acad::ErrorStatus LMALineDbObject::Init()
 {
+	acutPrintf(L"\n创建管线实体");
+
 	if( mpPointInfo == NULL ||
 		mpPointInfo->mCategoryData == NULL )
 	{
@@ -98,6 +102,8 @@ Acad::ErrorStatus LMALineDbObject::Init()
 
 		//直径的单位是毫米，而距离的单位是米
 		mRadius = mRadius / 1000;
+		
+		acutPrintf(L"\n创建半径为【%0.2lf】的圆柱", mRadius);
 	}
 	else //if ( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
@@ -107,6 +113,8 @@ Acad::ErrorStatus LMALineDbObject::Init()
 		//直径的单位是毫米，而距离的单位是米
 		mLength = mLength / 1000;
 		mWidth = mWidth / 1000;
+
+		acutPrintf(L"\n创建宽为【%0.2lf】高为【%0.2lf】的方柱", mWidth, mLength);
 	}
 
 	return CreateDBObject();
@@ -118,7 +126,7 @@ Acad::ErrorStatus LMALineDbObject::Init()
 /// <returns></returns>
 Acad::ErrorStatus LMALineDbObject::CreateDBObject()
 {
-	acutPrintf(L"\n开始绘制实体");
+	//acutPrintf(L"\n开始绘制实体");
 
 	const AcGePoint3d& startPoint = mpPointInfo->mStartPoint;
 	const AcGePoint3d& endPoint = mpPointInfo->mEndPoint;
@@ -133,14 +141,14 @@ Acad::ErrorStatus LMALineDbObject::CreateDBObject()
 
 	if( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
-		acutPrintf(L"\n绘制半径为【%0.2lf】长为【%0.2lf】的圆柱",mRadius,height);
+		//acutPrintf(L"\n绘制半径为【%0.2lf】长为【%0.2lf】的圆柱",mRadius,height);
 
 		//绘制圆柱体
 		this->createFrustum(height,mRadius,mRadius,mRadius);
 	}
-	else if (  mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
+	else //if (  mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
-		acutPrintf(L"\n绘制宽【%0.2lf】高【%0.2lf】长【%0.2lf】的方柱体",mLength, mWidth, height);
+		//acutPrintf(L"\n绘制宽【%0.2lf】高【%0.2lf】长【%0.2lf】的方柱体",mLength, mWidth, height);
 
 		//绘制圆柱体
 		this->createBox(mLength,mWidth,height);
@@ -152,7 +160,7 @@ Acad::ErrorStatus LMALineDbObject::CreateDBObject()
 
 	//得到旋转的角度
 	double angle = -line3dVector.angleTo(AcGeVector3d::kZAxis);
-	acutPrintf(L"\n得到旋转角度【%lf】",angle);
+	//acutPrintf(L"\n得到旋转角度【%lf】",angle);
 
 	//进行旋转
 	AcGeMatrix3d rotateMatrix = AcGeMatrix3d::rotation( angle, rotateVctor, AcGePoint3d::kOrigin);
@@ -161,7 +169,7 @@ Acad::ErrorStatus LMALineDbObject::CreateDBObject()
 	//得到线段的中心点
 	AcGePoint3d center( startPoint.x + endPoint.x, startPoint.y + endPoint.y, startPoint.z + endPoint.z); 
 	center /= 2;
-	acutPrintf(L"\n得到中心点【%0.2lf】【%0.2lf】【%0.2lf】",center.x,center.y,center.z);
+	//acutPrintf(L"\n得到中心点【%0.2lf】【%0.2lf】【%0.2lf】",center.x,center.y,center.z);
 
 	//进行偏移
 	AcGeMatrix3d moveMatrix;

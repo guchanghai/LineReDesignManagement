@@ -161,7 +161,7 @@ void PointEntity::CreateLineFrom(const void* lineEntity, const ads_point& start 
 bool PointDBEntityCollection::DrawEntityCollection() 
 {
 #ifdef DEBUG
-	acutPrintf(L"\n绘制柱体实例，加入到图层空间\n");
+	acutPrintf(L"\n绘制柱体实例，加入到图层空间");
 #endif
 
 	//创建管线实体
@@ -169,6 +169,19 @@ bool PointDBEntityCollection::DrawEntityCollection()
 
 	//保存管线实体
 	SetLineEntity( ArxWrapper::PostToModelSpace(lmaLineObj, mLayerName) );
+
+	//判断是否需要创建壁厚实体
+	if( mCategoryData->mWallSize != L"0" 
+		&& mCategoryData->mWallSize.length() != 0)
+	{
+		acutPrintf(L"\n当前管线有壁厚");
+
+		//创建管线实体
+		LMAWallLineDbObject* lmaWallLineObj = new LMAWallLineDbObject( this );
+
+		//保存管线实体
+		SetWallLineEntity( ArxWrapper::PostToModelSpace(lmaWallLineObj, mLayerName) );
+	}
 
 	//创建管线安全范围实体
 	LMASafeLineDbObject* lmaSafeLineObj = new LMASafeLineDbObject( this );
@@ -196,6 +209,20 @@ bool PointDBEntityCollection::HasEntity( const AcDbObjectId& entityId ) const
 		return false;
 	}
 }
+
+PointDBEntityCollection::PointDBEntityCollection()
+	:mLayerName()
+	,mCategoryData(NULL)
+	,mLineID(0)
+	,mSequenceNO(0)
+	,mStartPoint()
+	,mEndPoint()
+	,m_LineEntryId()
+	,m_WallLineEntryId()
+	,m_SafeLineEntityId()
+	,m_DimEntityId()
+	,m_MarkEntityId()
+{}
 
 void PointDBEntityCollection::DropEntityCollection()
 {

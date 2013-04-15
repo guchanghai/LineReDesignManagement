@@ -327,11 +327,17 @@ void LineCutPosDialog::GenerateCutRegion(LineEntity* lineEntry)
 void LineCutPosDialog::GenerateCutRegion(PointEntity* pointEntity, double markOffset)
 {
 	//得到其对应的管线实体对象
-	AcDbObjectId lineEntityId = pointEntity->m_DbEntityCollection.GetLineEntity();
-	if( lineEntityId.isNull() )
+	AcDbObjectId lineEntityId = pointEntity->m_DbEntityCollection.GetWallLineEntity();
+	if( !lineEntityId.isValid() )
 	{
-		acutPrintf(L"\n当前线段没有对应的数据库实体，不必切图！");
-		return;
+		acutPrintf(L"\n当前线段没有对应的管线壁实体，尝试用管线切图！");
+
+		lineEntityId = pointEntity->m_DbEntityCollection.GetLineEntity();
+		if( !lineEntityId.isValid() )
+		{
+			acutPrintf(L"\n当前线段没有对应的管线实体，不必切图！");
+			return;
+		}
 	}
 
 	AcDbEntity* pLineObj;
@@ -356,7 +362,17 @@ void LineCutPosDialog::GenerateCutRegion(PointEntity* pointEntity, double markOf
 
 		//设置注释的内容
 		CString markContent;
-		markContent.Format(L"%s#%d",pointEntity->m_DbEntityCollection.mLayerName.c_str(), pointEntity->m_PointNO);
+
+		//如果用户设置了标注内容,则用标注内容#段号
+		if( pointEntity->m_DbEntityCollection.mCategoryData->mCutMark.length() != 0
+			&& pointEntity->m_DbEntityCollection.mCategoryData->mCutMark != L"无" )
+		{
+			markContent.Format(L"%s#%d",pointEntity->m_DbEntityCollection.mCategoryData->mCutMark.c_str(), pointEntity->m_PointNO);
+		}
+		else //未定义标注内容，则用管线名称#段号
+		{
+			markContent.Format(L"%s#%d",pointEntity->m_DbEntityCollection.mLayerName.c_str(), pointEntity->m_PointNO);
+		}
 
 		//关闭实体
 		pLMALine->close();

@@ -49,11 +49,14 @@ public:
 
 	typedef enum { DB_LINE, DB_SAFELINE, DB_DIM, DB_MARK } DBEntityKind;
 
-	PointDBEntityCollection(){}
+	PointDBEntityCollection();
 	~PointDBEntityCollection(){}
 
 	void SetLineEntity( const AcDbObjectId entityId ){ m_LineEntryId = entityId; }
 	const AcDbObjectId& GetLineEntity() const { return m_LineEntryId; }
+
+	void SetWallLineEntity( const AcDbObjectId entityId ){ m_WallLineEntryId = entityId; }
+	const AcDbObjectId& GetWallLineEntity() const { return m_WallLineEntryId; }
 
 	void SetSafeLineEntity( const AcDbObjectId entityId ){ m_SafeLineEntityId = entityId; }
 	const AcDbObjectId& GetSafeLineEntity() const { return m_SafeLineEntityId; }
@@ -90,6 +93,9 @@ public:
 
 	//the real line
 	AcDbObjectId m_LineEntryId;
+
+	//the wall line
+	AcDbObjectId m_WallLineEntryId;
 
 	//the line contains safe size
 	AcDbObjectId m_SafeLineEntityId;

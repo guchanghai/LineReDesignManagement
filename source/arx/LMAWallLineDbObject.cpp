@@ -3,10 +3,10 @@
 // Copyright 2012-2013, Chengyong Yang & Changhai Gu. 
 //               All rights reserved.
 // ------------------------------------------------
-//	LMASafeLineObject.cpp
+//	LMAWallLineDbObject.cpp
 //	written by Changhai Gu
 // ------------------------------------------------
-// $File:\\LineManageAssitant\main\source\ARX\LMASafeLineObject.cpp $
+// $File:\\LineManageAssitant\main\source\ARX\LMAWallLineDbObject.cpp $
 // $Author: Changhai Gu $
 // $DateTime: 2013/1/12 06:13:00
 // $Revision: #1 $
@@ -35,15 +35,15 @@ namespace assistant
 namespace arx
 {
 
-ACRX_DXF_DEFINE_MEMBERS(LMASafeLineDbObject, AcDb3dSolid, 
+ACRX_DXF_DEFINE_MEMBERS(LMAWallLineDbObject, AcDb3dSolid, 
 AcDb::kDHL_CURRENT, AcDb::kMReleaseCurrent, 
 0,
-    LMASafeLineDbObject, LMA);
+    LMAWallLineDbObject, LMA);
 
 /// <summary>
 /// Initializes a new instance of the <see cref="LMALineDbObject" /> class.
 /// </summary>
-LMASafeLineDbObject::LMASafeLineDbObject():
+LMAWallLineDbObject::LMAWallLineDbObject():
 	LMALineDbObject()
 {
 }
@@ -52,7 +52,7 @@ LMASafeLineDbObject::LMASafeLineDbObject():
 /// Initializes a new instance of the <see cref="LMALineDbObject" /> class.
 /// </summary>
 /// <param name="pPointInfo">The p point info.</param>
-LMASafeLineDbObject::LMASafeLineDbObject( PointDBEntityCollection* pPointInfo)
+LMAWallLineDbObject::LMAWallLineDbObject( PointDBEntityCollection* pPointInfo)
 : LMALineDbObject( pPointInfo )
 {
 	Init();
@@ -62,9 +62,9 @@ LMASafeLineDbObject::LMASafeLineDbObject( PointDBEntityCollection* pPointInfo)
 /// Inits this instance.
 /// </summary>
 /// <returns></returns>
-Acad::ErrorStatus LMASafeLineDbObject::Init()
+Acad::ErrorStatus LMAWallLineDbObject::Init()
 {
-	acutPrintf(L"\n创建安全距离管线实体");
+	acutPrintf(L"\n创建管线壁实体");
 
 	if( mpPointInfo == NULL ||
 		mpPointInfo->mCategoryData == NULL )
@@ -74,8 +74,7 @@ Acad::ErrorStatus LMASafeLineDbObject::Init()
 	}
 
 	//安全半径与壁厚
-	double safeSize(0), wallSize(0);
-	acdbDisToF(mpPointInfo->mCategoryData->mSafeSize.c_str(), -1, &safeSize);
+	double wallSize(0);
 	acdbDisToF(mpPointInfo->mCategoryData->mWallSize.c_str(), -1, &wallSize);
 
 	//圆形或矩形
@@ -84,9 +83,9 @@ Acad::ErrorStatus LMASafeLineDbObject::Init()
 		acdbDisToF(mpPointInfo->mCategoryData->mSize.mRadius.c_str(), -1, &mRadius);
 
 		//直径的单位是毫米，而距离的单位是米
-		mRadius = (mRadius + safeSize + wallSize) / 1000;
+		mRadius = (mRadius + wallSize) / 1000;
 
-		acutPrintf(L"\n创建安全距离【%0.2lf】壁厚【%0.2lf】半径为【%0.2lf】的圆柱",safeSize, wallSize, mRadius);
+		acutPrintf(L"\n创建壁厚【%0.2lf】半径为【%0.2lf】的圆柱", wallSize, mRadius);
 	}
 	else //if ( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
@@ -94,10 +93,10 @@ Acad::ErrorStatus LMASafeLineDbObject::Init()
 		acdbDisToF(mpPointInfo->mCategoryData->mSize.mWidth.c_str(), -1, &mWidth);
 
 		//直径的单位是毫米，而距离的单位是米
-		mLength = ( mLength + safeSize + wallSize )/ 1000;
-		mWidth = ( mWidth + safeSize + wallSize )/ 1000;
+		mLength = ( mLength + wallSize )/ 1000;
+		mWidth = ( mWidth + wallSize )/ 1000;
 
-		acutPrintf(L"\n创建安全距离【%0.2lf】壁厚【%0.2lf】宽为【%0.2lf】高为【%0.2lf】的方柱",safeSize, wallSize, mWidth, mLength);
+		acutPrintf(L"\n创建壁厚【%0.2lf】宽为【%0.2lf】高为【%0.2lf】的方柱", wallSize, mWidth, mLength);
 	}
 
 	return CreateDBObject();
@@ -107,13 +106,13 @@ Acad::ErrorStatus LMASafeLineDbObject::Init()
 /// Creates the pipe.
 /// </summary>
 /// <returns></returns>
-Acad::ErrorStatus LMASafeLineDbObject::CreateDBObject()
+Acad::ErrorStatus LMAWallLineDbObject::CreateDBObject()
 {
 	//同样也是绘制管线
 	LMALineDbObject::CreateDBObject();
 
-	//标注为蓝色，用于区分
-	this->setColorIndex(3);
+	//标注为绿色，用于区分
+	this->setColorIndex(2);
 
 	return Acad::eOk;
 }
@@ -121,7 +120,7 @@ Acad::ErrorStatus LMASafeLineDbObject::CreateDBObject()
 // Files data in from a DWG file.
 //
 Acad::ErrorStatus
-LMASafeLineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
+LMAWallLineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
 {
     assertWriteEnabled();
 
@@ -154,10 +153,10 @@ LMASafeLineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
 	mpPointInfo = &pEnd->m_DbEntityCollection;
 
 	//设置折线段对象数据库ID
-	mpPointInfo->SetSafeLineEntity(id());
+	mpPointInfo->SetWallLineEntity(id());
 
 #ifdef DEBUG
-	acutPrintf(L"\n从DWG文件【%s】得到管线安全范围线段实体 ID【%d】序列号【%d】.",
+	acutPrintf(L"\n从DWG文件【%s】得到管线壁线段实体 ID【%d】序列号【%d】.",
 					filename.GetBuffer(),mpPointInfo->mLineID,mpPointInfo->mSequenceNO );
 #endif
 
@@ -167,7 +166,7 @@ LMASafeLineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
 // Files data out to a DWG file.
 //
 Acad::ErrorStatus
-LMASafeLineDbObject::dwgOutFields(AcDbDwgFiler* pFiler) const
+LMAWallLineDbObject::dwgOutFields(AcDbDwgFiler* pFiler) const
 {
     assertReadEnabled();
 
@@ -189,7 +188,7 @@ LMASafeLineDbObject::dwgOutFields(AcDbDwgFiler* pFiler) const
 	dbToStr(this->database(),filename);
 
 #ifdef DEBUG
-	acutPrintf(L"\n保存管线安全范围线段实体 序列号【%d】到DWG文件【%s】.",
+	acutPrintf(L"\n保存管线壁线段实体 序列号【%d】到DWG文件【%s】.",
 					mpPointInfo->mSequenceNO,
 					filename.GetBuffer());
 #endif
@@ -200,7 +199,7 @@ LMASafeLineDbObject::dwgOutFields(AcDbDwgFiler* pFiler) const
 // Files data in from a DXF file.
 //
 Acad::ErrorStatus
-LMASafeLineDbObject::dxfInFields(AcDbDxfFiler* pFiler)
+LMAWallLineDbObject::dxfInFields(AcDbDxfFiler* pFiler)
 {
     assertWriteEnabled();
 
@@ -239,7 +238,7 @@ LMASafeLineDbObject::dxfInFields(AcDbDxfFiler* pFiler)
 // Files data out to a DXF file.
 //
 Acad::ErrorStatus
-LMASafeLineDbObject::dxfOutFields(AcDbDxfFiler* pFiler) const
+LMAWallLineDbObject::dxfOutFields(AcDbDxfFiler* pFiler) const
 {
     assertReadEnabled();
 

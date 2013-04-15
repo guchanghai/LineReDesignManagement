@@ -119,6 +119,31 @@ public:
 	AcDbHandle mHandleText;
 };
 
+class LMAWallLineDbObject : public LMALineDbObject
+{
+public:
+
+    ACRX_DECLARE_MEMBERS(LMAWallLineDbObject);
+
+    LMAWallLineDbObject();
+    LMAWallLineDbObject( PointDBEntityCollection* pPointInfo );
+
+    virtual Acad::ErrorStatus dwgInFields (AcDbDwgFiler*);
+    virtual Acad::ErrorStatus dwgOutFields(AcDbDwgFiler*)
+        const;
+    virtual Acad::ErrorStatus dxfInFields (AcDbDxfFiler*);
+    virtual Acad::ErrorStatus dxfOutFields(AcDbDxfFiler*)
+        const;
+
+protected:
+
+	// create the line pipe
+	virtual Acad::ErrorStatus Init();
+
+	// creat the 3d pipe
+	virtual Acad::ErrorStatus CreateDBObject();
+};
+
 class LMASafeLineDbObject : public LMALineDbObject
 {
 public:

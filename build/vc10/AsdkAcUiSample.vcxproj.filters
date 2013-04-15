@@ -67,6 +67,9 @@
     <ClCompile Include="..\..\source\intersect\LineIntersectManage.cpp">
       <Filter>src\Intersect</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\arx\LMAWallLineDbObject.cpp">
+      <Filter>src\ARX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\header\AsdkAcUiDialogSample.h">
