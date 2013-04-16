@@ -326,21 +326,14 @@ void LineCutPosDialog::GenerateCutRegion(LineEntity* lineEntry)
 
 void LineCutPosDialog::GenerateCutRegion(PointEntity* pointEntity, double markOffset)
 {
-	//得到其对应的管线实体对象
-	AcDbObjectId lineEntityId = pointEntity->m_DbEntityCollection.GetWallLineEntity();
+	AcDbObjectId lineEntityId = pointEntity->m_DbEntityCollection.GetLineEntity();
 	if( !lineEntityId.isValid() )
 	{
-		acutPrintf(L"\n当前线段没有对应的管线壁实体，尝试用管线切图！");
-
-		lineEntityId = pointEntity->m_DbEntityCollection.GetLineEntity();
-		if( !lineEntityId.isValid() )
-		{
-			acutPrintf(L"\n当前线段没有对应的管线实体，不必切图！");
-			return;
-		}
+		acutPrintf(L"\n当前线段没有对应的管线实体，不必切图！");
+		return;
 	}
 
-	AcDbEntity* pLineObj;
+	AcDbEntity* pLineObj(NULL);
 	Acad::ErrorStatus es = acdbOpenAcDbEntity(pLineObj, lineEntityId, AcDb::kForRead);
 
 	if( es == Acad::eOk )
@@ -353,9 +346,44 @@ void LineCutPosDialog::GenerateCutRegion(PointEntity* pointEntity, double markOf
 			return;
 		}
 
+		LMAWallLineDbObject* pWallLine(NULL);
+		{
+			//得到其对应的管线实体对象
+			AcDbObjectId wallEntityId = pointEntity->m_DbEntityCollection.GetWallLineEntity();
+			if( wallEntityId.isValid() )
+			{
+				acutPrintf(L"\n当前线段有对应的管线壁实体.");
+				es = acdbOpenAcDbEntity(pLineObj, wallEntityId, AcDb::kForRead);
+
+				if( es == Acad::eOk )
+				{
+					pWallLine = LMAWallLineDbObject::cast(pLineObj);
+
+					if( pWallLine == NULL )
+						acutPrintf(L"\n非法的管线壁实体.");
+				}
+				else
+				{
+					acutPrintf(L"\n打开管线壁实体失败！");
+					rxErrorMsg(es);
+				}
+			}
+		}
+
 		//得到实体与切面相切的截面
 		AcDbRegion *pSelectionRegion = NULL;
-		pLMALine->getSection(m_CutPlane, pSelectionRegion);
+		if( pWallLine )
+		{
+			pWallLine->getSection(m_CutPlane, pSelectionRegion);
+			pWallLine->close();
+		}
+		else
+		{
+			pLMALine->getSection(m_CutPlane, pSelectionRegion);
+		}
+
+		//关闭实体
+		pLMALine->close();
 
 		//得到注释的中心点
 		AcGePoint3d centerPoint = pLMALine->GetCutCenter(m_CutPlane);
@@ -373,9 +401,6 @@ void LineCutPosDialog::GenerateCutRegion(PointEntity* pointEntity, double markOf
 		{
 			markContent.Format(L"%s#%d",pointEntity->m_DbEntityCollection.mLayerName.c_str(), pointEntity->m_PointNO);
 		}
-
-		//关闭实体
-		pLMALine->close();
 
 		if( pSelectionRegion )
 		{

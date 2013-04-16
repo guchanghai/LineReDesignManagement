@@ -763,7 +763,7 @@ void EntryManageDialog::FillLineData( LineEntity* lineEntry )
 	if( lineEntry )
 	{
 		//设置详细数据
-		FillComobBox(m_LineCategory, lineEntry->m_LineBasiInfo->mCategory.c_str());
+		FillComobBox(m_LineCategory, lineEntry->m_LineBasiInfo->mCategory);
 		FillComobBox(m_LineShape, lineEntry->m_LineBasiInfo->mShape);
 
 		//填充数据

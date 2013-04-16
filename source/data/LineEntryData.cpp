@@ -41,7 +41,7 @@ namespace data
 // Implementation LineEntity
 
 const wstring LineEntity::LINE_ENTRY_LAYER = L"管线实体字典";
-const wstring LineEntity::LINE_DATA_BEGIN = L"实体数据：\r\n";
+const wstring LineEntity::LINE_DATA_BEGIN = L"实体数据：";
 
 /**
  * 管线实体
@@ -240,6 +240,7 @@ void LineEntity::SetPoints( PointList* newPoints)
 wstring LineEntity::toString()
 {
 	wstring lineData(LINE_DATA_BEGIN);
+	lineData += L"\r\n";
 
 	CString temp;
 	temp.Format(L"%d\t%s\t%s\t%s\t%d",

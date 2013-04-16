@@ -227,59 +227,24 @@ PointDBEntityCollection::PointDBEntityCollection()
 void PointDBEntityCollection::DropEntityCollection()
 {
 	//得到线段的数据库对象ID
-	AcDbObjectId lineObjId = m_LineEntryId;
-	if( lineObjId.isValid() )
+	if( m_LineEntryId.isValid() )
 	{
 #ifdef DEBUG
-		acutPrintf(L"\n线段终点 序号【%d】 坐标 x:【%0.2lf】y:【%0.2lf】z:【%0.2lf】被删除",
-						mSequenceNO, mEndPoint[X], mEndPoint[Y], mEndPoint[Z]);
+		acutPrintf(L"\n线段【%s】序号【%d】 坐标 x:【%0.2lf】y:【%0.2lf】z:【%0.2lf】被删除",
+					mLayerName.c_str(), mSequenceNO, mEndPoint[X], mEndPoint[Y], mEndPoint[Z]);
 #endif
 
-		//根据objectID从数据库得到直线
-		AcDbEntity* pLineObject(NULL);
-		Acad::ErrorStatus es = acdbOpenAcDbEntity(pLineObject, lineObjId, AcDb::kForWrite);
-		if (es == Acad::eOk)
-		{
-			LMALineDbObject* pLmaLineObject = dynamic_cast<LMALineDbObject*>(pLineObject);
+		//删除线段对象
+		acutPrintf(L"\n删除折线段实体.");
+		ArxWrapper::RemoveDbObject(m_LineEntryId);
 
-			if( pLmaLineObject )
-			{
-				AcDbHandle handleDim = pLmaLineObject->mHandleDim;
-				AcDbHandle handleText = pLmaLineObject->mHandleText;
+		//删除壁厚实体
+		acutPrintf(L"\n删除折线段实体.");
+		ArxWrapper::RemoveDbObject(m_WallLineEntryId);
 
-				//关闭管线实体
-				pLmaLineObject->close();
-
-				//AcDbObjectId dimObjId, txtObjId;
-						
-				//得到标注对象的ID
-				//acdbHostApplicationServices()->workingDatabase()->getAcDbObjectId(
-				//	dimObjId,false,handleDim);
-						
-				//得到文字说明
-				//acdbHostApplicationServices()->workingDatabase()->getAcDbObjectId(
-				//	txtObjId,false,handleText);
-
-				//删除线段对象
-				acutPrintf(L"\n删除折线段实体.");
-				ArxWrapper::RemoveDbObject(lineObjId);
-
-				//删除折线段安全范围实体
-				acutPrintf(L"\n删除折线段实体.");
-				ArxWrapper::RemoveDbObject(m_SafeLineEntityId);
-
-				//acutPrintf(L"\n删除标注对象.");
-				//RemoveDbObject(dimObjId);
-
-				//acutPrintf(L"\n删除文字说明.");
-				//RemoveDbObject(txtObjId);
-			}
-		}
-		else
-		{
-			acutPrintf(L"\n在删除管线是没有找到对应的数据库对象！");
-			rxErrorMsg(es);
-		}
+		//删除折线段安全范围实体
+		acutPrintf(L"\n删除折线段实体.");
+		ArxWrapper::RemoveDbObject(m_SafeLineEntityId);
 	}
 }
 
