@@ -109,7 +109,70 @@ Acad::ErrorStatus LMAWallLineDbObject::Init()
 Acad::ErrorStatus LMAWallLineDbObject::CreateDBObject()
 {
 	//同样也是绘制管线
-	LMALineDbObject::CreateDBObject();
+	//LMALineDbObject::CreateDBObject();
+
+	//acutPrintf(L"\n开始绘制实体");
+
+	const AcGePoint3d& startPoint = mpPointInfo->mStartPoint;
+	const AcGePoint3d& endPoint = mpPointInfo->mEndPoint;
+
+	//得到线段的长度
+	double height = startPoint.distanceTo( endPoint );
+	if( height < 0.01 )
+	{
+		acutPrintf(L"\n高度小于1毫米，暂不考虑这样的实体！",mRadius,height);
+		return Acad::eInvalidInput;
+	}
+
+	double wallOffset = height * 0.02;
+	height -= wallOffset;
+
+	if( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
+	{
+		//acutPrintf(L"\n绘制半径为【%0.2lf】长为【%0.2lf】的圆柱",mRadius,height);
+
+		//绘制圆柱体
+		this->createFrustum(height,mRadius,mRadius,mRadius);
+	}
+	else //if (  mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
+	{
+		//acutPrintf(L"\n绘制宽【%0.2lf】高【%0.2lf】长【%0.2lf】的方柱体",mLength, mWidth, height);
+
+		//绘制圆柱体
+		this->createBox(mLength,mWidth,height);
+	}
+
+	//进行偏移
+	AcGeMatrix3d wallUpMatrix;
+	double zOffset = wallOffset / 8;
+	wallUpMatrix.setToTranslation(AcGeVector3d(0, 0, zOffset));
+
+	//向上移动一定的偏移量的1/4，保证内部管线实体露出
+	transformBy(wallUpMatrix);
+
+	//得到线段与Z轴的垂直向量
+	AcGeVector3d line3dVector(endPoint.x - startPoint.x, endPoint.y - startPoint.y, endPoint.z - startPoint.z);
+	AcGeVector3d rotateVctor = line3dVector.crossProduct(AcGeVector3d::kZAxis);
+
+	//得到旋转的角度
+	double angle = -line3dVector.angleTo(AcGeVector3d::kZAxis);
+	//acutPrintf(L"\n得到旋转角度【%lf】",angle);
+
+	//进行旋转
+	AcGeMatrix3d rotateMatrix = AcGeMatrix3d::rotation( angle, rotateVctor, AcGePoint3d::kOrigin);
+	transformBy(rotateMatrix);
+	
+	//得到线段的中心点
+	AcGePoint3d center( startPoint.x + endPoint.x, startPoint.y + endPoint.y, startPoint.z + endPoint.z); 
+	center /= 2;
+	//acutPrintf(L"\n得到中心点【%0.2lf】【%0.2lf】【%0.2lf】",center.x,center.y,center.z);
+
+	//进行偏移
+	AcGeMatrix3d moveMatrix;
+	moveMatrix.setToTranslation(AcGeVector3d(center.x,center.y,center.z));
+
+	//最终成型
+	transformBy(moveMatrix);
 
 	//标注为绿色，用于区分
 	this->setColorIndex(2);
