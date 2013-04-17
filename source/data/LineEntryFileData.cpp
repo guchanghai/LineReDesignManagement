@@ -522,7 +522,7 @@ LineEntityFile* LineEntityFileManager::SaveFileEntity()
 	return GetLineEntryFile(fileName);
 }
 
-bool LineEntityFileManager::RegisterLineSegment( const wstring& fileName, UINT lineID, UINT sequence, PointEntity*& pStart, PointEntity*& pEnd )
+bool LineEntityFileManager::RegisterLineSegment( const wstring& fileName, UINT lineID, UINT sequence, LineEntity*& pLineEntity, PointEntity*& pStart, PointEntity*& pEnd )
 {
 	//找到文件管理类
 	LineEntityFile* pFileEntry = RegisterEntryFile(fileName);
@@ -538,6 +538,23 @@ bool LineEntityFileManager::RegisterLineSegment( const wstring& fileName, UINT l
 		acutPrintf(L"\n保存到临时管线管理器中.");
 #endif
 		pPointList = pFileEntry->GetTempLine( lineID );
+
+		if( pPointList == NULL )
+		{
+			acutPrintf(L"\n临时管线管理器没有改线段，错误数据！.");
+			return false;
+		}
+	}
+	else
+	{
+		pLineEntity = lineEntry;
+		pPointList = lineEntry->m_PointList;
+
+		if( pPointList == NULL )
+		{
+			acutPrintf(L"\n管线管理器已有改线段，但没有折线段列表，认为是错误数据！.");
+			return false;
+		}
 	}
 
 	if( sequence == 1 )

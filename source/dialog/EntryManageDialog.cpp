@@ -882,7 +882,7 @@ LineCategoryItemData* EntryManageDialog::CreateEntryDetailInfo()
 			return NULL;
 		}
 	}
-	else if ( wstring(lineShape.GetBuffer()) == GlobalData::LINE_SHAPE_SQUARE )
+	else if ( wstring(lineShape.GetBuffer()) == GlobalData::LINE_SHAPE_GZQYG )
 	{
 		m_EditDynamic_1.GetWindowTextW(lineRadius);
 		m_EditDynamic_2.GetWindowTextW(lineWidth);
@@ -895,7 +895,7 @@ LineCategoryItemData* EntryManageDialog::CreateEntryDetailInfo()
 			return NULL;
 		}
 	}
-	else if ( wstring(lineShape.GetBuffer()) == GlobalData::LINE_SHAPE_SQUARE )
+	else if ( wstring(lineShape.GetBuffer()) == GlobalData::LINE_SHAPE_QQMTX )
 	{
 		m_EditDynamic_1.GetWindowTextW(lineRadius);
 		m_EditDynamic_2.GetWindowTextW(lineWidth);
@@ -1354,7 +1354,7 @@ bool EntryManageDialog::HasDuplicatePoint( PointList* pointList, wstring& duplic
 	bool hasDuplicate = false;
 
 	//重复的可能性存在于2个点以上
-	UINT count =  pointList->size();
+	int count =  (int)pointList->size();
 	if( count <= 1 )
 		return hasDuplicate;
 

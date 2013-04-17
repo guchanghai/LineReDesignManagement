@@ -366,10 +366,18 @@ LMALineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
 	//从实体管理器中取出该折线段的
 	CString filename;
 	dbToStr(this->database(),filename);
-	LineEntityFileManager::RegisterLineSegment(filename.GetBuffer(),lineID, seqNO, pStart, pEnd );
-		
+
+	LineEntity* pLineEntity(NULL);
+	if( !LineEntityFileManager::RegisterLineSegment(filename.GetBuffer(),lineID, seqNO, pLineEntity, pStart, pEnd ) )
+	{
+		acutPrintf(L"\n无效的线段实体，序号【%d】！",seqNO);
+		return Acad::eAlreadyInDb;
+	}
+
 	//得到管线信息绘制管理器
 	mpPointInfo = &pEnd->m_DbEntityCollection;
+	if( pLineEntity )
+		mpPointInfo->mCategoryData = const_cast<LineCategoryItemData*>(pLineEntity->GetBasicInfo());
 
 	//读取开始和结束节点
 	pFiler->readPoint3d(&mpPointInfo->mStartPoint);
@@ -383,6 +391,9 @@ LMALineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
 		pStart->m_Point[Z] = mpPointInfo->mStartPoint.z;
 
 		pStart->m_DbEntityCollection.mSequenceNO = 0;
+
+		if( pLineEntity )
+			pStart->m_DbEntityCollection.mCategoryData = const_cast<LineCategoryItemData*>(pLineEntity->GetBasicInfo());
 	}
 
 	//设置结束节点的属性

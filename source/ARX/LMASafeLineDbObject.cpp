@@ -148,8 +148,14 @@ LMASafeLineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
 	//从实体管理器中取出该折线段的
 	CString filename;
 	dbToStr(this->database(),filename);
-	LineEntityFileManager::RegisterLineSegment(filename.GetBuffer(),lineID, seqNO, pStart, pEnd );
-			
+	
+	LineEntity* pLineEntity(NULL);
+	if( !LineEntityFileManager::RegisterLineSegment(filename.GetBuffer(),lineID, seqNO, pLineEntity, pStart, pEnd ) )
+	{
+		acutPrintf(L"\n无效的安全线段实体，序号【%d】！",seqNO);
+		return Acad::eAlreadyInDb;
+	}
+
 	//得到管线信息绘制管理器
 	mpPointInfo = &pEnd->m_DbEntityCollection;
 

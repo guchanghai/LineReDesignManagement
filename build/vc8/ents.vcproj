@@ -86,6 +86,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy /Y  $(OutDir)\$(ProjectName)-2008.arx ..\..\release\2008\管线改移辅助设计系统.arx"
 			/>
 		</Configuration>
 		<Configuration
@@ -129,6 +130,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				OutputFile="$(OutDir)\$(ProjectName)-2008.arx"
 				AdditionalLibraryDirectories="..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2008\lib-win32;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib"
 				ModuleDefinitionFile="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\AcRxDefault.def"
 			/>
@@ -155,6 +157,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy /Y  $(OutDir)\$(ProjectName)-2008.arx ..\..\release\2008\管线改移辅助设计系统.arx"
 			/>
 		</Configuration>
 		<Configuration
@@ -316,11 +319,19 @@
 				Name="arx"
 				>
 				<File
-					RelativePath="..\..\source\ARX\ArxCustomObject.cpp"
+					RelativePath="..\..\source\ARX\ArxWrapper.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\source\ARX\ArxWrapper.cpp"
+					RelativePath="..\..\source\arx\LMALineDbObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\arx\LMASafeLineDbObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\arx\LMAWallLineDbObject.cpp"
 					>
 				</File>
 			</Filter>
@@ -361,6 +372,14 @@
 				</File>
 				<File
 					RelativePath="..\..\source\data\LineEntryData.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\data\LineEntryFileData.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\data\LineEntryPointData.cpp"
 					>
 				</File>
 			</Filter>
@@ -422,6 +441,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Intersect"
+				>
+				<File
+					RelativePath="..\..\source\intersect\LineIntersectManage.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -433,10 +460,6 @@
 			</File>
 			<File
 				RelativePath="..\..\header\ArxWrapper.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\header\asdkacuidialogsample.CPP"
 				>
 			</File>
 			<File
@@ -492,15 +515,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\header\linecutposdialog.CPP"
-				>
-			</File>
-			<File
 				RelativePath="..\..\header\LineCutPosDialog.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\header\LineEntryData.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\header\LineIntersectManage.h"
 				>
 			</File>
 			<File

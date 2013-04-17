@@ -506,10 +506,22 @@ LineDBEntity::dwgInFields(AcDbDwgFiler* pFiler)
 		wstring fileName(filename.GetBuffer());
 		LineEntityFile* entryFile = LineEntityFileManager::RegisterEntryFile(fileName);
 
-		if( pImplemention->m_PointList )
-			delete pImplemention->m_PointList;
+		PointList* tempList = entryFile->TransferTempLine(pImplemention->m_LineID);
+		if( tempList )
+		{
+			for( PointIter iter = tempList->begin();
+				 iter != tempList->end();
+				 iter++)
+			{
+				acutPrintf(L"\n追加折线段【%s】序号【%d】",(*iter)->m_DbEntityCollection.mLayerName.c_str(), (*iter)->m_PointNO);
+				this->pImplemention->m_PointList->push_back( *(iter) );
 
-		this->pImplemention->m_PointList = entryFile->TransferTempLine(pImplemention->m_LineID);
+				//设置基本信息
+				(*iter)->m_DbEntityCollection.mCategoryData = const_cast<LineCategoryItemData*>(this->pImplemention->GetBasicInfo());
+			}
+
+			delete tempList;
+		}
 
 #ifdef DEBUG
 		acutPrintf(L"\n从临时管线管理器中得到线段数据，个数为【%d】", ( pImplemention->m_PointList ? pImplemention->m_PointList->size() : 0 ) );

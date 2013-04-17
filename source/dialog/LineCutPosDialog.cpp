@@ -39,6 +39,8 @@
 
 #include <LMAUtils.h>
 
+#pragma warning(disable:4482)
+
 using namespace com::guch::assistant::arx;
 
 // LineCutPosDialog dialog
