@@ -248,6 +248,57 @@ void PointDBEntityCollection::DropEntityCollection()
 	}
 }
 
+void PointDBEntityCollection::SetLineWarning( bool warning )
+{
+	if( warning )
+		acutPrintf(L"\n设置管线最外层实体的颜色.");
+	else
+		acutPrintf(L"\n恢复管线最外层实体的颜色.");
+
+	if( m_WallLineEntryId.isValid())
+	{
+		AcDbEntity* pWallLine = ArxWrapper::GetDbObject( m_WallLineEntryId, true );
+		if( pWallLine )
+		{
+			if( warning )
+			{
+				acutPrintf(L"\n设置壁厚实体的颜色为报警色.");
+				pWallLine->setColorIndex( GlobalData::INTERSET_WALLLINE_COLOR );
+			}
+			else
+			{
+				acutPrintf(L"\n恢复壁厚实体的颜色.");
+				pWallLine->setColorIndex( GlobalData::WALLLINE_COLOR );
+			}
+
+			pWallLine->close();
+		}
+	}
+	else if( m_LineEntryId.isValid())
+	{
+		AcDbEntity* pLine = ArxWrapper::GetDbObject( m_LineEntryId, true );
+		if( pLine )
+		{
+			if( warning )
+			{
+				acutPrintf(L"\n设置管线实体的颜色为报警色.");
+				pLine->setColorIndex( GlobalData::INTERSET_WALLLINE_COLOR );
+			}
+			else
+			{
+				acutPrintf(L"\n恢复管线实体的颜色.");
+				pLine->setColorIndex( GlobalData::LINE_COLOR );
+			}
+
+			pLine->close();
+		}
+	}
+	else
+	{
+		acutPrintf(L"\n壁厚或者实体没有ID.");
+	}
+}
+
 } // end of data
 
 } // end of assistant

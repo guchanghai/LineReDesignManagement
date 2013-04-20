@@ -383,15 +383,34 @@ wstring LineEntityFile::GetNewPipeName( const LineCategoryItemData* pipeCategory
 		{
 			shape.Format(L"%s_%s",pipeCategoryData->mShape.c_str(),pipeCategoryData->mSize.mRadius.c_str());
 		}
-		else //if( pipeCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
+		else if( pipeCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 		{
 			shape.Format(L"%s_%sx%s",pipeCategoryData->mShape.c_str(),
 				pipeCategoryData->mSize.mWidth.c_str(),pipeCategoryData->mSize.mHeight.c_str());
 		}
-		//else
-		//{
-		//	shape.Format(L"%s",pipeCategoryData->mShape.c_str());
-		//}
+		else if( pipeCategoryData->mShape == GlobalData::LINE_SHAPE_GZQPD )
+		{
+			shape.Format(L"%s_%sx%sx%s",pipeCategoryData->mShape.c_str(),
+				pipeCategoryData->mSize.mRadius.c_str(),pipeCategoryData->mSize.mWidth.c_str(),
+				pipeCategoryData->mSize.mHeight.c_str());
+		}
+		else if( pipeCategoryData->mShape == GlobalData::LINE_SHAPE_GZQYG )
+		{
+			shape.Format(L"%s_%sx%sx%sx%s",pipeCategoryData->mShape.c_str(),
+				pipeCategoryData->mSize.mRadius.c_str(),pipeCategoryData->mSize.mWidth.c_str(),
+				pipeCategoryData->mSize.mHeight.c_str(),pipeCategoryData->mSize.mReservedA.c_str());
+		}
+		else if( pipeCategoryData->mShape == GlobalData::LINE_SHAPE_QQMTX )
+		{
+			shape.Format(L"%s_%sx%sx%sx%sx%s",pipeCategoryData->mShape.c_str(),
+				pipeCategoryData->mSize.mRadius.c_str(),pipeCategoryData->mSize.mWidth.c_str(),
+				pipeCategoryData->mSize.mHeight.c_str(),pipeCategoryData->mSize.mReservedA.c_str(),
+				pipeCategoryData->mSize.mReservedB.c_str());
+		}
+		else
+		{
+			shape.Format(L"%s",pipeCategoryData->mShape.c_str());
+		}
 
 		pipeName.Format(L"%s_%s_%d",pipeCategory.c_str(),shape.GetBuffer(),index);
 
@@ -522,11 +541,12 @@ LineEntityFile* LineEntityFileManager::SaveFileEntity()
 	return GetLineEntryFile(fileName);
 }
 
-bool LineEntityFileManager::RegisterLineSegment( const wstring& fileName, UINT lineID, UINT sequence, LineEntity*& pLineEntity, PointEntity*& pStart, PointEntity*& pEnd )
+bool LineEntityFileManager::RegisterLineSegment( const wstring& fileName, UINT lineID, UINT sequence,
+	LineEntity*& pLineEntity, PointEntity*& pStart, PointEntity*& pEnd )
 {
 	//找到文件管理类
 	LineEntityFile* pFileEntry = RegisterEntryFile(fileName);
-	acutPrintf(L"\n添加线段时，找到管线实体文件管理器【%s】.",fileName.c_str());
+	//acutPrintf(L"\n添加线段时，找到管线实体文件管理器【%s】.",fileName.c_str());
 
 	//找到实体类
 	LineEntity* lineEntry = pFileEntry->FindLine(lineID);
@@ -535,33 +555,33 @@ bool LineEntityFileManager::RegisterLineSegment( const wstring& fileName, UINT l
 	if( lineEntry == NULL )
 	{
 #ifdef DEBUG
-		acutPrintf(L"\n保存到临时管线管理器中.");
+		acutPrintf(L"\n保存序号为【%d】的折线段到临时管理器中.", sequence);
 #endif
 		pPointList = pFileEntry->GetTempLine( lineID );
 
 		if( pPointList == NULL )
 		{
-			acutPrintf(L"\n临时管线管理器没有改线段，错误数据！.");
+			acutPrintf(L"\n临时管线管理器有折线段列表，无法注册！.");
 			return false;
 		}
 	}
 	else
 	{
+#ifdef DEBUG
+		acutPrintf(L"\n保存序号为【%d】的折线段到管线管理器中.", sequence);
+#endif
 		pLineEntity = lineEntry;
 		pPointList = lineEntry->m_PointList;
 
 		if( pPointList == NULL )
 		{
-			acutPrintf(L"\n管线管理器已有改线段，但没有折线段列表，认为是错误数据！.");
+			acutPrintf(L"\n管线管理器已有改线段，但没有折线段列表，无法注册！.");
 			return false;
 		}
 	}
 
 	if( sequence == 1 )
 	{
-#ifdef DEBUG
-		acutPrintf(L"\n序列号为1，这是第一个线段.");
-#endif
 		if( pPointList->size() < 2 )
 		{
 			pStart = new PointEntity();
@@ -581,9 +601,6 @@ bool LineEntityFileManager::RegisterLineSegment( const wstring& fileName, UINT l
 	}
 	else if ( sequence > 1 )
 	{
-#ifdef DEBUG
-		acutPrintf(L"\n普通线段.");
-#endif
 		if( pPointList->size() <= sequence )
 		{
 			pEnd = new PointEntity();

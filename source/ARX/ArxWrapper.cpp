@@ -976,6 +976,30 @@ AcDbEntity* ArxWrapper::MoveToBottom(AcDbEntity* pEntry)
 	return pEntry;
 }
 
+AcDbEntity* ArxWrapper::GetDbObject( const AcDbObjectId& objId, bool openWrite )
+{
+	if( !objId.isValid() )
+	{
+		acutPrintf(L"\n打开数据库对象时，对象ID非法!");
+		return NULL;
+	}
+
+	AcDbEntity *pObject;
+	AcDb::OpenMode openMode = AcDb::kForRead;
+	if( openWrite )
+		openMode = AcDb::kForWrite;
+
+	Acad::ErrorStatus es = acdbOpenAcDbEntity(pObject, objId, openMode );
+	if( es != Acad::eOk )
+	{
+		acutPrintf(L"\n打开数据库对象是出错");
+		rxErrorMsg(es);
+		return NULL;
+	}
+
+	return pObject;
+}
+
 /**
  * 切换当前视图到与WCS的viewDirection相一致的视图
  **/

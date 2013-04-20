@@ -53,7 +53,7 @@ LMAWallLineDbObject::LMAWallLineDbObject():
 /// </summary>
 /// <param name="pPointInfo">The p point info.</param>
 LMAWallLineDbObject::LMAWallLineDbObject( PointDBEntityCollection* pPointInfo)
-: LMALineDbObject( pPointInfo )
+: LMALineDbObject( pPointInfo, false )
 {
 	Init();
 }
@@ -62,44 +62,39 @@ LMAWallLineDbObject::LMAWallLineDbObject( PointDBEntityCollection* pPointInfo)
 /// Inits this instance.
 /// </summary>
 /// <returns></returns>
-Acad::ErrorStatus LMAWallLineDbObject::Init()
+bool LMAWallLineDbObject::CalculateSize()
 {
-	acutPrintf(L"\n创建管线壁实体");
+	acutPrintf(L"\n计算管线壁厚大小");
 
-	if( mpPointInfo == NULL ||
-		mpPointInfo->mCategoryData == NULL )
+	if( LMALineDbObject::CalculateSize() == false )
 	{
-		acutPrintf(L"\n配置信息不合法");
-		return Acad::eInvalidInput;
+		acutPrintf(L"\n计算管线内的大小失败");
+		return false;
 	}
 
 	//安全半径与壁厚
 	double wallSize(0);
 	acdbDisToF(mpPointInfo->mCategoryData->mWallSize.c_str(), -1, &wallSize);
+	wallSize /= 1000;
 
 	//圆形或矩形
 	if( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
-		acdbDisToF(mpPointInfo->mCategoryData->mSize.mRadius.c_str(), -1, &mRadius);
-
 		//直径的单位是毫米，而距离的单位是米
-		mRadius = (mRadius + wallSize) / 1000;
+		mRadius = mRadius + wallSize;
 
 		acutPrintf(L"\n创建壁厚【%0.2lf】半径为【%0.2lf】的圆柱", wallSize, mRadius);
 	}
 	else //if ( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
-		acdbDisToF(mpPointInfo->mCategoryData->mSize.mHeight.c_str(), -1, &mLength);
-		acdbDisToF(mpPointInfo->mCategoryData->mSize.mWidth.c_str(), -1, &mWidth);
-
 		//直径的单位是毫米，而距离的单位是米
-		mLength = ( mLength + wallSize )/ 1000;
-		mWidth = ( mWidth + wallSize )/ 1000;
+		mWidth = mWidth + wallSize;
+		mHeight = mHeight + wallSize;
 
-		acutPrintf(L"\n创建壁厚【%0.2lf】宽为【%0.2lf】高为【%0.2lf】的方柱", wallSize, mWidth, mLength);
+		acutPrintf(L"\n创建壁厚【%0.2lf】宽为【%0.2lf】高为【%0.2lf】的方柱", wallSize, mWidth, mHeight);
 	}
 
-	return CreateDBObject();
+	return true;
 }
 
 /// <summary>
@@ -111,7 +106,7 @@ Acad::ErrorStatus LMAWallLineDbObject::CreateDBObject()
 	//同样也是绘制管线
 	//LMALineDbObject::CreateDBObject();
 
-	//acutPrintf(L"\n开始绘制实体");
+	acutPrintf(L"\n绘制管线壁实体");
 
 	const AcGePoint3d& startPoint = mpPointInfo->mStartPoint;
 	const AcGePoint3d& endPoint = mpPointInfo->mEndPoint;
@@ -132,14 +127,14 @@ Acad::ErrorStatus LMAWallLineDbObject::CreateDBObject()
 		//acutPrintf(L"\n绘制半径为【%0.2lf】长为【%0.2lf】的圆柱",mRadius,height);
 
 		//绘制圆柱体
-		this->createFrustum(height,mRadius,mRadius,mRadius);
+		this->createFrustum(height, mRadius, mRadius, mRadius);
 	}
 	else //if (  mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
-		//acutPrintf(L"\n绘制宽【%0.2lf】高【%0.2lf】长【%0.2lf】的方柱体",mLength, mWidth, height);
+		//acutPrintf(L"\n绘制宽【%0.2lf】高【%0.2lf】长【%0.2lf】的方柱体",mHeight, mWidth, height);
 
 		//绘制圆柱体
-		this->createBox(mLength,mWidth,height);
+		this->createBox(mHeight, mWidth, height);
 	}
 
 	//进行偏移
@@ -174,8 +169,8 @@ Acad::ErrorStatus LMAWallLineDbObject::CreateDBObject()
 	//最终成型
 	transformBy(moveMatrix);
 
-	//标注为绿色，用于区分
-	this->setColorIndex(2);
+	//标注为黄色，用于区分
+	setColorIndex( GlobalData::WALLLINE_COLOR );
 
 	return Acad::eOk;
 }
@@ -212,17 +207,26 @@ LMAWallLineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
 	dbToStr(this->database(),filename);
 	
 	LineEntity* pLineEntity(NULL);
-	if( !LineEntityFileManager::RegisterLineSegment(filename.GetBuffer(),lineID, seqNO, pLineEntity, pStart, pEnd ) )
+	if( LineEntityFileManager::RegisterLineSegment(filename.GetBuffer(),lineID, seqNO, pLineEntity, pStart, pEnd ) == false )
 	{
-		acutPrintf(L"\n无效的壁厚线段，序号【%d】！",seqNO);
+		acutPrintf(L"\n注册失败，无效的壁厚线段");
 		return Acad::eAlreadyInDb;
 	}
 
 	//得到管线信息绘制管理器
-	mpPointInfo = &pEnd->m_DbEntityCollection;
+	if( pEnd )
+	{
+		mpPointInfo = &pEnd->m_DbEntityCollection;
+	}
+	else
+	{
+		acutPrintf(L"\n壁厚实体无对应的结束点坐标!");
+		return Acad::eInvalidIndex;
+	}
 
 	//设置折线段对象数据库ID
-	mpPointInfo->SetWallLineEntity(id());
+	if( mpPointInfo )
+		mpPointInfo->SetWallLineEntity(id());
 
 #ifdef DEBUG
 	acutPrintf(L"\n从DWG文件【%s】得到管线壁线段实体 ID【%d】序列号【%d】.",

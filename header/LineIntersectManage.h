@@ -43,6 +43,8 @@ protected:
 
 	static LineIntersectManage* mLineIntersectInstance;
 
+	static AcCmTransparency mWarningTrans;
+
 	//判断本文件里的管线相侵情况
 	void CheckLineInteract();
 

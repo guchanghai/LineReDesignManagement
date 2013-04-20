@@ -66,3 +66,17 @@ const wstring GlobalData::ERROR_DIALOG_CAPTION = L"管线辅助系统告警";
 const wstring GlobalData::CONFIG_LINE_KIND = L"管线种类";
 const wstring GlobalData::CONFIG_SHAPE_KIND = L"管线形状";
 const wstring GlobalData::CONFIG_BLOCK_KIND = L"阻隔体种类";
+
+/**
+* 颜色配置
+**/
+const int GlobalData::LINE_COLOR = 0;
+const int GlobalData::SAFELINE_COLOR = 1; //红色
+const int GlobalData::INTERSET_COLOR = 1; //红色
+const int GlobalData::WALLLINE_COLOR = 3; //绿色
+const int GlobalData::INTERSET_WALLLINE_COLOR = 2; //黄色
+
+/**
+* 透明度
+**/
+const double GlobalData::TRANS_SAFELINE_COLOR = 0.2;

@@ -82,6 +82,20 @@ public:
 	static const wstring CONFIG_LINE_KIND;
 	static const wstring CONFIG_SHAPE_KIND;
 	static const wstring CONFIG_BLOCK_KIND;
+
+	/**
+	* ÑÕÉ«ÅäÖÃ
+	**/
+	static const int LINE_COLOR;
+	static const int WALLLINE_COLOR;
+	static const int SAFELINE_COLOR;
+	static const int INTERSET_COLOR;
+	static const int INTERSET_WALLLINE_COLOR;
+	/**
+	* Í¸Ã÷¶È
+	**/
+	static const double TRANS_SAFELINE_COLOR;
+	
 };
 
 

@@ -69,6 +69,8 @@ public:
 
 	bool HasEntity( const AcDbObjectId& entityId ) const;
 
+	void SetLineWarning( bool warning = true );
+
 	//database object collection
 	bool DrawEntityCollection();
 	void DropEntityCollection();
@@ -326,7 +328,8 @@ public:
 
 	static LineEntityFile* SaveFileEntity();
 
-	static bool RegisterLineSegment( const wstring& fileName, UINT lineID, UINT sequence, LineEntity*& pLineEntity, PointEntity*& pStart, PointEntity*& pEnd );
+	static bool RegisterLineSegment( const wstring& fileName, UINT lineID, UINT sequence, 
+		LineEntity*& pLineEntity, PointEntity*& pStart, PointEntity*& pEnd );
 
 public:
 	

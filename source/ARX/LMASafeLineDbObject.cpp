@@ -53,24 +53,22 @@ LMASafeLineDbObject::LMASafeLineDbObject():
 /// </summary>
 /// <param name="pPointInfo">The p point info.</param>
 LMASafeLineDbObject::LMASafeLineDbObject( PointDBEntityCollection* pPointInfo)
-: LMALineDbObject( pPointInfo )
+: LMALineDbObject( pPointInfo, false )
 {
 	Init();
 }
 
- /// <summary>
-/// Inits this instance.
+/// <summary>
+/// Calculates the size.
 /// </summary>
-/// <returns></returns>
-Acad::ErrorStatus LMASafeLineDbObject::Init()
+bool LMASafeLineDbObject::CalculateSize()
 {
-	acutPrintf(L"\n创建安全距离管线实体");
+	acutPrintf(L"\n计算管线安全范围大小");
 
-	if( mpPointInfo == NULL ||
-		mpPointInfo->mCategoryData == NULL )
+	if( LMALineDbObject::CalculateSize() == false )
 	{
-		acutPrintf(L"\n配置信息不合法");
-		return Acad::eInvalidInput;
+		acutPrintf(L"\n计算管线内的大小失败");
+		return false;
 	}
 
 	//安全半径与壁厚
@@ -78,29 +76,27 @@ Acad::ErrorStatus LMASafeLineDbObject::Init()
 	acdbDisToF(mpPointInfo->mCategoryData->mSafeSize.c_str(), -1, &safeSize);
 	acdbDisToF(mpPointInfo->mCategoryData->mWallSize.c_str(), -1, &wallSize);
 
+	wallSize /= 1000;
+	safeSize /= 1000;
+
 	//圆形或矩形
 	if( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
-		acdbDisToF(mpPointInfo->mCategoryData->mSize.mRadius.c_str(), -1, &mRadius);
-
 		//直径的单位是毫米，而距离的单位是米
-		mRadius = (mRadius + safeSize + wallSize) / 1000;
+		mRadius = mRadius + safeSize + wallSize;
 
 		acutPrintf(L"\n创建安全距离【%0.2lf】壁厚【%0.2lf】半径为【%0.2lf】的圆柱",safeSize, wallSize, mRadius);
 	}
 	else //if ( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
-		acdbDisToF(mpPointInfo->mCategoryData->mSize.mHeight.c_str(), -1, &mLength);
-		acdbDisToF(mpPointInfo->mCategoryData->mSize.mWidth.c_str(), -1, &mWidth);
-
 		//直径的单位是毫米，而距离的单位是米
-		mLength = ( mLength + safeSize + wallSize )/ 1000;
-		mWidth = ( mWidth + safeSize + wallSize )/ 1000;
+		mHeight = mHeight + safeSize + wallSize;
+		mWidth = mWidth + safeSize + wallSize;
 
-		acutPrintf(L"\n创建安全距离【%0.2lf】壁厚【%0.2lf】宽为【%0.2lf】高为【%0.2lf】的方柱",safeSize, wallSize, mWidth, mLength);
+		acutPrintf(L"\n创建安全距离【%0.2lf】壁厚【%0.2lf】宽为【%0.2lf】高为【%0.2lf】的方柱",safeSize, wallSize, mWidth, mHeight);
 	}
 
-	return CreateDBObject();
+	return true;
 }
 
 /// <summary>
@@ -109,11 +105,16 @@ Acad::ErrorStatus LMASafeLineDbObject::Init()
 /// <returns></returns>
 Acad::ErrorStatus LMASafeLineDbObject::CreateDBObject()
 {
+	acutPrintf(L"\n绘制管线安全范围实体");
+
 	//同样也是绘制管线
 	LMALineDbObject::CreateDBObject();
 
-	//标注为蓝色，用于区分
-	this->setColorIndex(3);
+	//标注为红色，用于区分
+	setColorIndex(GlobalData::SAFELINE_COLOR);
+
+	//默认安全距离实体有一定透明度
+	setTransparency( AcCmTransparency( GlobalData::TRANS_SAFELINE_COLOR ) );
 
 	return Acad::eOk;
 }
@@ -150,9 +151,9 @@ LMASafeLineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
 	dbToStr(this->database(),filename);
 	
 	LineEntity* pLineEntity(NULL);
-	if( !LineEntityFileManager::RegisterLineSegment(filename.GetBuffer(),lineID, seqNO, pLineEntity, pStart, pEnd ) )
+	if( LineEntityFileManager::RegisterLineSegment(filename.GetBuffer(),lineID, seqNO, pLineEntity, pStart, pEnd ) == false )
 	{
-		acutPrintf(L"\n无效的安全线段实体，序号【%d】！",seqNO);
+		acutPrintf(L"\n注册失败，不导入此安全线段实体");
 		return Acad::eAlreadyInDb;
 	}
 

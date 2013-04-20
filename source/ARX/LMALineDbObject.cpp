@@ -63,7 +63,7 @@ LMALineDbObject::LMALineDbObject():
 	mpPointInfo( NULL )
 	,mRadius(0)
 	,mWidth(0)
-	,mLength(0)
+	,mHeight(0)
 {
 }
 
@@ -71,13 +71,14 @@ LMALineDbObject::LMALineDbObject():
 /// Initializes a new instance of the <see cref="LMALineDbObject" /> class.
 /// </summary>
 /// <param name="pPointInfo">The p point info.</param>
-LMALineDbObject::LMALineDbObject( PointDBEntityCollection* pPointInfo)
+LMALineDbObject::LMALineDbObject( PointDBEntityCollection* pPointInfo, bool init)
 : mpPointInfo( pPointInfo )
 , mRadius(0)
 , mWidth(0)
-, mLength(0)
+, mHeight(0)
 {
-	Init();
+	if( init )
+		Init();
 }
 
  /// <summary>
@@ -86,14 +87,29 @@ LMALineDbObject::LMALineDbObject( PointDBEntityCollection* pPointInfo)
 /// <returns></returns>
 Acad::ErrorStatus LMALineDbObject::Init()
 {
-	acutPrintf(L"\n创建管线实体");
-
 	if( mpPointInfo == NULL ||
 		mpPointInfo->mCategoryData == NULL )
 	{
-		acutPrintf(L"\n配置信息不合法");
+		acutPrintf(L"\n配置信息不合法!");
 		return Acad::eInvalidInput;
 	}
+
+	if( CalculateSize() == false )
+	{
+		acutPrintf(L"\n计算管线大小时出错!");
+		return Acad::eInvalidInput;
+	}
+
+	return CreateDBObject();
+}
+
+
+/// <summary>
+/// Calculates the size.
+/// </summary>
+bool LMALineDbObject::CalculateSize()
+{
+	acutPrintf(L"\n计算管线基本大小");
 
 	//圆形或矩形
 	if( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
@@ -103,21 +119,81 @@ Acad::ErrorStatus LMALineDbObject::Init()
 		//直径的单位是毫米，而距离的单位是米
 		mRadius = mRadius / 1000;
 		
-		acutPrintf(L"\n创建半径为【%0.2lf】的圆柱", mRadius);
+		acutPrintf(L"\n半径为【%0.2lf】的圆柱", mRadius);
 	}
-	else //if ( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
+	else if ( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
-		acdbDisToF(mpPointInfo->mCategoryData->mSize.mHeight.c_str(), -1, &mLength);
 		acdbDisToF(mpPointInfo->mCategoryData->mSize.mWidth.c_str(), -1, &mWidth);
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mHeight.c_str(), -1, &mHeight);
 
 		//直径的单位是毫米，而距离的单位是米
-		mLength = mLength / 1000;
 		mWidth = mWidth / 1000;
+		mHeight = mHeight / 1000;
 
-		acutPrintf(L"\n创建宽为【%0.2lf】高为【%0.2lf】的方柱", mWidth, mLength);
+		acutPrintf(L"\n宽为【%0.2lf】高为【%0.2lf】的方柱", mWidth, mHeight);
+	}
+	else if( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_GZQPD )
+	{
+		double sizeA(0.0), sizeB(0.0), sizeC(0.0);
+
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mRadius.c_str(), -1, &sizeA);
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mWidth.c_str(), -1, &sizeB);
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mHeight.c_str(), -1, &sizeC);
+
+		//直径的单位是毫米，而距离的单位是米
+		//净宽
+		mWidth = sizeA / 1000;
+		
+		//矢高+墙高
+		mHeight = ( sizeB + sizeC ) / 1000;
+
+		acutPrintf(L"\n净宽为【%0.2lf】矢高为【%0.2lf】墙高【%0.2lf】的拱直墙平底", sizeA, sizeB, sizeC);
+	}
+	else if( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_GZQYG )
+	{
+		double sizeA(0.0), sizeB(0.0), sizeC(0.0), sizeD(0.0);
+
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mRadius.c_str(), -1, &sizeA);
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mWidth.c_str(), -1, &sizeB);
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mHeight.c_str(), -1, &sizeC);
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mReservedA.c_str(), -1, &sizeD);
+
+		//直径的单位是毫米，而距离的单位是米
+		//净宽
+		mWidth = sizeA / 1000;
+
+		//上矢高+墙高+下矢高
+		mHeight = ( sizeB + sizeC + sizeD ) / 1000;
+
+		acutPrintf(L"\n净宽为【%0.2lf】上矢高为【%0.2lf】下矢高【%0.2lf】墙高【%0.2lf】的拱直墙仰拱", sizeA, sizeB, sizeC, sizeD);
+	}
+	else if( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_QQMTX )
+	{
+		double sizeA(0.0), sizeB(0.0), sizeC(0.0), sizeD(0.0), sizeE(0.0);
+
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mRadius.c_str(), -1, &sizeA);
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mWidth.c_str(), -1, &sizeB);
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mHeight.c_str(), -1, &sizeC);
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mReservedA.c_str(), -1, &sizeD);
+		acdbDisToF(mpPointInfo->mCategoryData->mSize.mReservedB.c_str(), -1, &sizeE);
+
+		//直径的单位是毫米，而距离的单位是米
+		
+		//上矢宽与下矢宽两者取大
+		mWidth = ( sizeA > sizeB ? sizeA : sizeB ) / 1000;
+
+		//上矢高+墙高+下矢高
+		mHeight = ( sizeC + sizeD + sizeE ) / 1000;
+
+		acutPrintf(L"\n上矢宽为【%0.2lf】下矢宽为【%0.2lf】上矢高为【%0.2lf】下矢高【%0.2lf】墙高【%0.2lf】的曲墙马蹄形", sizeA, sizeB, sizeC, sizeD, sizeE);
+	}
+	else
+	{
+		acutPrintf(L"\n管线类型【%s】不支持，停止绘制", mpPointInfo->mCategoryData->mShape.c_str() );
+		return false;
 	}
 
-	return CreateDBObject();
+	return true;
 }
 
 /// <summary>
@@ -151,7 +227,7 @@ Acad::ErrorStatus LMALineDbObject::CreateDBObject()
 		//acutPrintf(L"\n绘制宽【%0.2lf】高【%0.2lf】长【%0.2lf】的方柱体",mLength, mWidth, height);
 
 		//绘制圆柱体
-		this->createBox(mLength,mWidth,height);
+		this->createBox(mHeight, mWidth, height);
 	}
 
 	//得到线段与Z轴的垂直向量
@@ -368,9 +444,9 @@ LMALineDbObject::dwgInFields(AcDbDwgFiler* pFiler)
 	dbToStr(this->database(),filename);
 
 	LineEntity* pLineEntity(NULL);
-	if( !LineEntityFileManager::RegisterLineSegment(filename.GetBuffer(),lineID, seqNO, pLineEntity, pStart, pEnd ) )
+	if( LineEntityFileManager::RegisterLineSegment(filename.GetBuffer(),lineID, seqNO, pLineEntity, pStart, pEnd ) == false )
 	{
-		acutPrintf(L"\n无效的线段实体，序号【%d】！",seqNO);
+		acutPrintf(L"\n注册失败，不导入此管线！");
 		return Acad::eAlreadyInDb;
 	}
 

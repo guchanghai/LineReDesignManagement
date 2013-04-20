@@ -59,6 +59,7 @@ namespace assistant
 namespace Intersect
 {
 LineIntersectManage* LineIntersectManage::mLineIntersectInstance = NULL;
+AcCmTransparency LineIntersectManage::mWarningTrans = AcCmTransparency(0.2);
 
 LineIntersectManage* LineIntersectManage::Instance()
 {
@@ -200,26 +201,21 @@ void LineIntersectManage::CheckLineInteract( PointEntity* checkPoint )
 			ArxWrapper::LockCurDoc();
 
 			//得到两个线段的数据库安全范围对象
-			AcDbObjectId safeLine = (*point)->m_DbEntityCollection.GetSafeLineEntity();
-			AcDbEntity *pSafeLine;
-			es = acdbOpenAcDbEntity(pSafeLine, safeLine, AcDb::kForWrite);
-
-			if( es != Acad::eOk )
+			AcDbEntity *pSafeLine = ArxWrapper::GetDbObject( (*point)->m_DbEntityCollection.GetSafeLineEntity(), true );
+			if( pSafeLine == NULL )
 			{
 				acutPrintf(L"\n遍历检查侵限的管线的安全范围实体时出错");
-				rxErrorMsg(es);
 				ArxWrapper::UnLockCurDoc();
 				continue;
 			}
 
-			AcDbObjectId beCheckedSafeLine = checkPoint->m_DbEntityCollection.GetSafeLineEntity();
-			AcDbEntity *pCheckSafeLine;
-			es = acdbOpenAcDbEntity(pCheckSafeLine, beCheckedSafeLine, AcDb::kForWrite);
-
-			if( es != Acad::eOk )
+			AcDbEntity *pCheckSafeLine = ArxWrapper::GetDbObject( checkPoint->m_DbEntityCollection.GetSafeLineEntity(), true );
+			if( pCheckSafeLine == NULL )
 			{
+				if( pSafeLine )
+					pSafeLine->close();
+
 				acutPrintf(L"\n得到被检查侵限的管线的安全范围实体时出错");
-				rxErrorMsg(es);
 				ArxWrapper::UnLockCurDoc();
 				continue;
 			}
@@ -239,17 +235,18 @@ void LineIntersectManage::CheckLineInteract( PointEntity* checkPoint )
 				//隐藏的安全范围管线可见，设置为红色
 				if( pSafeLine->visibility() == AcDb::kInvisible )
 				{
-					pSafeLine->setColorIndex(1);
 					pSafeLine->setVisibility(AcDb::kVisible);
+					(*point)->m_DbEntityCollection.SetLineWarning();
 				}
 
 				if( pCheckSafeLine->visibility() == AcDb::kInvisible )
 				{
-					pCheckSafeLine->setColorIndex(1);
 					pCheckSafeLine->setVisibility(AcDb::kVisible);
+					checkPoint->m_DbEntityCollection.SetLineWarning();
 				}
 
-				intersetObj->setColorIndex(3);
+				//相交的区域设置为红色
+				intersetObj->setColorIndex(GlobalData::INTERSET_COLOR);
 				pIntersect->intersctcId = ArxWrapper::PostToModelSpace( intersetObj, lineName );
 
 				//用于恢复操作
@@ -269,6 +266,8 @@ void LineIntersectManage::Reset()
 	//对保存的结果中进行处理
 	for( int i = 0; i < mIntersectEntities.length(); i++ )
 	{
+		ArxWrapper::LockCurDoc();
+
 		IntersectStruct* intersect = mIntersectEntities[i];
 
 		//将安全范围实体隐藏
@@ -276,16 +275,22 @@ void LineIntersectManage::Reset()
 		{
 			AcDbObjectId intersectAId = intersect->intersetcA->m_DbEntityCollection.GetSafeLineEntity();
 			ArxWrapper::ShowDbObject(intersectAId, AcDb::kInvisible );
+
+			intersect->intersetcA->m_DbEntityCollection.SetLineWarning(false);
 		}
 
 		if( intersect->intersetcB )
 		{
 			AcDbObjectId intersectBId = intersect->intersetcB->m_DbEntityCollection.GetSafeLineEntity();
 			ArxWrapper::ShowDbObject(intersectBId, AcDb::kInvisible );
+
+			intersect->intersetcB->m_DbEntityCollection.SetLineWarning(false);
 		}
 
 		//删除相交的实体
 		ArxWrapper::RemoveDbObject(intersect->intersctcId);
+
+		ArxWrapper::UnLockCurDoc();
 	}
 
 	//清空结果

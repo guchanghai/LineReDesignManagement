@@ -95,6 +95,9 @@ public:
 	//得到两个实体是否有交集
 	static AcDb3dSolid* GetInterset( AcDbEntity* pEntityA, AcDbEntity* pEntityB );
 
+	//得到实体
+	static AcDbEntity* GetDbObject( const AcDbObjectId& objId, bool openWrite = false );
+
 	//测试函数
 	static void TestFunction();
 };

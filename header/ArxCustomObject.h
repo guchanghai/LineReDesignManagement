@@ -76,7 +76,7 @@ public:
     ACRX_DECLARE_MEMBERS(LMALineDbObject);
 
     LMALineDbObject();
-    LMALineDbObject( PointDBEntityCollection* pPointInfo );
+    LMALineDbObject( PointDBEntityCollection* pPointInfo, bool init = true );
 
     virtual Acad::ErrorStatus dwgInFields (AcDbDwgFiler*);
     virtual Acad::ErrorStatus dwgOutFields(AcDbDwgFiler*)
@@ -92,6 +92,9 @@ protected:
 	// create the line pipe
 	virtual Acad::ErrorStatus Init();
 
+	// calculate the width, height, ...
+	virtual bool CalculateSize();
+
 	// creat the 3d pipe
 	virtual Acad::ErrorStatus CreateDBObject();
 
@@ -106,11 +109,11 @@ public:
 	//the outter radius
 	double mRadius;
 
-	//the length
-	double mLength;
-
 	//the widht
 	double mWidth;
+
+	//the height
+	double mHeight;
 
 	//handler of the dimension
 	AcDbHandle mHandleDim;
@@ -137,8 +140,8 @@ public:
 
 protected:
 
-	// create the line pipe
-	virtual Acad::ErrorStatus Init();
+	// calculate the width, height, ...
+	virtual bool CalculateSize();
 
 	// creat the 3d pipe
 	virtual Acad::ErrorStatus CreateDBObject();
@@ -162,8 +165,8 @@ public:
 
 protected:
 
-	// create the line pipe
-	virtual Acad::ErrorStatus Init();
+	// calculate the width, height, ...
+	virtual bool CalculateSize();
 
 	// creat the 3d pipe
 	virtual Acad::ErrorStatus CreateDBObject();
