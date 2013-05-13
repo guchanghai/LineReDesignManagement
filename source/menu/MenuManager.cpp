@@ -90,6 +90,8 @@ void MenuManager::AddDropdownMenu()
 {
     TRY
     {
+		int menuIndex = 0;
+
         CAcadApplication IAcad(acedGetAcadWinApp()->GetIDispatch(TRUE));
 
         CAcadMenuBar IMenuBar(IAcad.get_MenuBar());
@@ -102,7 +104,7 @@ void MenuManager::AddDropdownMenu()
         VARIANT index;
         VariantInit(&index);
         V_VT(&index) = VT_I4;
-        V_I4(&index) = 0;
+        V_I4(&index) = menuIndex++;
 
         CAcadMenuGroup IMenuGroup(IMenuGroups.Item(index));
 
@@ -163,12 +165,12 @@ void MenuManager::AddDropdownMenu()
 
             VariantInit(&index);
             V_VT(&index) = VT_I4;
-            V_I4(&index) = 1;
+            V_I4(&index) = menuIndex++;
             IPopUpMenu.AddSeparator(index);
 
             VariantInit(&index);
             V_VT(&index) = VT_I4;
-            V_I4(&index) = 2;
+            V_I4(&index) = menuIndex++;
 
 			//◊Ë∏ÙÃÂ≤Àµ•
 			cmdMenuName.Format(L"%s\n", MAIN_MENU_BLOCK_MANAGE );
@@ -204,12 +206,12 @@ void MenuManager::AddDropdownMenu()
 
 			VariantInit(&index);
             V_VT(&index) = VT_I4;
-            V_I4(&index) = 3;
+            V_I4(&index) = menuIndex++;
             IPopUpMenu.AddSeparator(index);
 
             VariantInit(&index);
             V_VT(&index) = VT_I4;
-            V_I4(&index) = 4;
+            V_I4(&index) = menuIndex++;
 
 			//«–Õº≤Àµ•
 			cmdMenuName.Format(L"%s\n", MAIN_MENU_LINE_CUT_MANAGE );
@@ -238,14 +240,14 @@ void MenuManager::AddDropdownMenu()
 
 			VariantInit(&index);
             V_VT(&index) = VT_I4;
-            V_I4(&index) = 5;
+            V_I4(&index) = menuIndex++;
             IPopUpMenu.AddSeparator(index);
 
 			VariantInit(&index);
             V_VT(&index) = VT_I4;
-            V_I4(&index) = 6;
+            V_I4(&index) = menuIndex++;
 
-			//«–Õº≤Àµ•
+			//«÷œﬁ≤Àµ•
 			cmdMenuName.Format(L"%s\n", MAIN_MENU_LINE_INTERACT_MANAGE );
             CAcadPopupMenu ILineInteractManagePopUpMenu(IPopUpMenu.AddSubMenu(index, cmdMenuName));
 
@@ -272,12 +274,59 @@ void MenuManager::AddDropdownMenu()
 
 			VariantInit(&index);
             V_VT(&index) = VT_I4;
-            V_I4(&index) = 7;
+            V_I4(&index) = menuIndex++;
             IPopUpMenu.AddSeparator(index);
 
 			VariantInit(&index);
             V_VT(&index) = VT_I4;
-            V_I4(&index) = 8;
+            V_I4(&index) = menuIndex++;
+
+			//’⁄µ≤≤Àµ•
+			cmdMenuName.Format(L"%s\n", MAIN_MENU_LINE_SHADOW_MANAGE );
+            CAcadPopupMenu ILineShadowManagePopUpMenu(IPopUpMenu.AddSubMenu(index, cmdMenuName));
+
+			{
+				IDispatch* pSubMenuDisp=NULL;
+
+				VariantInit(&index);
+				V_VT(&index) = VT_I4;
+				V_I4(&index) = 0;
+
+				cmdMenuName.Format(L"%s\n",CommandManager::CMD_LINE_SHADOW);
+				ILineShadowManagePopUpMenu.AddMenuItem(index, MAIN_MENU_LINE_SHADOW, cmdMenuName);
+			
+				VariantInit(&index);
+				V_VT(&index) = VT_I4;
+				V_I4(&index) = 1;
+
+				cmdMenuName.Format(L"%s\n",CommandManager::CMD_LINE_SHADOW_BACK);
+				ILineShadowManagePopUpMenu.AddMenuItem(index, MAIN_MENU_LINE_SHADOW_BACK, cmdMenuName);
+
+				pSubMenuDisp = ILineShadowManagePopUpMenu.m_lpDispatch;
+				pSubMenuDisp->AddRef();
+			}
+
+			VariantInit(&index);
+            V_VT(&index) = VT_I4;
+            V_I4(&index) = menuIndex++;
+            IPopUpMenu.AddSeparator(index);
+
+			VariantInit(&index);
+            V_VT(&index) = VT_I4;
+            V_I4(&index) = menuIndex++;
+
+			//¬∑”…
+			cmdMenuName.Format(L"%s\n",CommandManager::CMD_LINE_ROUTE);
+            IPopUpMenu.AddMenuItem(index, MAIN_MENU_LINE_ROUTE, cmdMenuName);
+
+			VariantInit(&index);
+            V_VT(&index) = VT_I4;
+            V_I4(&index) = menuIndex++;
+            IPopUpMenu.AddSeparator(index);
+
+			VariantInit(&index);
+            V_VT(&index) = VT_I4;
+            V_I4(&index) = menuIndex++;
 
 			//≤‚ ‘≤Àµ•
 			cmdMenuName.Format(L"%s\n",CommandManager::CMD_LINE_TEST);

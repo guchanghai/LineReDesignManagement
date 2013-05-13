@@ -42,7 +42,17 @@
 
 #define MAIN_MENU_LINE_CUT L"生成切图"
 
-#define MAIN_MENU_LINE_CUT_BACK L"恢复视窗"
+#define MAIN_MENU_LINE_CUT_BACK L"删除切图"
+
+/*
+* 遮挡菜单
+*/
+
+#define MAIN_MENU_LINE_SHADOW_MANAGE L"遮挡切图"
+
+#define MAIN_MENU_LINE_SHADOW L"生成遮挡"
+
+#define MAIN_MENU_LINE_SHADOW_BACK L"删除遮挡"
 
 /*
 * 侵限菜单
@@ -52,7 +62,14 @@
 
 #define MAIN_MENU_LINE_INTERACT L"侵限判断"
 
-#define MAIN_MENU_LINE_INTERACT_BACK L"恢复视窗"
+#define MAIN_MENU_LINE_INTERACT_BACK L"删除判断"
+
+/*
+* 路由判断
+*/
+
+#define MAIN_MENU_LINE_ROUTE L"寻找路由"
+
 
 /*
 * 测试

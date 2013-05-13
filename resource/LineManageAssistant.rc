@@ -13,18 +13,20 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Chinese (Simplified, PRC) resources
+// 中文(中华人民共和国) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 #pragma code_page(936)
+#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-IDR_MENU1 MENU
+IDR_MENU1 MENU 
 BEGIN
     POPUP "管线改移设计"
     BEGIN
@@ -43,13 +45,19 @@ BEGIN
         POPUP "切剖面图"
         BEGIN
             MENUITEM "生成切图",                        ID_GENERATE_CUT
-            MENUITEM "恢复视窗",                        ID_GENERATE_BACK
+            MENUITEM "删除切图",                        ID_GENERATE_BACK
         END
         POPUP "管线相侵"
         BEGIN
-            MENUITEM "相侵判断",                        ID_32805
-            MENUITEM "恢复视窗",                        ID_32806
+            MENUITEM "侵限判断",                        ID_32805
+            MENUITEM "删除判断",                        ID_32806
         END
+        POPUP "遮挡视图"
+        BEGIN
+            MENUITEM "生成遮挡",                        ID_32808
+            MENUITEM "删除遮挡",                        ID_32809
+        END
+        MENUITEM "寻找路由",                        ID_32810
         MENUITEM "功能测试",                        ID_MENU_TEST
     END
 END
@@ -203,7 +211,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_DIALOG_ENTRY_MANAGE, DIALOG
     BEGIN
@@ -237,7 +245,7 @@ END
 // Toolbar
 //
 
-IDR_TOOLBAR_LMA TOOLBAR 16, 15
+IDR_TOOLBAR_LMA TOOLBAR  16, 15
 BEGIN
     BUTTON      ID_BUTTON_CANCLE
 END
@@ -255,21 +263,23 @@ IDR_TOOLBAR_LMA         BITMAP                  "toolbar_lma.bmp"
 // String Table
 //
 
-STRINGTABLE
+STRINGTABLE 
 BEGIN
     ID_BUTTON_CANCLE        "删除切图"
 END
 
-#endif    // Chinese (Simplified, PRC) resources
+#endif    // 中文(中华人民共和国) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (United States) resources
+// 英语(美国) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
+#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -345,7 +355,7 @@ BEGIN
     END
 END
 
-#endif    // English (United States) resources
+#endif    // 英语(美国) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

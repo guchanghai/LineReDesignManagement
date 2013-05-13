@@ -59,7 +59,6 @@ namespace assistant
 namespace Intersect
 {
 LineIntersectManage* LineIntersectManage::mLineIntersectInstance = NULL;
-AcCmTransparency LineIntersectManage::mWarningTrans = AcCmTransparency(0.2);
 
 LineIntersectManage* LineIntersectManage::Instance()
 {
@@ -153,7 +152,6 @@ void LineIntersectManage::CheckLineInteract( PointEntity* checkPoint )
 	wstring& lineName = checkPoint->m_DbEntityCollection.mLayerName;
 	Adesk::Int32& checkLineID = checkPoint->m_DbEntityCollection.mLineID;
 	Adesk::Int32& checkSeqNO = checkPoint->m_DbEntityCollection.mSequenceNO;
-	Acad::ErrorStatus es;
 
 #ifdef DEBUG
 	acutPrintf(L"\n对【%s】的第【%d】条进行相侵判断.",lineName.c_str(), checkSeqNO);
@@ -233,15 +231,15 @@ void LineIntersectManage::CheckLineInteract( PointEntity* checkPoint )
 				pIntersect->intersetcB = (*point);
 
 				//隐藏的安全范围管线可见，设置为红色
-				if( pSafeLine->visibility() == AcDb::kInvisible )
+				//if( pSafeLine->visibility() == AcDb::kInvisible )
 				{
-					pSafeLine->setVisibility(AcDb::kVisible);
+					//pSafeLine->setVisibility(AcDb::kVisible);
 					(*point)->m_DbEntityCollection.SetLineWarning();
 				}
 
-				if( pCheckSafeLine->visibility() == AcDb::kInvisible )
+				//if( pCheckSafeLine->visibility() == AcDb::kInvisible )
 				{
-					pCheckSafeLine->setVisibility(AcDb::kVisible);
+					//pCheckSafeLine->setVisibility(AcDb::kVisible);
 					checkPoint->m_DbEntityCollection.SetLineWarning();
 				}
 
@@ -273,16 +271,16 @@ void LineIntersectManage::Reset()
 		//将安全范围实体隐藏
 		if( intersect->intersetcA )
 		{
-			AcDbObjectId intersectAId = intersect->intersetcA->m_DbEntityCollection.GetSafeLineEntity();
-			ArxWrapper::ShowDbObject(intersectAId, AcDb::kInvisible );
+			//AcDbObjectId intersectAId = intersect->intersetcA->m_DbEntityCollection.GetSafeLineEntity();
+			//ArxWrapper::ShowDbObject(intersectAId, AcDb::kInvisible );
 
 			intersect->intersetcA->m_DbEntityCollection.SetLineWarning(false);
 		}
 
 		if( intersect->intersetcB )
 		{
-			AcDbObjectId intersectBId = intersect->intersetcB->m_DbEntityCollection.GetSafeLineEntity();
-			ArxWrapper::ShowDbObject(intersectBId, AcDb::kInvisible );
+			//AcDbObjectId intersectBId = intersect->intersetcB->m_DbEntityCollection.GetSafeLineEntity();
+			//ArxWrapper::ShowDbObject(intersectBId, AcDb::kInvisible );
 
 			intersect->intersetcB->m_DbEntityCollection.SetLineWarning(false);
 		}

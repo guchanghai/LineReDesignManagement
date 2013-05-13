@@ -73,10 +73,10 @@ const wstring GlobalData::CONFIG_BLOCK_KIND = L"阻隔体种类";
 const int GlobalData::LINE_COLOR = 0;
 const int GlobalData::SAFELINE_COLOR = 1; //红色
 const int GlobalData::INTERSET_COLOR = 1; //红色
-const int GlobalData::WALLLINE_COLOR = 3; //绿色
 const int GlobalData::INTERSET_WALLLINE_COLOR = 2; //黄色
+const int GlobalData::WALLLINE_COLOR = 3; //绿色
 
 /**
 * 透明度
 **/
-const double GlobalData::TRANS_SAFELINE_COLOR = 0.2;
+const double GlobalData::TRANS_SAFELINE_COLOR = 128;

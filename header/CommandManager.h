@@ -40,10 +40,18 @@ public:
 
 	static void GenerateCutBack();
 
+	//遮挡相关
+	static void LineShadow();
+
+	static void LineShadowBack();
+
 	//侵限相关
 	static void InteractCheck();
 
 	static void InteractCheckBack();
+
+	//寻找路由
+	static void LineRoute();
 
 	//测试
 	static void TestFunction();
@@ -61,8 +69,13 @@ public:
 	static const WCHAR* CMD_LINE_CUT;
 	static const WCHAR* CMD_LINE_CUT_BACK;
 
+	static const WCHAR* CMD_LINE_SHADOW;
+	static const WCHAR* CMD_LINE_SHADOW_BACK;
+
 	static const WCHAR* CMD_LINE_INTERACT;
 	static const WCHAR* CMD_LINE_INTERACT_BACK;
+
+	static const WCHAR* CMD_LINE_ROUTE;
 
 	static const WCHAR* CMD_LINE_TEST;
 

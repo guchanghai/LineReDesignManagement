@@ -114,7 +114,9 @@ Acad::ErrorStatus LMASafeLineDbObject::CreateDBObject()
 	setColorIndex(GlobalData::SAFELINE_COLOR);
 
 	//默认安全距离实体有一定透明度
-	setTransparency( AcCmTransparency( GlobalData::TRANS_SAFELINE_COLOR ) );
+	AcCmTransparency trans;
+	trans.setAlpha( GlobalData::TRANS_SAFELINE_COLOR );
+	setTransparency( trans );
 
 	return Acad::eOk;
 }

@@ -23,10 +23,12 @@ CommandManager* CommandManager::gCmdManager = NULL;
 
 const WCHAR* CommandManager::CMD_GROUP = L"LMA_CMD_GROUP";
 
+//¹ÜÏßÊäÈë
 const WCHAR* CommandManager::CMD_LINE_IMPORT = L"LMA_LINE_IMP";
 const WCHAR* CommandManager::CMD_LINE_INPUT = L"LMA_LINE_INPUT";
 const WCHAR* CommandManager::CMD_LINE_EXPORT = L"LMA_LINE_EXP";
 
+//×è¸ôÌåÊäÈë
 const WCHAR* CommandManager::CMD_BLOCK_IMPORT = L"LMA_BLOCK_IMP";
 const WCHAR* CommandManager::CMD_BLOCK_INPUT = L"LMA_BLOCK_INPUT";
 const WCHAR* CommandManager::CMD_BLOCK_EXPORT = L"LMA_BLOCK_EXP";
@@ -35,10 +37,18 @@ const WCHAR* CommandManager::CMD_BLOCK_EXPORT = L"LMA_BLOCK_EXP";
 const WCHAR* CommandManager::CMD_LINE_CUT = L"LMA_CUT";
 const WCHAR* CommandManager::CMD_LINE_CUT_BACK = L"LMA_CUT_BACK";
 
+//ÕÚµ²ÇÐÍ¼
+const WCHAR* CommandManager::CMD_LINE_SHADOW = L"LMA_SHADOW";
+const WCHAR* CommandManager::CMD_LINE_SHADOW_BACK = L"LMA_SHADOW_BACK";
+
 //¹ÜÏßÏàÇÖ
 const WCHAR* CommandManager::CMD_LINE_INTERACT = L"LMA_LINE_INTERACT";
 const WCHAR* CommandManager::CMD_LINE_INTERACT_BACK = L"LMA_LINE_INTERACT_BACK";
 
+//Ñ°ÕÒÂ·ÓÉ
+const WCHAR* CommandManager::CMD_LINE_ROUTE = L"LMA_LINE_ROUTE";
+
+//¹¦ÄÜ²âÊÔ
 const WCHAR* CommandManager::CMD_LINE_TEST = L"LMA_TESTFUN";
 
 CommandManager* CommandManager::instance()
@@ -76,9 +86,16 @@ CommandManager::CommandManager(void)
 	mSupportCommands[CMD_LINE_CUT] = GenerateCut;
 	mSupportCommands[CMD_LINE_CUT_BACK] = GenerateCutBack;
 
+	//ÕÚµ²ÇÐÍ¼
+	mSupportCommands[CMD_LINE_SHADOW] = LineShadow;
+	mSupportCommands[CMD_LINE_SHADOW_BACK] = LineShadowBack;
+
 	//ÏàÇÖÅÐ¶Ï¡¢»Ö¸´
 	mSupportCommands[CMD_LINE_INTERACT] = InteractCheck;
 	mSupportCommands[CMD_LINE_INTERACT_BACK] = InteractCheckBack;
+
+	//Ñ°ÕÒÂ·ÓÉ
+	mSupportCommands[CMD_LINE_ROUTE] = LineRoute;
 
 	//²âÊÔ¹¦ÄÜ
 	mSupportCommands[CMD_LINE_TEST] = TestFunction;
@@ -181,7 +198,26 @@ void CommandManager::GenerateCut()
 void CommandManager::GenerateCutBack()
 {
 #ifdef DEBUG
-	acutPrintf(L"\nÍ¨¹ýµã»÷²Ëµ¥»Ö¸´ÊÓ´°");
+	acutPrintf(L"\nÉ¾³ýÁÙÊ±ÇÐÍ¼£¬»Ö¸´3DÊÓ´°");
+#endif
+
+	LineCutPosDialog::Reset();
+}
+
+void CommandManager::LineShadow()
+{
+#ifdef DEBUG
+	acutPrintf(L"\nÕÚµ²ÇÐÍ¼");
+#endif
+
+	LineCutPosDialog dlg(CWnd::FromHandle(adsw_acadMainWnd()));
+	INT_PTR nReturnValue = dlg.DoModal();
+}
+
+void CommandManager::LineShadowBack()
+{
+#ifdef DEBUG
+	acutPrintf(L"\nÉ¾³ýÁÙÊ±ÕÚµ²ÇÐÍ¼£¬»Ö¸´3DÊÓ´°");
 #endif
 
 	LineCutPosDialog::Reset();
@@ -206,6 +242,14 @@ void CommandManager::InteractCheckBack()
 	LineIntersectManage::Instance()->Reset();
 }
 
+void CommandManager::LineRoute()
+{
+#ifdef DEBUG
+	acutPrintf(L"\n¼ÆËãÂ·ÓÉ£¬½â¾öÇÖÏÞÎÊÌâ");
+#endif
+
+	LineIntersectManage::Instance()->Reset();
+}
 void CommandManager::TestFunction()
 {
 #ifdef DEBUG

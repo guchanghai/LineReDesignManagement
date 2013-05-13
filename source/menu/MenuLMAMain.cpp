@@ -92,9 +92,21 @@ void MenuLMAMain::onAction(const CString& menuName)
 	{
 		CommandManager::GenerateCutBack();
 	}
-	else if( menuName == MAIN_MENU_LINE_TEST )
+	else if( menuName == MAIN_MENU_LINE_SHADOW )
 	{
-		CommandManager::TestFunction();
+		CommandManager::GenerateCut();
+	}
+	else if( menuName == MAIN_MENU_LINE_CUT_BACK )
+	{
+		CommandManager::LineShadow();
+	}
+	else if( menuName == MAIN_MENU_LINE_SHADOW_BACK )
+	{
+		CommandManager::LineShadowBack();
+	}
+	else if( menuName == MAIN_MENU_LINE_ROUTE )
+	{
+		CommandManager::LineRoute();
 	}
 	else
 	{
