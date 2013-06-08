@@ -244,8 +244,8 @@ void LineIntersectManage::CheckLineInteract( PointEntity* checkPoint )
 				}
 
 				//相交的区域设置为红色
-				intersetObj->setColorIndex(GlobalData::INTERSET_COLOR);
-				pIntersect->intersctcId = ArxWrapper::PostToModelSpace( intersetObj, lineName );
+				//intersetObj->setColorIndex(GlobalData::INTERSET_COLOR);
+				//pIntersect->intersctcId = ArxWrapper::PostToModelSpace( intersetObj, lineName );
 
 				//用于恢复操作
 				mIntersectEntities.append(pIntersect);
@@ -286,7 +286,7 @@ void LineIntersectManage::Reset()
 		}
 
 		//删除相交的实体
-		ArxWrapper::RemoveDbObject(intersect->intersctcId);
+		//ArxWrapper::RemoveDbObject(intersect->intersctcId);
 
 		ArxWrapper::UnLockCurDoc();
 	}

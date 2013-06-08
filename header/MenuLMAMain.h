@@ -75,7 +75,8 @@
 * 测试
 */
 
-#define MAIN_MENU_LINE_TEST L"功能测试"
+#define MAIN_MENU_LINE_TEST L"版权信息"
+
 
 class MenuLMAMain : public AcEdUIContext
 {

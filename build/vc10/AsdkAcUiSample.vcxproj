@@ -189,6 +189,7 @@
     <ClCompile Include="..\..\source\dialog\EntryManageDialog.cpp" />
     <ClCompile Include="..\..\source\dialog\AsdkAcUiDialogSample.cpp" />
     <ClCompile Include="..\..\source\dialog\LineCutPosDialog.cpp" />
+    <ClCompile Include="..\..\source\dialog\LMACopyRight.cpp" />
     <ClCompile Include="..\..\source\exception\LMAException.cpp" />
     <ClCompile Include="..\..\source\intersect\LineIntersectManage.cpp" />
     <ClCompile Include="..\..\source\menu\MenuLMAMain.cpp">
@@ -225,6 +226,7 @@
     <ClInclude Include="..\..\header\LineIntersectManage.h" />
     <ClInclude Include="..\..\header\LineManageAssitant.h" />
     <ClInclude Include="..\..\header\ListCtrlEx.h" />
+    <ClInclude Include="..\..\header\LMACopyRight.h" />
     <ClInclude Include="..\..\header\LMAException.h" />
     <ClInclude Include="..\..\header\LMAUtils.h" />
     <ClInclude Include="..\..\header\MenuLMAMain.h" />
@@ -235,6 +237,7 @@
     <ClInclude Include="..\..\header\CommandManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\Photos\Author.bmp" />
     <None Include="..\..\resource\res\LineManageAssistant.rc2" />
     <None Include="..\..\doc\ReadMe.txt" />
     <None Include="..\..\resource\toolbar_lma.bmp" />

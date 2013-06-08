@@ -142,7 +142,7 @@ private:
 	CEdit m_EditDynamic_5;
 
 	CEdit m_LineWallSize;
-	CEdit m_LineSafeSize;
+	CComboBox m_LineSafeSize;
 
 	CEdit m_LinePlaneDesc;
 	CEdit m_LineCutDesc;

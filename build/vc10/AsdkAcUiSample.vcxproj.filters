@@ -70,6 +70,9 @@
     <ClCompile Include="..\..\source\arx\LMAWallLineDbObject.cpp">
       <Filter>src\ARX</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\dialog\LMACopyRight.cpp">
+      <Filter>src\Dialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\header\AsdkAcUiDialogSample.h">
@@ -156,6 +159,9 @@
     <ClInclude Include="..\..\header\LineIntersectManage.h">
       <Filter>inc</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\header\LMACopyRight.h">
+      <Filter>inc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\doc\ReadMe.txt">
@@ -165,6 +171,7 @@
       <Filter>res</Filter>
     </None>
     <None Include="..\..\resource\toolbar_lma.bmp" />
+    <None Include="..\..\..\..\Photos\Author.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="inc">

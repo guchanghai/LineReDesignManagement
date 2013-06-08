@@ -262,8 +262,8 @@ void PointDBEntityCollection::SetLineWarning( bool warning )
 		{
 			if( warning )
 			{
-				acutPrintf(L"\n设置壁厚实体的颜色为报警色.");
-				pWallLine->setColorIndex( GlobalData::INTERSET_WALLLINE_COLOR );
+				acutPrintf(L"\n设置壁厚实体的颜色为红色.");
+				pWallLine->setColorIndex( GlobalData::INTERSET_COLOR );
 			}
 			else
 			{
@@ -281,8 +281,8 @@ void PointDBEntityCollection::SetLineWarning( bool warning )
 		{
 			if( warning )
 			{
-				acutPrintf(L"\n设置管线实体的颜色为报警色.");
-				pLine->setColorIndex( GlobalData::INTERSET_WALLLINE_COLOR );
+				acutPrintf(L"\n设置管线实体的颜色为红色.");
+				pLine->setColorIndex( GlobalData::INTERSET_COLOR );
 			}
 			else
 			{

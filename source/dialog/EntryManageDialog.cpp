@@ -524,8 +524,9 @@ BEGIN_MESSAGE_MAP(EntryManageDialog, CDialog)
 	ON_BN_CLICKED(IDC_THROUGH_BELLOW,		OnControlValueChange)
 
 	ON_EN_CHANGE(IDC_EDIT_WALL_SIZE,		OnControlValueChange)
-	ON_EN_CHANGE(IDC_EDIT_SAFESIZE,			OnControlValueChange)
-	
+	ON_CBN_SELCHANGE(IDC_EDIT_SAFESIZE,		OnControlValueChange)
+	ON_CBN_EDITUPDATE(IDC_EDIT_SAFESIZE,	OnControlValueChange)
+
 	ON_EN_CHANGE(IDC_EDIT_PLANE_MARK,		OnControlValueChange)
 	ON_EN_CHANGE(IDC_EDIT_CUT_MARK,			OnControlValueChange)
 
@@ -799,6 +800,11 @@ void EntryManageDialog::FillLineData( LineEntity* lineEntry )
 		}
 
 		m_LineWallSize.SetWindowText(lineEntry->m_LineBasiInfo->mWallSize.c_str());
+		
+		m_LineSafeSize.ResetContent();
+		wstring defaultSafeSize = LineConfigDataManager::Instance()->FindDefaultSafeSize(lineEntry->m_LineBasiInfo->mCategory);
+		m_LineSafeSize.AddString(defaultSafeSize.c_str());
+
 		m_LineSafeSize.SetWindowText(lineEntry->m_LineBasiInfo->mSafeSize.c_str());
 
 		m_LinePlaneDesc.SetWindowText(lineEntry->m_LineBasiInfo->mPlaneMark.c_str());
@@ -1026,7 +1032,10 @@ void EntryManageDialog::ClearLineData()
 	m_LineWallSize.SetWindowText(L"0");
 
 	wstring defaultSafeSize = LineConfigDataManager::Instance()->FindDefaultSafeSize(lineCategory);
-	m_LineSafeSize.SetWindowText(defaultSafeSize.c_str());
+
+	m_LineSafeSize.ResetContent();
+	m_LineSafeSize.AddString(defaultSafeSize.c_str());
+	m_LineSafeSize.SetCurSel(0);
 
 	m_LinePlaneDesc.SetWindowText(L"нч");
 	m_LineCutDesc.SetWindowText(L"нч");
@@ -1087,7 +1096,10 @@ void EntryManageDialog::OnCbnCategoryChange()
 		wstring lineCategory(category.GetBuffer());
 
 		wstring defaultSafeSize = LineConfigDataManager::Instance()->FindDefaultSafeSize(lineCategory);
-		m_LineSafeSize.SetWindowText(defaultSafeSize.c_str());
+		
+		m_LineSafeSize.ResetContent();
+		m_LineSafeSize.AddString(defaultSafeSize.c_str());
+		m_LineSafeSize.SetCurSel(0);
 	}
 }
 

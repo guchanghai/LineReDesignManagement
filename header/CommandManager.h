@@ -53,6 +53,9 @@ public:
 	//寻找路由
 	static void LineRoute();
 
+	//版权信息
+	static void ShowCopyRight();
+
 	//测试
 	static void TestFunction();
 

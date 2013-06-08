@@ -13,20 +13,18 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// 中文(中华人民共和国) resources
+// Chinese (Simplified, PRC) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
-#ifdef _WIN32
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
 #pragma code_page(936)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-IDR_MENU1 MENU 
+IDR_MENU1 MENU
 BEGIN
     POPUP "管线改移设计"
     BEGIN
@@ -58,7 +56,7 @@ BEGIN
             MENUITEM "删除遮挡",                        ID_32809
         END
         MENUITEM "寻找路由",                        ID_32810
-        MENUITEM "功能测试",                        ID_MENU_TEST
+        MENUITEM "版权信息",                        ID_MENU_TEST
     END
 END
 
@@ -93,7 +91,7 @@ BEGIN
     RTEXT           "壁厚(mm)",IDC_STATIC,255,69,47,8
     EDITTEXT        IDC_EDIT_WALL_SIZE,309,66,38,14,ES_AUTOHSCROLL | ES_NUMBER
     RTEXT           "安全距离(mm)",IDC_STATIC,461,69,49,8
-    EDITTEXT        IDC_EDIT_SAFESIZE,516,66,38,14,ES_AUTOHSCROLL | ES_NUMBER
+    COMBOBOX        IDC_EDIT_SAFESIZE,515,67,37,13,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     RTEXT           "管线平面标注",IDC_STATIC,253,88,49,8
     EDITTEXT        IDC_EDIT_PLANE_MARK,309,88,143,33,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL
     RTEXT           "管线剖面标注",IDC_STATIC,461,88,49,8
@@ -166,7 +164,7 @@ BEGIN
     COMBOBOX        IDC_COMBO_SHAPE,527,24,134,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     EDITTEXT        IDC_EDIT_DANAMIC_1,314,46,38,14,ES_AUTOHSCROLL | ES_NUMBER
     EDITTEXT        IDC_EDIT_DANAMIC_2,409,46,38,14,ES_AUTOHSCROLL | ES_NUMBER
-    EDITTEXT        IDC_EDIT_DANAMIC_3,528,46,38,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDIT_DANAMIC_3,528,46,34,12,ES_AUTOHSCROLL | ES_NUMBER
     EDITTEXT        IDC_EDIT_DANAMIC_4,623,46,38,14,ES_AUTOHSCROLL | ES_NUMBER
     EDITTEXT        IDC_EDIT_DANAMIC_5,623,68,38,14,ES_AUTOHSCROLL | ES_NUMBER
     RTEXT           "净宽 (mm)",IDC_STATIC_DYNAMIC_1,260,47,46,8
@@ -177,7 +175,7 @@ BEGIN
     RTEXT           "壁厚(mm)",IDC_STATIC,259,71,47,8
     EDITTEXT        IDC_EDIT_WALL_SIZE,314,68,38,14,ES_AUTOHSCROLL | ES_NUMBER
     RTEXT           "安全距离 (mm)",IDC_STATIC,470,71,51,8
-    EDITTEXT        IDC_EDIT_SAFESIZE,528,68,38,14,ES_AUTOHSCROLL | ES_NUMBER
+    COMBOBOX        IDC_EDIT_SAFESIZE,529,70,34,13,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     RTEXT           "阻隔体平面标注",IDC_STATIC,249,92,57,8
     EDITTEXT        IDC_EDIT_PLANE_MARK,314,91,134,33,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN
     RTEXT           "阻隔体剖面标注",IDC_STATIC,464,92,57,8
@@ -204,6 +202,20 @@ BEGIN
     CONTROL         "重复坐标点提醒",IDC_STATIC_DUP_WARNING,"Static",SS_LEFTNOWORDWRAP | NOT WS_VISIBLE | WS_GROUP,548,257,103,42
 END
 
+IDD_COPYRIGHT DIALOGEX 0, 0, 316, 143
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Copyright"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,241,122,50,14
+    LTEXT           "This system is written using C++ and MFC",IDC_STATIC,29,20,149,11
+    LTEXT           "The main funtion is draw pipes in AutoCAD",IDC_STATIC,29,43,136,8
+    LTEXT           "Copyright@2013 ",IDC_STATIC,29,63,57,8
+    LTEXT           "Author: Gu Changhai",IDC_STATIC,29,83,68,8
+    CONTROL         144,IDC_STATIC,"Static",SS_BITMAP,218,14,75,101
+    LTEXT           "Mail : chgu@adobe.com",IDC_STATIC,29,103,77,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -211,7 +223,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_DIALOG_ENTRY_MANAGE, DIALOG
     BEGIN
@@ -229,12 +241,24 @@ BEGIN
         BOTTOMMARGIN, 114
     END
 
+    IDD_DIALOG1, DIALOG
+    BEGIN
+    END
+
     IDD_DIALOG_BLOCK_MANAGE, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 679
         TOPMARGIN, 7
         BOTTOMMARGIN, 338
+    END
+
+    IDD_COPYRIGHT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 136
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -245,7 +269,7 @@ END
 // Toolbar
 //
 
-IDR_TOOLBAR_LMA TOOLBAR  16, 15
+IDR_TOOLBAR_LMA TOOLBAR 16, 15
 BEGIN
     BUTTON      ID_BUTTON_CANCLE
 END
@@ -257,29 +281,28 @@ END
 //
 
 IDR_TOOLBAR_LMA         BITMAP                  "toolbar_lma.bmp"
+IDB_AUTHOR              BITMAP                  "C:\\Users\\chgu\\Dropbox\\Photos\\Author.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_BUTTON_CANCLE        "删除切图"
 END
 
-#endif    // 中文(中华人民共和国) resources
+#endif    // Chinese (Simplified, PRC) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// 英语(美国) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -355,7 +378,7 @@ BEGIN
     END
 END
 
-#endif    // 英语(美国) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

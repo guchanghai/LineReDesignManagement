@@ -19,6 +19,7 @@
 #include <gelnsg3d.h>
 #include <LineConfigDataManager.h>
 #include <GlobalDataConfig.h>
+#include <LineManageAssitant.h>
 
 using namespace com::guch::assistant::config;
 using namespace com::guch::assistant::data;
@@ -218,30 +219,41 @@ Acad::ErrorStatus LMALineDbObject::CreateDBObject()
 	if( mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
 		//acutPrintf(L"\n绘制半径为【%0.2lf】长为【%0.2lf】的圆柱",mRadius,height);
-
 		//绘制圆柱体
 		this->createFrustum(height,mRadius,mRadius,mRadius);
 	}
 	else //if (  mpPointInfo->mCategoryData->mShape == GlobalData::LINE_SHAPE_SQUARE )
 	{
 		//acutPrintf(L"\n绘制宽【%0.2lf】高【%0.2lf】长【%0.2lf】的方柱体",mLength, mWidth, height);
-
 		//绘制圆柱体
-		this->createBox(mHeight, mWidth, height);
+		this->createBox(mWidth, mHeight, height);
 	}
 
-	//得到线段与Z轴的垂直向量
+	AcGeMatrix3d rotateMatrix;
+	double angle;
+
+	//得到与该线段和Z轴的坐在平面垂直的向量
 	AcGeVector3d line3dVector(endPoint.x - startPoint.x, endPoint.y - startPoint.y, endPoint.z - startPoint.z);
 	AcGeVector3d rotateVctor = line3dVector.crossProduct(AcGeVector3d::kZAxis);
 
-	//得到旋转的角度
-	double angle = -line3dVector.angleTo(AcGeVector3d::kZAxis);
-	//acutPrintf(L"\n得到旋转角度【%lf】",angle);
+	//得到上诉垂直向量与X轴的夹角
+	angle = rotateVctor.angleTo(AcGeVector3d::kXAxis); // 线段位于第二，三象限时，垂直向量与X轴的夹角与该线段在第一，四象限时的夹角相等，估需区分
+	if( startPoint.x < endPoint.x )
+		angle = -angle;
+	//acutPrintf(L"\n得到倾斜的角度【%lf】",angle);
+
+	//进行旋转，放置柱体倾斜
+	rotateMatrix = AcGeMatrix3d::rotation( angle, AcGeVector3d::kZAxis, AcGePoint3d::kOrigin);
+	transformBy(rotateMatrix);
+
+	//得到柱体进行旋转的角度
+	angle = -line3dVector.angleTo(AcGeVector3d::kZAxis);
+	//acutPrintf(L"\n得到旋转的角度【%lf】",angle);
 
 	//进行旋转
-	AcGeMatrix3d rotateMatrix = AcGeMatrix3d::rotation( angle, rotateVctor, AcGePoint3d::kOrigin);
+	rotateMatrix = AcGeMatrix3d::rotation( angle, rotateVctor, AcGePoint3d::kOrigin);
 	transformBy(rotateMatrix);
-	
+
 	//得到线段的中心点
 	AcGePoint3d center( startPoint.x + endPoint.x, startPoint.y + endPoint.y, startPoint.z + endPoint.z); 
 	center /= 2;

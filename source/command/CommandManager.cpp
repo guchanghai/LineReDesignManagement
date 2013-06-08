@@ -8,6 +8,7 @@
 #include <LineIntersectManage.h>
 #include <ArxWrapper.h>
 #include <GlobalDataConfig.h>
+#include <LMACopyRight.h>
 
 #include "AsdkAcUiDialogSample.h"
 #include "AcExtensionModule.h"
@@ -250,11 +251,15 @@ void CommandManager::LineRoute()
 
 	LineIntersectManage::Instance()->Reset();
 }
+
 void CommandManager::TestFunction()
 {
 #ifdef DEBUG
-	acutPrintf(L"\n测试AutoCAD的功能");
+	acutPrintf(L"\n显示版本信息");
 #endif
 
-	ArxWrapper::TestFunction();
+	LMACopyRight dlg(CWnd::FromHandle(adsw_acadMainWnd()));
+	INT_PTR nReturnValue = dlg.DoModal();
+
+	//ArxWrapper::TestFunction();
 }
