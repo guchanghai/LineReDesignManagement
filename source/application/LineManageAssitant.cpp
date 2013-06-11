@@ -21,7 +21,7 @@
 
 #include "AsdkAcUiDialogSample.h"
 #include "AcExtensionModule.h"
-
+#include "ArxWrapper.h"
 #include "MenuManager.h"
 
 #include "CommandManager.h"
@@ -53,6 +53,9 @@ static void initApp(void* appId)
 
   // 注册自定义类
   LMADbObjectManager::RegisterClass();
+
+  // 加载依赖的类库
+  ArxWrapper::LoadDependencyLibrary();
 }
 
 static void unloadApp()
@@ -65,6 +68,9 @@ static void unloadApp()
 
   // 注销自定义类
   LMADbObjectManager::UnRegisterClass();
+
+  //卸载依赖的库
+  ArxWrapper::UnLoadDependencyLirarby();
 }
 
 static void dwgLoaded()

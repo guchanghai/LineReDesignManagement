@@ -3,11 +3,12 @@
 // Used by LineManageAssistant.rc
 //
 #define IDD_COPYRIGHT                   141
-#define IDB_BITMAP1                     144
 #define IDB_AUTHOR                      144
 #define IDC_STATIC_DUP_WARNING          1066
 #define IDC_COMBO2                      1069
 #define IDC_COMBO1                      1070
+#define IDC_RADIO_DIR_SAME              1072
+#define IDC_RADIO_DIR_OPPOSITE          1073
 #define IDD_DIALOG1                     10001
 #define IDR_MENU1                       10002
 #define IDR_TOOLBAR_LMA                 10003
@@ -19,7 +20,7 @@
 #define IDC_EDIT_ZPT                    10009
 #define IDC_EDIT_ANGLE                  10010
 #define IDC_OFFSET                      10011
-#define IDD_DIALOG_CUT_POS              10012
+#define IDD_DIALOG_CUT_POS				10012
 #define IDC_BUTTON_POINT                10013
 #define IDC_BUTTON_ANGLE                10014
 #define ID_BUTTON_CANCLE                10015
@@ -64,6 +65,7 @@
 #define IDC_THROUGH_BELLOW              10065
 #define IDC_STATIC_RADIUS               11051
 #define IDD_DIALOG_BLOCK_MANAGE         11059
+#define IDD_DIALOG_SHADOW_POS			11060
 #define ID_GENERATE_CUT                 32774
 #define ID_GENERATE_BACK                32784
 #define ID_MENU_TEST                    32786
@@ -88,7 +90,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        145
 #define _APS_NEXT_COMMAND_VALUE         32811
-#define _APS_NEXT_CONTROL_VALUE         1072
+#define _APS_NEXT_CONTROL_VALUE         1074
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

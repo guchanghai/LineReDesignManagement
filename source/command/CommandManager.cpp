@@ -4,6 +4,7 @@
 #include <LineManageAssitant.h>
 
 #include <LineCutPosDialog.h>
+#include <LineShadowCutDialog.h>
 #include <EntryManageDialog.h>
 #include <LineIntersectManage.h>
 #include <ArxWrapper.h>
@@ -192,7 +193,7 @@ void CommandManager::GenerateCut()
 #ifdef DEBUG
 	acutPrintf(L"\n…˙≥…«–Õº");
 #endif
-	LineCutPosDialog dlg(CWnd::FromHandle(adsw_acadMainWnd()));
+	LineCutPosDialog dlg(LineCutPosDialog::IDD, CWnd::FromHandle(adsw_acadMainWnd()));
 	INT_PTR nReturnValue = dlg.DoModal();
 }
 
@@ -211,7 +212,7 @@ void CommandManager::LineShadow()
 	acutPrintf(L"\n’⁄µ≤«–Õº");
 #endif
 
-	LineCutPosDialog dlg(CWnd::FromHandle(adsw_acadMainWnd()));
+	LineShadowCutDialog dlg(LineShadowCutDialog::IDD, CWnd::FromHandle(adsw_acadMainWnd()));
 	INT_PTR nReturnValue = dlg.DoModal();
 }
 
@@ -221,7 +222,7 @@ void CommandManager::LineShadowBack()
 	acutPrintf(L"\n…æ≥˝¡Ÿ ±’⁄µ≤«–Õº£¨ª÷∏¥3D ”¥∞");
 #endif
 
-	LineCutPosDialog::Reset();
+	LineShadowCutDialog::Reset();
 }
 
 //«÷œﬁœ‡πÿ

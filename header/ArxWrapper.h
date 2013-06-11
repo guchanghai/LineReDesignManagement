@@ -47,6 +47,10 @@ public:
 	static const double kRad270;
 	static const double kRad360;
 
+	static void LoadDependencyLibrary();
+
+	static void UnLoadDependencyLirarby();
+
 	static bool createNewLayer(const wstring& layerName);
 
 	static bool ShowLayer(const wstring& theOnly);

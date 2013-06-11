@@ -23,7 +23,7 @@ public:
 	// Dialog Data
 	enum { IDD = IDD_DIALOG_CUT_POS };
 
-	LineCutPosDialog(CWnd* pParent = NULL);   // standard constructor
+	LineCutPosDialog(int dialogId, CWnd* pParent = NULL);   // standard constructor
 	virtual ~LineCutPosDialog();
 
 	virtual BOOL OnInitDialog();
@@ -44,23 +44,23 @@ protected:
 
 	afx_msg void OnBnClickedZ();
 
-	afx_msg void OnBnClickedOk();
+	virtual afx_msg void OnBnClickedOk();
 
 	afx_msg void OnBnPickCutPos();
 
-private:
+protected:
 
 	//对当前文件中的所有管线进行切图
 	void GenerateCutRegion();
 
 	//对一根管线进行切图
-	void GenerateCutRegion(LineEntity* lineEntry);
+	virtual void GenerateCutRegion(LineEntity* lineEntry);
 
 	//对一个折线段进行切图
-	void GenerateCutRegion(PointEntity* pointEntity, double markOffset);
+	virtual void GenerateCutRegion(PointEntity* pointEntity, double markOffset);
 
 	//生成切面图所在的图层
-	void GenerateCutPlane();
+	virtual void GenerateCutPlane();
 
 	//生成转换矩阵
 	void GenerateTransform();
@@ -80,7 +80,9 @@ private:
 	//进行矩阵转换，将切面图放置XY平面
 	void TransformToXY( AcDbObjectIdArray entityIds );
 
-private:
+protected:
+
+	static int m_DialogID;
 
 	//选取X、Y、Z三个方向
 	CButton m_DirectionX;

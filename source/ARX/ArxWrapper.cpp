@@ -4,6 +4,8 @@
 #include <LineConfigDataManager.h>
 #include <LineEntryData.h>
 
+#include <Hlr.h>
+
 #include "acedads.h"
 #include "accmd.h"
 #include <adscodes.h>
@@ -57,6 +59,27 @@ const double ArxWrapper::kRad135   = (3.14159265358979323846 * 3.0) / 4.0;
 const double ArxWrapper::kRad180   = 3.14159265358979323846;
 const double ArxWrapper::kRad270   = 3.14159265358979323846 * 1.5;
 const double ArxWrapper::kRad360   = 3.14159265358979323846 * 2.0;
+
+/**
+ * 加载依赖的库
+ **/
+void ArxWrapper::LoadDependencyLibrary()
+{
+	//----- We need the HLR engine loaded
+	if ( !acrxServiceIsRegistered (AsdkHlrApiServiceName) )
+		acrxLoadModule (ACRX_T(/*NOXLATE*/"AsdkHlrApi19.dbx"), false, true) ;
+	
+	//----- bump the reference count
+	acrxLoadModule (ACRX_T(/*NOXLATE*/"AsdkHlrApi19.dbx"), false, false) ;
+}
+
+/**
+ * 卸载依赖的库
+ **/
+void ArxWrapper::UnLoadDependencyLirarby()
+{
+  acrxUnloadModule (ACRX_T(/*NOXLATE*/"AsdkHlrApi19.dbx")) ;
+}
 
 /**
  * 将对象放置在命名词典中
@@ -1005,28 +1028,6 @@ AcDbEntity* ArxWrapper::GetDbObject( const AcDbObjectId& objId, bool openWrite )
  **/
 void ArxWrapper::ChangeView(int viewDirection)
 {
-	AcDbViewTableRecord view;
-
-    // get desired view direction
-    AcGeVector3d viewDir = -AcGeVector3d::kYAxis;
-	/*
-    if (prViewDir.isKeyWordPicked(_T("Top")))
-        viewDir = AcGeVector3d::kZAxis;
-    else if (prViewDir.isKeyWordPicked(_T("BOttom")))
-        viewDir = -AcGeVector3d::kZAxis;
-    else if (prViewDir.isKeyWordPicked(_T("BAck")))
-        viewDir = AcGeVector3d::kYAxis;
-    else if (prViewDir.isKeyWordPicked(_T("Front")))
-        viewDir = -AcGeVector3d::kYAxis;
-    else if (prViewDir.isKeyWordPicked(_T("Right")))
-        viewDir = AcGeVector3d::kXAxis;
-    else if (prViewDir.isKeyWordPicked(_T("Left")))
-        viewDir = -AcGeVector3d::kXAxis;
-    else {
-        ASSERT(0);
-    }
-	*/
-
 #ifdef DEBUG
 	acutPrintf(L"\n设置当前视图为前视,中心点在50");
 #endif
@@ -1039,25 +1040,18 @@ void ArxWrapper::ChangeView(int viewDirection)
 		cmdViewDir =  L"FRONT";
 	else if  ( viewDirection == 3 )
 		cmdViewDir =  L"TOP";
+	else if( viewDirection == 4 )
+		cmdViewDir = L"LEFT";
+	else if ( viewDirection == 5 )
+		cmdViewDir =  L"BACK";
+	else if  ( viewDirection == 6 )
+		cmdViewDir =  L"BOTTOM";
 
 #ifdef DEBUG
 	acutPrintf(L"\n设置当前视图为前视为【%s】",cmdViewDir.c_str());
 #endif
 
 	acedCommand(RTSTR, _T("._-VIEW"), RTSTR, cmdViewDir.c_str(), 0);
-
-    //view.setViewDirection(viewDir);
-	//view.setCenterPoint(AcGePoint2d(50, 50));
-
-	// 设置视图的中心点
-	//view.setCenterPoint(AcGePoint2d((xMin + xMax) / 2,  (yMin + yMax) / 2));
-
-	// 设置视图的高度和宽度
-	//view.setHeight(fabs(yMax - yMin));
-	//view.setWidth(fabs(xMax - xMin));
-
-	// 将视图对象设置为当前视图
-	//Acad::ErrorStatus es = acedSetCurrentView(&view, NULL);
 }
 
 void TestViewPort()

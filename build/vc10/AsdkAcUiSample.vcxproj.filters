@@ -73,6 +73,9 @@
     <ClCompile Include="..\..\source\dialog\LMACopyRight.cpp">
       <Filter>src\Dialog</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\source\dialog\LineShadowCutDilaog.cpp">
+      <Filter>src\Dialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\header\AsdkAcUiDialogSample.h">
@@ -160,6 +163,9 @@
       <Filter>inc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\header\LMACopyRight.h">
+      <Filter>inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LineShadowCutDialog.h">
       <Filter>inc</Filter>
     </ClInclude>
   </ItemGroup>

@@ -83,7 +83,7 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX 2013\utils\HlrApi\inc;(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -93,9 +93,9 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib;..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\ObjectARX 2013\utils\HlrApi\lib-$(Platform);..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib;..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
-      <AdditionalDependencies>acad.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>AsdkHlrApi19.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName).arx</OutputFile>
     </Link>
     <PostBuildEvent>
@@ -107,7 +107,7 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX 2013\utils\HlrApi\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -121,13 +121,13 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\ObjectARX 2013\utils\HlrApi\lib-$(Platform);..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
       <TargetMachine>MachineX64</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
       <MapExports>true</MapExports>
-      <AdditionalDependencies>acad.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>AsdkHlrApi19.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName).$(TargetExt)</OutputFile>
       <OptimizeReferences>false</OptimizeReferences>
     </Link>
@@ -138,15 +138,16 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX 2013\utils\HlrApi\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\ObjectARX 2013\utils\HlrApi\lib-$(Platform);..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
       <OutputFile>$(OutDir)$(TargetName).arx</OutputFile>
+      <AdditionalDependencies>AsdkHlrApi19.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /B $(OutDir)$(TargetName).$(TargetExt) ..\..\release\2013\$(Platform)\$(Configuration)</Command>
@@ -155,16 +156,17 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX 2013\utils\HlrApi\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\ObjectARX 2013\utils\HlrApi\lib-$(Platform);..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
       <TargetMachine>MachineX64</TargetMachine>
       <OutputFile>$(OutDir)$(TargetName).arx</OutputFile>
+      <AdditionalDependencies>AsdkHlrApi19.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /B $(OutDir)$(TargetName).$(TargetExt) ..\..\release\2013\$(Platform)\$(Configuration)</Command>
@@ -189,6 +191,7 @@
     <ClCompile Include="..\..\source\dialog\EntryManageDialog.cpp" />
     <ClCompile Include="..\..\source\dialog\AsdkAcUiDialogSample.cpp" />
     <ClCompile Include="..\..\source\dialog\LineCutPosDialog.cpp" />
+    <ClCompile Include="..\..\source\dialog\LineShadowCutDilaog.cpp" />
     <ClCompile Include="..\..\source\dialog\LMACopyRight.cpp" />
     <ClCompile Include="..\..\source\exception\LMAException.cpp" />
     <ClCompile Include="..\..\source\intersect\LineIntersectManage.cpp" />
@@ -225,6 +228,7 @@
     <ClInclude Include="..\..\header\LineEntryData.h" />
     <ClInclude Include="..\..\header\LineIntersectManage.h" />
     <ClInclude Include="..\..\header\LineManageAssitant.h" />
+    <ClInclude Include="..\..\header\LineShadowCutDialog.h" />
     <ClInclude Include="..\..\header\ListCtrlEx.h" />
     <ClInclude Include="..\..\header\LMACopyRight.h" />
     <ClInclude Include="..\..\header\LMAException.h" />

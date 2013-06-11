@@ -48,11 +48,12 @@ using namespace com::guch::assistant::arx;
 CString LineCutPosDialog::m_CutLayerName = L"";
 AcDbObjectIdArray LineCutPosDialog::m_CutObjects = AcDbObjectIdArray();
 wstring LineCutPosDialog::m_CutHatchStyle = L"NET";
+int LineCutPosDialog::m_DialogID = LineCutPosDialog::IDD;
 
 IMPLEMENT_DYNAMIC(LineCutPosDialog, CAcUiDialog)
 
-LineCutPosDialog::LineCutPosDialog(CWnd* pParent /*=NULL*/)
-	: CAcUiDialog(LineCutPosDialog::IDD, pParent),
+LineCutPosDialog::LineCutPosDialog(int dialogId, CWnd* pParent /*=NULL*/)
+	: CAcUiDialog(dialogId, pParent),
 	m_Direction(0),
 	m_strOffset(0)
 {
@@ -604,9 +605,7 @@ void LineCutPosDialog::ShowCutRegion()
 	ArxWrapper::ShowLayer(m_CutLayerName.GetBuffer());
 
 	//切换视图
-	//ArxWrapper::ChangeView(m_Direction);
-
-	acedCommand(RTSTR, _T("._-VIEW"), RTSTR, L"TOP", 0);
+	ArxWrapper::ChangeView(m_Direction);
 }
 
 void LineCutPosDialog::Reset()
@@ -636,6 +635,9 @@ void LineCutPosDialog::Reset()
 
 		acutPrintf(L"\n解除文档锁定");
 		ArxWrapper::UnLockCurDoc();
+
+		acutPrintf(L"\n切换至俯视");
+		ArxWrapper::ChangeView(3);
 	}
 	else
 	{
