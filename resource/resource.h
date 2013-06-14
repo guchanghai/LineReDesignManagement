@@ -20,7 +20,7 @@
 #define IDC_EDIT_ZPT                    10009
 #define IDC_EDIT_ANGLE                  10010
 #define IDC_OFFSET                      10011
-#define IDD_DIALOG_CUT_POS				10012
+#define IDD_DIALOG_CUT_POS              10012
 #define IDC_BUTTON_POINT                10013
 #define IDC_BUTTON_ANGLE                10014
 #define ID_BUTTON_CANCLE                10015
@@ -65,7 +65,9 @@
 #define IDC_THROUGH_BELLOW              10065
 #define IDC_STATIC_RADIUS               11051
 #define IDD_DIALOG_BLOCK_MANAGE         11059
-#define IDD_DIALOG_SHADOW_POS			11060
+#define IDD_DIALOG_SHADOW_POS           11060
+#define IDD_COPYRIGHT1                  11061
+#define IDD_COPYRIGHT_SIMPLE            11061
 #define ID_GENERATE_CUT                 32774
 #define ID_GENERATE_BACK                32784
 #define ID_MENU_TEST                    32786

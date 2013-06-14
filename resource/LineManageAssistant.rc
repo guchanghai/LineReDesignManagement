@@ -237,6 +237,16 @@ BEGIN
     CONTROL         "",IDC_BUTTON_PICKCUT,"Button",BS_OWNERDRAW | WS_TABSTOP,199,25,28,14
 END
 
+IDD_COPYRIGHT_SIMPLE DIALOGEX 0, 0, 139, 96
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "版权信息"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,68,70,50,14
+    LTEXT           "地铁管线改移设计辅助系统",-1,21,23,111,11
+    LTEXT           "Copyright@2013 ",-1,21,46,57,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -288,6 +298,14 @@ BEGIN
         RIGHTMARGIN, 256
         TOPMARGIN, 7
         BOTTOMMARGIN, 112
+    END
+
+    IDD_COPYRIGHT_SIMPLE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 132
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 89
     END
 END
 #endif    // APSTUDIO_INVOKED

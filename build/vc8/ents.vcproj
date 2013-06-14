@@ -42,8 +42,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\header;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32;..\..\resource;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include"
-				PreprocessorDefinitions=";ACRXAPP;RADPACK;"
+				AdditionalIncludeDirectories="&quot;C:\ObjectARX 2008\utils\HlrApi\inc&quot;;..\..\header;&quot;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32&quot;;..\..\resource;&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include&quot;"
+				PreprocessorDefinitions="AUTOCAD2008"
 				UsePrecompiledHeader="0"
 				WarnAsError="false"
 			/>
@@ -59,8 +59,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="AsdkHlrApi17.lib"
 				OutputFile="$(OutDir)\$(ProjectName)-2008.arx"
-				AdditionalLibraryDirectories="..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2008\lib-win32;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib"
+				AdditionalLibraryDirectories="&quot;..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2008\lib-win32&quot;;&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib&quot;;&quot;C:\ObjectARX 2008\win32\utils\HlrApi\lib&quot;"
 				ModuleDefinitionFile="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\AcRxDefault.def"
 			/>
 			<Tool
@@ -114,8 +115,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\header;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32;..\..\resource;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include"
-				PreprocessorDefinitions="ACRXAPP;RADPACK;"
+				AdditionalIncludeDirectories="&quot;C:\ObjectARX 2008\utils\HlrApi\inc&quot;;..\..\header;&quot;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32&quot;;..\..\resource;&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include&quot;"
+				PreprocessorDefinitions="AUTOCAD2008"
 				UsePrecompiledHeader="0"
 				WarnAsError="false"
 			/>
@@ -130,8 +131,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="AsdkHlrApi17.lib"
 				OutputFile="$(OutDir)\$(ProjectName)-2008.arx"
-				AdditionalLibraryDirectories="..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2008\lib-win32;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib"
+				AdditionalLibraryDirectories="&quot;..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2008\lib-win32&quot;;&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib&quot;;&quot;C:\ObjectARX 2008\win32\utils\HlrApi\lib&quot;"
 				ModuleDefinitionFile="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\AcRxDefault.def"
 			/>
 			<Tool
@@ -412,6 +414,14 @@
 						/>
 					</FileConfiguration>
 				</File>
+				<File
+					RelativePath="..\..\source\dialog\LineShadowCutDilaog.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\dialog\LMACopyRight.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="exception"
@@ -531,7 +541,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\header\LineShadowCutDialog.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\header\ListCtrlEx.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\header\LMACopyRight.h"
 				>
 			</File>
 			<File

@@ -84,7 +84,7 @@
     </Midl>
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX 2013\utils\HlrApi\inc;(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;AUTOCAD2013;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <Optimization>Disabled</Optimization>
@@ -108,7 +108,7 @@
     </Midl>
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX 2013\utils\HlrApi\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;AUTOCAD2013;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
@@ -139,7 +139,7 @@
     <ClCompile>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX 2013\utils\HlrApi\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;AUTOCAD2013;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>Disabled</Optimization>
     </ClCompile>
@@ -157,7 +157,7 @@
     <ClCompile>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX 2013\utils\HlrApi\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;AUTOCAD2013;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>Disabled</Optimization>
     </ClCompile>

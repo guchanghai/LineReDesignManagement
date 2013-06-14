@@ -605,7 +605,7 @@ void LineCutPosDialog::ShowCutRegion()
 	ArxWrapper::ShowLayer(m_CutLayerName.GetBuffer());
 
 	//«–ªª ”Õº
-	ArxWrapper::ChangeView(m_Direction);
+	//ArxWrapper::ChangeView(m_Direction);
 }
 
 void LineCutPosDialog::Reset()

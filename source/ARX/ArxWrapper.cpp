@@ -1,3 +1,5 @@
+#include <string>
+
 #include <ArxWrapper.h>
 #include <GlobalDataConfig.h>
 #include <LineCategoryItemData.h>
@@ -45,6 +47,7 @@ void TestMLeader();
 void TestLayer();
 void TestArxPath();
 
+using namespace std;
 using namespace com::guch::assistant::arx;
 using namespace com::guch::assistant::data;
 using namespace com::guch::assistant::config;
@@ -60,17 +63,29 @@ const double ArxWrapper::kRad180   = 3.14159265358979323846;
 const double ArxWrapper::kRad270   = 3.14159265358979323846 * 1.5;
 const double ArxWrapper::kRad360   = 3.14159265358979323846 * 2.0;
 
+extern wstring gLmaArxLoadPath;
+
+#ifdef AUTOCAD2008
+const wstring HLR_MODULE_NAME = L"AsdkHlrApi17.dbx";
+#endif
+
+#ifdef AUTOCAD2013
+const wstring HLR_MODULE_NAME = L"AsdkHlrApi19.dbx";
+#endif
+
 /**
  * º”‘ÿ“¿¿µµƒø‚
  **/
 void ArxWrapper::LoadDependencyLibrary()
 {
+	wstring hlrModule = gLmaArxLoadPath + L"\\" + HLR_MODULE_NAME;
+
 	//----- We need the HLR engine loaded
 	if ( !acrxServiceIsRegistered (AsdkHlrApiServiceName) )
-		acrxLoadModule (ACRX_T(/*NOXLATE*/"AsdkHlrApi19.dbx"), false, true) ;
+		acrxLoadModule(hlrModule.c_str(), false, true) ;
 	
 	//----- bump the reference count
-	acrxLoadModule (ACRX_T(/*NOXLATE*/"AsdkHlrApi19.dbx"), false, false) ;
+	acrxLoadModule(hlrModule.c_str(), false, false) ;
 }
 
 /**
@@ -78,7 +93,8 @@ void ArxWrapper::LoadDependencyLibrary()
  **/
 void ArxWrapper::UnLoadDependencyLirarby()
 {
-  acrxUnloadModule (ACRX_T(/*NOXLATE*/"AsdkHlrApi19.dbx")) ;
+	wstring hlrModule = gLmaArxLoadPath + wstring(L"\\") + HLR_MODULE_NAME;
+	acrxUnloadModule(hlrModule.c_str()) ;
 }
 
 /**
@@ -1035,13 +1051,13 @@ void ArxWrapper::ChangeView(int viewDirection)
 	wstring cmdViewDir;
 
 	if( viewDirection == 1 )
-		cmdViewDir = L"RIGHT";
+		cmdViewDir = L"LEFT";
 	else if ( viewDirection == 2 )
 		cmdViewDir =  L"FRONT";
 	else if  ( viewDirection == 3 )
 		cmdViewDir =  L"TOP";
 	else if( viewDirection == 4 )
-		cmdViewDir = L"LEFT";
+		cmdViewDir = L"RIGHT";
 	else if ( viewDirection == 5 )
 		cmdViewDir =  L"BACK";
 	else if  ( viewDirection == 6 )

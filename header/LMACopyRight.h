@@ -21,7 +21,7 @@ class LMACopyRight : public CAcUiDialog
 public:
 
 	// Dialog Data
-	enum { IDD = IDD_COPYRIGHT };
+	enum { IDD = IDD_COPYRIGHT_SIMPLE };
 
 	LMACopyRight(CWnd* pParent = NULL);   // standard constructor
 	virtual ~LMACopyRight();

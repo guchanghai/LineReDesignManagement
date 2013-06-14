@@ -347,7 +347,7 @@ void LineShadowCutDialog::ShowCutRegion()
 	ArxWrapper::ShowLayer(m_CutLayerName.GetBuffer());
 
 	int direction = m_Direction;
-	if( m_ViewDirection == 0 )
+	if( m_ViewDirection == 1 )
 	{
 		direction +=3;
 	}
