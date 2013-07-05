@@ -10,6 +10,7 @@
 #include <ArxWrapper.h>
 #include <GlobalDataConfig.h>
 #include <LMACopyRight.h>
+#include <LineCalRouteDialog.h>
 
 #include "AsdkAcUiDialogSample.h"
 #include "AcExtensionModule.h"
@@ -49,6 +50,7 @@ const WCHAR* CommandManager::CMD_LINE_INTERACT_BACK = L"LMA_LINE_INTERACT_BACK";
 
 //寻找路由
 const WCHAR* CommandManager::CMD_LINE_ROUTE = L"LMA_LINE_ROUTE";
+const WCHAR* CommandManager::CMD_LINE_ROUTE_BACK = L"LMA_LINE_ROUTE_BACK";
 
 //功能测试
 const WCHAR* CommandManager::CMD_LINE_TEST = L"LMA_TESTFUN";
@@ -247,10 +249,21 @@ void CommandManager::InteractCheckBack()
 void CommandManager::LineRoute()
 {
 #ifdef DEBUG
-	acutPrintf(L"\n计算路由，解决侵限问题");
+	acutPrintf(L"\n自动计算路由");
 #endif
 
-	LineIntersectManage::Instance()->Reset();
+	LineCalRouteDialog dlg(CWnd::FromHandle(adsw_acadMainWnd()));
+	INT_PTR nReturnValue = dlg.DoModal();
+}
+
+void CommandManager::LineRouteBack()
+{
+#ifdef DEBUG
+	acutPrintf(L"\n删除路由自动计算结果，恢复3D模型窗口");
+#endif
+
+	LineCalRouteDialog dlg(CWnd::FromHandle(adsw_acadMainWnd()));
+	LineCalRouteDialog::Reset();
 }
 
 void CommandManager::TestFunction()

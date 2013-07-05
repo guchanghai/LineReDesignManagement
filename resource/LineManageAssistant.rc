@@ -55,7 +55,11 @@ BEGIN
             MENUITEM "生成遮挡",                        ID_32808
             MENUITEM "删除遮挡",                        ID_32809
         END
-        MENUITEM "寻找路由",                        ID_32810
+        POPUP "寻找路由"
+        BEGIN
+            MENUITEM "计算路由",                        ID_32811
+            MENUITEM "删除路由",                        ID_32812
+        END
         MENUITEM "版权信息",                        ID_MENU_TEST
     END
 END
@@ -247,6 +251,31 @@ BEGIN
     LTEXT           "Copyright@2013 ",-1,21,46,57,8
 END
 
+IDD_DIALOG_CAL_ROUTE DIALOGEX 0, 0, 304, 152
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "自动计算两点间的管线"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "选择或输入起始点坐标",IDC_STATIC_ROUTE_START,17,20,272,43
+    LTEXT           "X : ",IDC_STATIC,30,43,12,8
+    EDITTEXT        IDC_ROUTE_START_X,42,40,40,14,ES_AUTOHSCROLL
+    LTEXT           "Y :",IDC_STATIC,99,43,12,8
+    EDITTEXT        IDC_ROUTE_START_Y,115,40,40,14,ES_AUTOHSCROLL
+    LTEXT           "Z :",IDC_STATIC,174,43,13,8
+    EDITTEXT        IDC_ROUTE_START_Z,189,40,40,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "",IDC_ROUTE_PICK_START,251,40,27,14
+    GROUPBOX        "选择或输入终止点坐标",IDC_STATIC_ROUTE_END,17,76,270,43
+    LTEXT           "X : ",IDC_STATIC,28,97,12,8
+    EDITTEXT        IDC_ROUTE_END_X,40,94,40,14,ES_AUTOHSCROLL
+    LTEXT           "Y :",IDC_STATIC,98,97,12,8
+    EDITTEXT        IDC_ROUTE_END_Y,114,94,40,14,ES_AUTOHSCROLL
+    LTEXT           "Z :",IDC_STATIC,172,97,13,8
+    EDITTEXT        IDC_ROUTE_END_Z,188,94,40,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "",IDC_ROUTE_PICK_END,250,94,27,14
+    DEFPUSHBUTTON   "计算",IDOK,177,131,50,14
+    PUSHBUTTON      "取消",IDCANCEL,237,131,50,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -306,6 +335,14 @@ BEGIN
         RIGHTMARGIN, 132
         TOPMARGIN, 7
         BOTTOMMARGIN, 89
+    END
+
+    IDD_DIALOG_CAL_ROUTE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 297
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 145
     END
 END
 #endif    // APSTUDIO_INVOKED

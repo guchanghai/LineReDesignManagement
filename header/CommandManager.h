@@ -53,6 +53,8 @@ public:
 	//寻找路由
 	static void LineRoute();
 
+	static void LineRouteBack();
+
 	//版权信息
 	static void ShowCopyRight();
 
@@ -79,6 +81,7 @@ public:
 	static const WCHAR* CMD_LINE_INTERACT_BACK;
 
 	static const WCHAR* CMD_LINE_ROUTE;
+	static const WCHAR* CMD_LINE_ROUTE_BACK;
 
 	static const WCHAR* CMD_LINE_TEST;
 

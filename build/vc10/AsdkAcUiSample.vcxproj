@@ -190,6 +190,7 @@
     <ClCompile Include="..\..\source\data\LineEntryPointData.cpp" />
     <ClCompile Include="..\..\source\dialog\EntryManageDialog.cpp" />
     <ClCompile Include="..\..\source\dialog\AsdkAcUiDialogSample.cpp" />
+    <ClCompile Include="..\..\source\dialog\LineCalRouteDialog.cpp" />
     <ClCompile Include="..\..\source\dialog\LineCutPosDialog.cpp" />
     <ClCompile Include="..\..\source\dialog\LineShadowCutDilaog.cpp" />
     <ClCompile Include="..\..\source\dialog\LMACopyRight.cpp" />
@@ -222,6 +223,7 @@
     <ClInclude Include="..\..\header\CAcadPopupMenus.h" />
     <ClInclude Include="..\..\header\EntryManageDialog.h" />
     <ClInclude Include="..\..\header\GlobalDataConfig.h" />
+    <ClInclude Include="..\..\header\LineCalRouteDialog.h" />
     <ClInclude Include="..\..\header\LineCategoryItemData.h" />
     <ClInclude Include="..\..\header\LineConfigDataManager.h" />
     <ClInclude Include="..\..\header\LineCutPosDialog.h" />

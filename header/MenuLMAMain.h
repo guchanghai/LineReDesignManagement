@@ -70,6 +70,9 @@
 
 #define MAIN_MENU_LINE_ROUTE L"寻找路由"
 
+#define MAIN_MENU_LINE_CALCULATE_ROUTE L"计算路由"
+
+#define MAIN_MENU_LINE_DELETE_ROUTE L"删除路由"
 
 /*
 * 测试

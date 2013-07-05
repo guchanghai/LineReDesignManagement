@@ -104,9 +104,13 @@ void MenuLMAMain::onAction(const CString& menuName)
 	{
 		CommandManager::LineShadowBack();
 	}
-	else if( menuName == MAIN_MENU_LINE_ROUTE )
+	else if( menuName == MAIN_MENU_LINE_CALCULATE_ROUTE )
 	{
 		CommandManager::LineRoute();
+	}
+	else if( menuName == MAIN_MENU_LINE_DELETE_ROUTE )
+	{
+		CommandManager::LineRouteBack();
 	}
 	else
 	{

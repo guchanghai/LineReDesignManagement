@@ -315,9 +315,30 @@ void MenuManager::AddDropdownMenu()
             V_VT(&index) = VT_I4;
             V_I4(&index) = menuIndex++;
 
-			//路由
-			cmdMenuName.Format(L"%s\n",CommandManager::CMD_LINE_ROUTE);
-            IPopUpMenu.AddMenuItem(index, MAIN_MENU_LINE_ROUTE, cmdMenuName);
+			//计算路由
+			cmdMenuName.Format(L"%s\n", MAIN_MENU_LINE_ROUTE );
+            CAcadPopupMenu ILineCalRoutePopUpMenu(IPopUpMenu.AddSubMenu(index, cmdMenuName));
+
+			{
+				IDispatch* pSubMenuDisp=NULL;
+
+				VariantInit(&index);
+				V_VT(&index) = VT_I4;
+				V_I4(&index) = 0;
+
+				cmdMenuName.Format(L"%s\n",CommandManager::CMD_LINE_ROUTE);
+				ILineCalRoutePopUpMenu.AddMenuItem(index, MAIN_MENU_LINE_CALCULATE_ROUTE, cmdMenuName);
+			
+				VariantInit(&index);
+				V_VT(&index) = VT_I4;
+				V_I4(&index) = 1;
+
+				cmdMenuName.Format(L"%s\n",CommandManager::CMD_LINE_ROUTE_BACK);
+				ILineCalRoutePopUpMenu.AddMenuItem(index, MAIN_MENU_LINE_DELETE_ROUTE, cmdMenuName);
+
+				pSubMenuDisp = ILineCalRoutePopUpMenu.m_lpDispatch;
+				pSubMenuDisp->AddRef();
+			}
 
 			VariantInit(&index);
             V_VT(&index) = VT_I4;

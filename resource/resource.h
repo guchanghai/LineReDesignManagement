@@ -4,11 +4,22 @@
 //
 #define IDD_COPYRIGHT                   141
 #define IDB_AUTHOR                      144
+#define IDD_DIALOG_CAL_ROUTE            145
 #define IDC_STATIC_DUP_WARNING          1066
 #define IDC_COMBO2                      1069
 #define IDC_COMBO1                      1070
 #define IDC_RADIO_DIR_SAME              1072
 #define IDC_RADIO_DIR_OPPOSITE          1073
+#define IDC_STATIC_ROUTE_START          1074
+#define IDC_STATIC_ROUTE_END            1075
+#define IDC_ROUTE_START_X               1076
+#define IDC_ROUTE_START_Y               1077
+#define IDC_ROUTE_START_Z               1078
+#define IDC_ROUTE_PICK_START            1079
+#define IDC_ROUTE_END_X                 1080
+#define IDC_ROUTE_END_Y                 1081
+#define IDC_ROUTE_END_Z                 1082
+#define IDC_ROUTE_PICK_END              1083
 #define IDD_DIALOG1                     10001
 #define IDR_MENU1                       10002
 #define IDR_TOOLBAR_LMA                 10003
@@ -66,7 +77,6 @@
 #define IDC_STATIC_RADIUS               11051
 #define IDD_DIALOG_BLOCK_MANAGE         11059
 #define IDD_DIALOG_SHADOW_POS           11060
-#define IDD_COPYRIGHT1                  11061
 #define IDD_COPYRIGHT_SIMPLE            11061
 #define ID_GENERATE_CUT                 32774
 #define ID_GENERATE_BACK                32784
@@ -85,14 +95,16 @@
 #define ID_32808                        32808
 #define ID_32809                        32809
 #define ID_32810                        32810
+#define ID_32811                        32811
+#define ID_32812                        32812
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        145
-#define _APS_NEXT_COMMAND_VALUE         32811
-#define _APS_NEXT_CONTROL_VALUE         1074
+#define _APS_NEXT_RESOURCE_VALUE        146
+#define _APS_NEXT_COMMAND_VALUE         32813
+#define _APS_NEXT_CONTROL_VALUE         1080
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
