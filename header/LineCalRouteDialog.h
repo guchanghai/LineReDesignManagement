@@ -49,6 +49,32 @@ protected:
 	//删除上次切图中产生的结果对象
 	static void CutBack();
 
+	void CalculateShortestRoute();
+
+	bool CalculateShortestRoute( const AcGePoint3d& start, const AcGePoint3d& end);
+
+	bool SetupRouteLineEnv();
+
+	bool CreateRouteSegment( const AcGePoint3d& start, const AcGePoint3d& end);
+
+private:
+
+	bool InitializeRouteLine();
+
+	bool InitializeRouteLineInfo();
+
+	bool InitializeStartEndPoints( const AcGePoint3d& startPoint, const AcGePoint3d& endPoint );
+
+	bool AppendStartEndPoints(const AcGePoint3d& startPoint, const AcGePoint3d& endPoint);
+
+	bool SaveRouteLinePoint( const AcGePoint3d& newPoint );
+
+	bool HasIntersect(AcArray<PointEntity*>* intersectEntities);
+
+	PointEntity* GetNearestLineSegement( AcArray<PointEntity*>* intersectEntities );
+
+	AcGePoint3d GetProjectPoint3d(PointEntity* lineSegment);
+
 protected:
 
 	//选取起始、截止点
@@ -68,9 +94,32 @@ protected:
 	AcGePoint3d m_startPoint;
 	AcGePoint3d m_endPoint;
 
+	AcGePoint3d m_newStartPoint;
+
+	//代表的文件名
+	wstring m_fileName;
+
+	//实体文件管理器
+	LineEntityFile* m_EntryFile;
+
+	//默认的管线种类
+	static CString m_lineCategory;
+
 	//计算的管线的名称，用于生成新的图层
 	static CString m_CutLayerName;
 
+	//默认的管线宽度
+	static CString m_lineWidth;
+
+	//默认的管线信息
+	static LineCategoryItemData* m_lineInfo;
+
 	//计算路由过程中产生的新的数据库对象
-	static AcDbObjectIdArray m_CutObjects;
+	static AcDbObjectIdArray* m_CutObjects;
+
+	//管线实体，代表当前进行
+	static LineEntity* m_RouteLineEntity;
+
+	//最终结果,保存各个线段的坐标
+	static AcGePoint3dArray* m_PointVertices;
 };
