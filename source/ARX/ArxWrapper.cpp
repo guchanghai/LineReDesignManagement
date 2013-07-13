@@ -474,12 +474,12 @@ AcDb3dSolid* ArxWrapper::GetInterset( AcDbEntity* pEntityA, AcDbEntity* pEntityB
 	{
 		if(boolInter == Adesk::kFalse)
 		{
-			//acutPrintf(L"\n两个3D对象无交集!");
+			acutPrintf(L"\n两个3D对象无交集!");
 			return NULL;
 		}
 		else
 		{
-			//acutPrintf(L"\n两个3D对象存在交集!");
+			acutPrintf(L"\n两个3D对象存在交集!");
 			if( commonVolumeSolid )
 			{
 				return commonVolumeSolid;

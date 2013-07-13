@@ -187,7 +187,7 @@ bool PointDBEntityCollection::DrawEntityCollection()
 	LMASafeLineDbObject* lmaSafeLineObj = new LMASafeLineDbObject( this );
 
 	//默认安全范围实体不显示
-	lmaSafeLineObj->setVisibility(AcDb::kInvisible);
+	//lmaSafeLineObj->setVisibility(AcDb::kInvisible);
 
 	//保存管线安全范围实体
 	SetSafeLineEntity( ArxWrapper::PostToModelSpace(lmaSafeLineObj, mLayerName) );

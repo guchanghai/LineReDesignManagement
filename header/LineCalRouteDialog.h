@@ -49,6 +49,8 @@ protected:
 	//删除上次切图中产生的结果对象
 	static void CutBack();
 
+	void GetStartEndPoint();
+
 	void CalculateShortestRoute();
 
 	bool CalculateShortestRoute( const AcGePoint3d& start, const AcGePoint3d& end);
@@ -65,15 +67,19 @@ private:
 
 	bool InitializeStartEndPoints( const AcGePoint3d& startPoint, const AcGePoint3d& endPoint );
 
+	void InitializeProjectPlace();
+
 	bool AppendStartEndPoints(const AcGePoint3d& startPoint, const AcGePoint3d& endPoint);
 
 	bool SaveRouteLinePoint( const AcGePoint3d& newPoint );
 
-	bool HasIntersect(AcArray<PointEntity*>* intersectEntities);
+	void CheckIntersect(AcArray<PointEntity*>* intersectEntities);
 
 	PointEntity* GetNearestLineSegement( AcArray<PointEntity*>* intersectEntities );
 
 	AcGePoint3d GetProjectPoint3d(PointEntity* lineSegment);
+
+	void SetupRouteResult();
 
 protected:
 
@@ -100,7 +106,7 @@ protected:
 	wstring m_fileName;
 
 	//实体文件管理器
-	LineEntityFile* m_EntryFile;
+	static LineEntityFile* m_EntryFile;
 
 	//默认的管线种类
 	static CString m_lineCategory;
@@ -122,4 +128,7 @@ protected:
 
 	//最终结果,保存各个线段的坐标
 	static AcGePoint3dArray* m_PointVertices;
+
+	//起始、终止点与X轴垂直的平面
+	AcGePlane m_ProjectPlane;
 };

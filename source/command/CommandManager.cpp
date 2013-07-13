@@ -100,6 +100,7 @@ CommandManager::CommandManager(void)
 
 	//寻找路由
 	mSupportCommands[CMD_LINE_ROUTE] = LineRoute;
+	mSupportCommands[CMD_LINE_ROUTE_BACK] = LineRouteBack;
 
 	//测试功能
 	mSupportCommands[CMD_LINE_TEST] = TestFunction;
