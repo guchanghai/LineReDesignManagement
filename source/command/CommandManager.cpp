@@ -263,7 +263,6 @@ void CommandManager::LineRouteBack()
 	acutPrintf(L"\n删除路由自动计算结果，恢复3D模型窗口");
 #endif
 
-	LineCalRouteDialog dlg(CWnd::FromHandle(adsw_acadMainWnd()));
 	LineCalRouteDialog::Reset();
 }
 

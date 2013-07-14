@@ -553,8 +553,9 @@ Acad::ErrorStatus ArxWrapper::RemoveFromModelSpace(const wstring& layerName )
 						acutPrintf(L"\nÉ¾³ý²¢¹Ø±Õµô");
 #endif
 						ent->erase();
-						ent->close();
 					}
+
+					ent->close();
                 }
 				else
 				{

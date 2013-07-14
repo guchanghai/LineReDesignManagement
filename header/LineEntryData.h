@@ -72,7 +72,7 @@ public:
 	void SetLineWarning( bool warning = true );
 
 	//database object collection
-	bool DrawEntityCollection();
+	bool DrawEntityCollection(bool showSafeSize);
 	void DropEntityCollection();
 
 	//the layer to insert
@@ -221,6 +221,9 @@ public:
 
 	//保存其ID
 	AcDbObjectId m_dbId;
+
+	//是否特殊标示
+	bool m_bSpecialLine;
 };
 
 /**

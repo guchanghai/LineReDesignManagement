@@ -54,7 +54,8 @@ LineEntity::LineEntity()
 	m_LineBasiInfo(new LineCategoryItemData()),
 	m_CurrentPointNO(0),
 	m_PrePointList(NULL),
-	m_PointList(new PointList())
+	m_PointList(new PointList()),
+	m_bSpecialLine( false )
 {}
 
 LineEntity::LineEntity(const wstring& rLineName, const wstring& rLineKind,
@@ -65,7 +66,8 @@ LineEntity::LineEntity(const wstring& rLineName, const wstring& rLineKind,
 	m_LineBasiInfo(lineInfo),
 	m_PointList(pointList),
 	m_CurrentPointNO(0),
-	m_PrePointList(NULL)
+	m_PrePointList(NULL),
+	m_bSpecialLine( false )
 {
 	//创建数据库代理对象
 	m_pDbEntry = new LineDBEntity( this );
@@ -128,6 +130,8 @@ LineEntity::LineEntity( wstring& data)
 
 	//创建数据库代理对象
 	m_pDbEntry = new LineDBEntity( this );
+
+	m_bSpecialLine = false;
 }
 
 LineEntity::~LineEntity()
@@ -138,7 +142,10 @@ LineEntity::~LineEntity()
 void LineEntity::ClearPoints()
 {
 	ClearPoints(this->m_PrePointList);
+	m_PrePointList = NULL;
+
 	ClearPoints(this->m_PointList);
+	m_PointList = NULL;
 }
 
 void LineEntity::ClearPoints( PointList* pPointList)

@@ -289,6 +289,9 @@ bool LineCalRouteDialog::InitializeRouteLine()
 	//创建新的路由管线
 	acutPrintf(L"\n创建新的路由管线");
 	m_RouteLineEntity = new LineEntity(pipeName,GlobalData::CONFIG_LINE_KIND, m_lineInfo ,NULL);
+	
+	//特殊管线，需要标示
+	m_RouteLineEntity->m_bSpecialLine = true;
 
 	//生成该项的ID
 	m_RouteLineEntity->m_LineID = (UINT)GetTickCount();
@@ -427,7 +430,7 @@ void LineCalRouteDialog::CalculateShortestRoute()
 	{
 		acutPrintf(L"\n发现当前管线与系统中的线段有相侵的现象，继续计算");
 
-		if( count++ >= 1000 )
+		if( count++ >= 50 )
 			break;
 	}
 }
@@ -554,7 +557,7 @@ AcGePoint3d LineCalRouteDialog::GetProjectPoint3d(PointEntity* lineSegment)
 	{
 		//柱体的话，取宽度为Y轴的偏离
 		acdbDisToF(lineSegment->m_DbEntityCollection.mCategoryData->mSize.mWidth.c_str(), -1, &yOffset);
-		yOffset /= 1000;
+		yOffset /= 2000;
 		yOffset += wallSize;
 		yOffset += safeSize;
 
@@ -731,10 +734,16 @@ void LineCalRouteDialog::Reset()
 		acutPrintf(L"\n删除计算路由相关的对象");
 		CutBack();
 
+		acutPrintf(L"\n删除计算出的路由所在的图层上的其他剩余实体");
+		if( ArxWrapper::RemoveFromModelSpace(m_CutLayerName.GetBuffer()) )
+		{
+			acutPrintf(L"\n删除剩余实体成功");
+		}
+
 		acutPrintf(L"\n删除计算出的路由所在的图层");
 		if( ArxWrapper::DeleteLayer(m_CutLayerName.GetBuffer(),true) )
 		{
-			acutPrintf(L"\n初始化设置");
+			acutPrintf(L"\n删除图层成功");
 			m_CutLayerName.Format(L"");
 		}
 
@@ -765,7 +774,7 @@ void LineCalRouteDialog::CutBack()
 		m_RouteLineEntity->EraseDbObjects();
 
 		//删除所有的内存节点
-		m_RouteLineEntity->ClearPoints();
+		m_RouteLineEntity->SetPoints(NULL);
 
 		//删除线段集合
 		m_EntryFile->DeleteLine(m_RouteLineEntity->GetLineID());
@@ -774,6 +783,7 @@ void LineCalRouteDialog::CutBack()
 		m_PointVertices->removeAll();
 
 		delete m_RouteLineEntity;
+		m_RouteLineEntity = NULL;
 	}
 }
 
