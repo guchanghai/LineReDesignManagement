@@ -131,4 +131,7 @@ protected:
 
 	//起始、终止点与X轴垂直的平面
 	AcGePlane m_ProjectPlane;
+
+	//越过的线段不在重复计算
+	set<LinePointID> m_CheckedEntities;
 };

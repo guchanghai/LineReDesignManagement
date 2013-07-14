@@ -270,6 +270,7 @@ void LineEntity::Redraw()
 
 	//删除以前的线段(从内存中)
 	ClearPoints(m_PrePointList);
+	m_PrePointList = NULL;
 
 	//绘制新的线段
 	CreateDbObjects();

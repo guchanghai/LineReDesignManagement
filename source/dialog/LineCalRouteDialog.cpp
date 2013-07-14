@@ -212,6 +212,16 @@ void LineCalRouteDialog::GetStartEndPoint()
 
 	m_EndZ.GetWindowTextW(pointZ);
 	acdbDisToF(pointZ.GetBuffer(), -1, &m_endPoint.z);
+
+	//当前系统运算按照从下往上计算
+	//既下方为起始点，上方为截止点
+	if( m_startPoint.y > m_endPoint.z )
+	{
+		AcGePoint3d swap(m_endPoint);
+
+		m_endPoint.set( m_startPoint.x, m_startPoint.y, m_startPoint.z );
+		m_startPoint.set( swap.x, swap.y, swap.z );
+	}
 }
 
 void LineCalRouteDialog::OnBnClickedOk()
@@ -260,9 +270,9 @@ void LineCalRouteDialog::InitializeProjectPlace()
 
 	//得到起始点垂直于X面,竖直向下10000个像素
 	AcGePoint3d projectPoint( m_startPoint );
-	projectPoint.z -= 10000;
+	projectPoint.z -= 100;
 
-	m_ProjectPlane = AcGePlane( m_startPoint, m_startPoint, projectPoint);
+	m_ProjectPlane = AcGePlane( m_startPoint, m_endPoint, projectPoint);
 }
 
 bool LineCalRouteDialog::InitializeRouteLine()
@@ -348,6 +358,9 @@ bool LineCalRouteDialog::InitializeStartEndPoints( const AcGePoint3d& startPoint
 	//默认用户选择的开始点可以保存下来了
 	SaveRouteLinePoint( startPoint );
 
+	//没有计算过的线段
+	m_CheckedEntities.clear();
+
 	return true;
 }
 
@@ -407,10 +420,15 @@ void LineCalRouteDialog::CalculateShortestRoute()
 	//从用户选择的其实点开始
 	m_newStartPoint = m_startPoint;
 
+	int count = 0;
+
 	//递归计算
 	while( CalculateShortestRoute( m_newStartPoint, m_endPoint ) == false )
 	{
-		acutPrintf(L"\n发现最后一条管线的线段有相侵的现象，继续计算");
+		acutPrintf(L"\n发现当前管线与系统中的线段有相侵的现象，继续计算");
+
+		if( count++ >= 1000 )
+			break;
 	}
 }
 
@@ -426,6 +444,7 @@ bool LineCalRouteDialog::CalculateShortestRoute( const AcGePoint3d& start, const
 
 	//与当前系统内的管线判断
 	CheckIntersect(intersectEntities);
+	acutPrintf(L"相交的管线有【%d】条",intersectEntities->length());
 
 	if( intersectEntities->length() > 0  )
 	{
@@ -439,7 +458,9 @@ bool LineCalRouteDialog::CalculateShortestRoute( const AcGePoint3d& start, const
 		m_newStartPoint = newPoint;
 
 		//删除中间结果
+		intersectEntities->removeAll();
 		delete intersectEntities;
+		intersectEntities = NULL;
 
 		return false;
 	}
@@ -452,7 +473,7 @@ bool LineCalRouteDialog::CalculateShortestRoute( const AcGePoint3d& start, const
 
 PointEntity* LineCalRouteDialog::GetNearestLineSegement( AcArray<PointEntity*>* intersectEntities )
 {
-	acutPrintf(L"\n寻找最近的相交管线");
+	acutPrintf(L"\n寻找离X轴最近的相交管线");
 
 	if( intersectEntities == NULL )
 		return NULL;
@@ -464,7 +485,7 @@ PointEntity* LineCalRouteDialog::GetNearestLineSegement( AcArray<PointEntity*>* 
 	AcGePoint3d nearestPoint;
 	bool findNearer = false;
 
-	for( int i = 0;  i < intersectEntities->length(); i++ )
+	for( int i = 0; i < intersectEntities->length(); i++ )
 	{
 		PointEntity* pointEntity = intersectEntities->at(i);
 		AcGePoint3d start = pointEntity->m_DbEntityCollection.mStartPoint;
@@ -486,6 +507,12 @@ PointEntity* LineCalRouteDialog::GetNearestLineSegement( AcArray<PointEntity*>* 
 		}
 	}
 
+	//一旦某个线段被越过，则不再重复计算
+	if( nearestEntity )
+	{
+		m_CheckedEntities.insert( LinePointID(nearestEntity->m_DbEntityCollection.mLineID, nearestEntity->m_DbEntityCollection.mSequenceNO) );
+	}
+
 	return nearestEntity;
 }
 
@@ -500,24 +527,56 @@ AcGePoint3d LineCalRouteDialog::GetProjectPoint3d(PointEntity* lineSegment)
 	AcGePoint3d resultPnt;
 	m_ProjectPlane.intersectWith(intersectLine, resultPnt);
 
+	acutPrintf(L"\n得到管线的相交点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】", resultPnt[X], resultPnt[Y], resultPnt[Z]);
+
+	double wallSize = 0.0;
+	acdbDisToF(lineSegment->m_DbEntityCollection.mCategoryData->mWallSize.c_str(), -1, &wallSize);
+	wallSize /= 1000;
+
+	double safeSize = 0.0;
+	acdbDisToF(lineSegment->m_DbEntityCollection.mCategoryData->mSafeSize.c_str(), -1, &safeSize);
+	safeSize /= 1000;
+
 	double yOffset = 0.0;
 	double zOffset = 0.0;
 
 	if( lineSegment->m_DbEntityCollection.mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
+		//圆体的话，取半径为Y,Z轴的偏离
 		acdbDisToF(lineSegment->m_DbEntityCollection.mCategoryData->mSize.mRadius.c_str(), -1, &yOffset);
+		yOffset /= 1000;
+		yOffset += wallSize;
+		yOffset += safeSize;
+
 		zOffset = yOffset;
 	}
 	else
 	{
+		//柱体的话，取宽度为Y轴的偏离
 		acdbDisToF(lineSegment->m_DbEntityCollection.mCategoryData->mSize.mWidth.c_str(), -1, &yOffset);
+		yOffset /= 1000;
+		yOffset += wallSize;
+		yOffset += safeSize;
+
+		//取高度的一半为Z轴的偏离
 		acdbDisToF(lineSegment->m_DbEntityCollection.mCategoryData->mSize.mHeight.c_str(), -1, &zOffset);
+		zOffset /= 2000;
+		zOffset += wallSize;
+		zOffset += safeSize;
 	}
 
 	AcGePoint3d projectPoint;
 	projectPoint.x = resultPnt.x;
 	projectPoint.y = resultPnt.y - yOffset;
 	projectPoint.z = resultPnt.z + zOffset;
+
+	//保存离X轴较近的点
+	acutPrintf(L"\n存储下方的点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】为一个起点", projectPoint[X], projectPoint[Y], projectPoint[Z]);
+	m_PointVertices->append( projectPoint );
+
+	projectPoint.y = resultPnt.y + yOffset;
+
+	acutPrintf(L"\n返回上方的点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】为新的计算起点", projectPoint[X], projectPoint[Y], projectPoint[Z]);
 
 	return projectPoint;
 }
@@ -578,6 +637,12 @@ void LineCalRouteDialog::CheckIntersect(AcArray<PointEntity*>* intersectEntities
 				continue;
 			}
 
+			if( m_CheckedEntities.find(LinePointID(lineID,seqNO)) != m_CheckedEntities.end() )
+			{
+				acutPrintf(L"\n此折线段已被比较过,忽略");
+				continue;
+			}
+
 			ArxWrapper::LockCurDoc();
 
 			//得到两个线段的数据库安全范围对象
@@ -588,7 +653,6 @@ void LineCalRouteDialog::CheckIntersect(AcArray<PointEntity*>* intersectEntities
 				ArxWrapper::UnLockCurDoc();
 				continue;
 			}
-			pSafeLine->setColorIndex(GlobalData::INTERSET_WALLLINE_COLOR);
 
 			AcDbEntity *pCheckSafeLine = ArxWrapper::GetDbObject( checkPoint->m_DbEntityCollection.GetSafeLineEntity(), true );
 			if( pCheckSafeLine == NULL )
@@ -600,7 +664,6 @@ void LineCalRouteDialog::CheckIntersect(AcArray<PointEntity*>* intersectEntities
 				ArxWrapper::UnLockCurDoc();
 				continue;
 			}
-			pCheckSafeLine->setColorIndex(GlobalData::INTERSET_WALLLINE_COLOR);
 
 			//判断2者是否相侵
 			AcDb3dSolid* intersetObj = ArxWrapper::GetInterset( pSafeLine, pCheckSafeLine );
@@ -707,7 +770,10 @@ void LineCalRouteDialog::CutBack()
 		//删除线段集合
 		m_EntryFile->DeleteLine(m_RouteLineEntity->GetLineID());
 
-		//delete m_RouteLineEntity;
+		//删除折线点集合
+		m_PointVertices->removeAll();
+
+		delete m_RouteLineEntity;
 	}
 }
 
