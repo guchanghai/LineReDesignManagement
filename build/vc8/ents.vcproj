@@ -393,6 +393,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\dialog\LineCalRouteDialog.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\dialog\LineCutPosDialog.cpp"
 					>
 					<FileConfiguration
@@ -518,6 +522,10 @@
 			</File>
 			<File
 				RelativePath="..\..\header\GlobalDataConfig.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\header\LineCalRouteDialog.h"
 				>
 			</File>
 			<File
