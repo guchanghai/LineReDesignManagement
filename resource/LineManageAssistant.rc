@@ -365,7 +365,7 @@ END
 //
 
 IDR_TOOLBAR_LMA         BITMAP                  "toolbar_lma.bmp"
-IDB_AUTHOR              BITMAP                  "C:\\Users\\chgu\\Dropbox\\Photos\\Author.bmp"
+IDB_AUTHOR              BITMAP                  "Author.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

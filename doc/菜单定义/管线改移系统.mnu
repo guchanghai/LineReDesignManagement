@@ -1,0 +1,13 @@
+***MENUGROUP=管线辅助改移
+***POP32
+**管线管理
+ID_MnLMAMENU         		 [管线菜单系统]
+ID_MnLineManagement          [->管线输入]
+ID_Line_LINE_IMP             [管线导入]^C^C_LMA_LINE_IMP
+ID_Line_LINE_INPUT           [管线录入]^C^C_LMA_LINE_INPUT
+ID_Line_LINE_EXP             [<-管线导出]^C^C_LMA_LINE_EXP
+[--]
+ID_MnBlockManagement         [->阻隔体输入]
+ID_Block_LINE_IMP            [阻隔体导入]^C^C_LMA_BLOCK_IMP
+ID_Block_LINE_INPUT          [阻隔体录入]^C^C_LMA_BLOCK_INPUT
+ID_Block_LINE_EXP            [<-阻隔体导出]^C^C_LMA_BLOCK_EXP

@@ -42,38 +42,38 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\rxsdk_Releasecfg.props" />
-    <Import Project="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\arx.props" />
+    <Import Project="C:\ObjectARX\system\include\inc_2013\inc\rxsdk_Releasecfg.props" />
+    <Import Project="C:\ObjectARX\system\include\inc_2013\inc\arx.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\rxsdk_Debugcfg.props" />
-    <Import Project="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\arx.props" />
+    <Import Project="C:\ObjectARX\system\include\inc_2013\inc\rxsdk_Debugcfg.props" />
+    <Import Project="C:\ObjectARX\system\include\inc_2013\inc\arx.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\rxsdk_Releasecfg.props" />
-    <Import Project="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\arx.props" />
+    <Import Project="C:\ObjectARX\system\include\inc_2013\inc\rxsdk_Releasecfg.props" />
+    <Import Project="C:\ObjectARX\system\include\inc_2013\inc\arx.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\arx.props" />
+    <Import Project="C:\ObjectARX\system\include\inc_2013\inc\arx.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\ObjectARX\system\output\inter\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\ObjectARX\system\output\inter\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\ObjectARX\system\output\inter\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\ObjectARX\system\output\inter\$(Configuration)\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">lma</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lma</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">lma</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">lma</TargetName>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\$(Platform)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\$(Platform)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\$(Platform)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\$(Configuration)\$(Platform)\</OutDir>
-    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.arx</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\ObjectARX\system\output\bin\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\ObjectARX\system\output\bin\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\ObjectARX\system\output\bin\$(Configuration)\$(Platform)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\ObjectARX\system\output\bin\$(Configuration)\$(Platform)\</OutDir>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">arx</TargetExt>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">arx</TargetExt>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">arx</TargetExt>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">arx</TargetExt>
@@ -83,23 +83,24 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX 2013\utils\HlrApi\inc;(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\ObjectARX\system\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX\versions\ObjectARX 2013\utils\HlrApi\inc;(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;AUTOCAD2013;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <Optimization>Disabled</Optimization>
+      <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\ObjectARX 2013\utils\HlrApi\lib-$(Platform);..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib;..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>C:\ObjectARX\versions\ObjectARX 2013\utils\HlrApi\lib-$(Platform);C:\ObjectARX\system\library\lib-2013\lib;C:\ObjectARX\system\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>C:\ObjectARX\system\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
       <AdditionalDependencies>AsdkHlrApi19.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName).arx</OutputFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy /B $(OutDir)$(TargetName).$(TargetExt) ..\..\release\2013\$(Platform)\$(Configuration)</Command>
+      <Command>copy /B $(OutDir)$(TargetName).$(TargetExt) C:\ObjectARX\system\release\2013\$(TargetName).$(TargetExt)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -107,7 +108,7 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX 2013\utils\HlrApi\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\ObjectARX\system\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX\versions\ObjectARX 2013\utils\HlrApi\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;AUTOCAD2013;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -121,8 +122,8 @@
       <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\ObjectARX 2013\utils\HlrApi\lib-$(Platform);..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>C:\ObjectARX\versions\ObjectARX 2013\utils\HlrApi\lib-$(Platform);C:\ObjectARX\system\library\lib-2013\lib-$(Platform);C:\ObjectARX\system\library\lib-2013\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>C:\ObjectARX\system\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
       <TargetMachine>MachineX64</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -132,44 +133,44 @@
       <OptimizeReferences>false</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>copy /B $(OutDir)$(TargetName).$(TargetExt) ..\..\release\2013\$(Platform)\$(Configuration)</Command>
+      <Command>copy /B $(OutDir)$(TargetName).$(TargetExt) C:\ObjectARX\system\release\2013\$(TargetName).$(TargetExt)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX 2013\utils\HlrApi\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\ObjectARX\system\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX\versions\ObjectARX 2013\utils\HlrApi\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;AUTOCAD2013;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\ObjectARX 2013\utils\HlrApi\lib-$(Platform);..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>C:\ObjectARX\versions\ObjectARX 2013\utils\HlrApi\lib-$(Platform);C:\ObjectARX\system\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>C:\ObjectARX\system\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
       <OutputFile>$(OutDir)$(TargetName).arx</OutputFile>
       <AdditionalDependencies>AsdkHlrApi19.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /B $(OutDir)$(TargetName).$(TargetExt) ..\..\release\2013\$(Platform)\$(Configuration)</Command>
+      <Command>copy /B $(OutDir)$(TargetName).$(TargetExt) C:\ObjectARX\system\release\2013\$(TargetName).$(TargetExt)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX 2013\utils\HlrApi\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\ObjectARX\system\include\inc_2013\inc;..\..\header;..\..\resource;C:\Users\chgu\Work\library\log4cpp\include;C:\ObjectARX\versions\ObjectARX 2013\utils\HlrApi\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DEBUG;_AFXDLL;UNICODE;NOTREE;AUTOCAD2013;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\ObjectARX 2013\utils\HlrApi\lib-$(Platform);..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
+      <AdditionalLibraryDirectories>C:\ObjectARX\versions\ObjectARX 2013\utils\HlrApi\lib-$(Platform);C:\ObjectARX\system\library\lib-2013\lib-$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>C:\ObjectARX\system\include\inc_2013\inc\AcRxDefault.def</ModuleDefinitionFile>
       <TargetMachine>MachineX64</TargetMachine>
       <OutputFile>$(OutDir)$(TargetName).arx</OutputFile>
       <AdditionalDependencies>AsdkHlrApi19.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /B $(OutDir)$(TargetName).$(TargetExt) ..\..\release\2013\$(Platform)\$(Configuration)</Command>
+      <Command>copy /B $(OutDir)$(TargetName).$(TargetExt) C:\ObjectARX\system\release\2013\$(TargetName).$(TargetExt)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
