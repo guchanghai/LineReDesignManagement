@@ -8,8 +8,12 @@
 #include <acui.h>
 #include "afxwin.h"
 
+#include <map>
+#include <list>
+
 #include <LineEntryData.h>
 
+using namespace std;
 using namespace com::guch::assistant::data;
 
 // LineCalRouteDialog dialog
@@ -22,6 +26,24 @@ public:
 
 	// Dialog Data
 	enum { IDD = IDD_DIALOG_CAL_ROUTE };
+
+	// Pass through direction 000000 -> 111111
+	enum PASS_STATUS
+		{	PASS_NONE = 0x0,
+			PASS_UP = 0x1, 
+			PASS_DOWN = ( 0x1 < 1 ),
+			PASS_LEFT = (0x1 < 2), 
+			PASS_RIGHT = (0x1 < 3), 
+			PASS_FRONT = (0x1 < 4), 
+			PASS_BACK = (0x1 < 5),
+			PASS_ALL = 0X3F };
+
+	// Status for one possible route line
+	typedef enum _CALCULATE_STATUS
+	{
+		INIT = 0,
+		DONE = 1
+	} CAL_STATUS;
 
 	LineCalRouteDialog(CWnd* pParent = NULL);   // standard constructor
 	virtual ~LineCalRouteDialog();
@@ -59,11 +81,15 @@ protected:
 
 	bool CreateRouteSegment( const AcGePoint3d& start, const AcGePoint3d& end);
 
+	static PASS_STATUS GetPassDirecion( PointEntity *lineSegment);
+
 private:
 
 	bool InitializeRouteLine();
 
 	bool InitializeRouteLineInfo();
+
+	bool InitializePossibleLines();
 
 	bool InitializeStartEndPoints( const AcGePoint3d& startPoint, const AcGePoint3d& endPoint );
 
@@ -79,7 +105,17 @@ private:
 
 	AcGePoint3d GetProjectPoint3d(PointEntity* lineSegment);
 
-	void SetupRouteResult();
+	void SetupLineRouteResult();
+
+	void SetupFinalResult();
+
+	void GetHeightAndStep(PointEntity* lineSegment, double& height, double& step);
+
+	bool GetPossibleStartPoint(AcGePoint3d& startPoint);
+
+	bool SetCurrentPossibleLineDone();
+
+	LineEntity* CreateNewLineEntity();
 
 protected:
 
@@ -123,11 +159,17 @@ protected:
 	//计算路由过程中产生的新的数据库对象
 	static AcDbObjectIdArray* m_CutObjects;
 
-	//管线实体，代表当前进行
-	static LineEntity* m_RouteLineEntity;
+	//所有可能的管线路由
+	static list<LineEntity*> m_AllPossibleLineEntities;
 
-	//最终结果,保存各个线段的坐标
-	static AcGePoint3dArray* m_PointVertices;
+	//管线实体，代表当前进行的管线
+	LineEntity* m_CurrentRouteLineEntity;
+
+	//所有可能的路线,每条路线都保存各个线段的坐标
+	static map<AcGePoint3dArray*, CAL_STATUS> m_lPossibleRoutes;
+	
+	//当前进行计算的路线
+	AcGePoint3dArray* m_CurrentPointVertices;
 
 	//起始、终止点与X轴垂直的平面
 	AcGePlane m_ProjectPlane;

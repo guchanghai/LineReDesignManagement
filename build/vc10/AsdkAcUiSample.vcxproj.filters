@@ -182,8 +182,12 @@
     <None Include="..\..\resource\res\LineManageAssistant.rc2">
       <Filter>res</Filter>
     </None>
-    <None Include="..\..\resource\toolbar_lma.bmp" />
-    <None Include="..\..\..\..\Photos\Author.bmp" />
+    <None Include="..\..\..\..\Photos\Author.bmp">
+      <Filter>res</Filter>
+    </None>
+    <None Include="..\..\resource\toolbar_lma.bmp">
+      <Filter>res</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="inc">

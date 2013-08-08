@@ -46,6 +46,8 @@ using namespace com::guch::assistant::arx;
 using namespace com::guch::assistant::data;
 using namespace com::guch::assistant::Intersect;
 
+typedef map<AcGePoint3dArray*, LineCalRouteDialog::CAL_STATUS>::iterator LineIter;
+
 CString LineCalRouteDialog::m_lineCategory = L"自动路由管线";
 CString LineCalRouteDialog::m_CutLayerName = L"";
 CString LineCalRouteDialog::m_lineWidth = L"100";
@@ -53,8 +55,13 @@ CString LineCalRouteDialog::m_lineWidth = L"100";
 LineCategoryItemData* LineCalRouteDialog::m_lineInfo = NULL;
 
 AcDbObjectIdArray* LineCalRouteDialog::m_CutObjects = NULL;
-LineEntity* LineCalRouteDialog::m_RouteLineEntity = NULL;
-AcGePoint3dArray* LineCalRouteDialog::m_PointVertices = NULL;
+
+//All possible line database entities 
+list<LineEntity*> LineCalRouteDialog::m_AllPossibleLineEntities = list<LineEntity*>();
+
+//可能的路由在最初状态为0条
+map<AcGePoint3dArray*, LineCalRouteDialog::CAL_STATUS> LineCalRouteDialog::m_lPossibleRoutes
+	= map<AcGePoint3dArray*, LineCalRouteDialog::CAL_STATUS>();
 
 LineEntityFile* LineCalRouteDialog::m_EntryFile = NULL;
 
@@ -242,7 +249,7 @@ void LineCalRouteDialog::OnBnClickedOk()
 	CalculateShortestRoute();
 
 	//整理最终计算出的结果
-	SetupRouteResult();
+	SetupFinalResult();
 
 	//关闭对话框
 	CAcUiDialog::OnOK();
@@ -258,8 +265,12 @@ bool LineCalRouteDialog::SetupRouteLineEnv()
 	//创建起始、终止点与X轴垂直的平面
 	InitializeProjectPlace();
 
-	//创建代表路由的管线实体
+	//创建代表当前路由的管线实体
 	InitializeRouteLine();
+
+	//Initialize the possible route lines;
+	//That is to say, use the start point user selected to set up the first new possible route.
+	InitializePossibleLines();
 
 	return true;
 }
@@ -282,30 +293,37 @@ bool LineCalRouteDialog::InitializeRouteLine()
 	//创建管线detail信息
 	InitializeRouteLineInfo();
 
+	//创建临时路由管线，用于当前的计算
+	acutPrintf(L"\n创建临时路由管线");
+	m_CurrentRouteLineEntity = CreateNewLineEntity();
+
+	return true;
+}
+
+LineEntity* LineCalRouteDialog::CreateNewLineEntity()
+{
 	//得到实体名称
 	wstring pipeName(m_CutLayerName.GetBuffer());
 	acutPrintf(L"\n新的路由所在图层的名字为【%s】", pipeName.c_str());
 
-	//创建新的路由管线
-	acutPrintf(L"\n创建新的路由管线");
-	m_RouteLineEntity = new LineEntity(pipeName,GlobalData::CONFIG_LINE_KIND, m_lineInfo ,NULL);
-	
+	LineEntity* lineEntity = new LineEntity(pipeName,GlobalData::CONFIG_LINE_KIND, m_lineInfo ,NULL);
+
 	//特殊管线，需要标示
-	m_RouteLineEntity->m_bSpecialLine = true;
+	lineEntity->m_bSpecialLine = true;
 
 	//生成该项的ID
-	m_RouteLineEntity->m_LineID = (UINT)GetTickCount();
+	lineEntity->m_LineID = (UINT)GetTickCount();
 
 	//保存到数据库
-	m_RouteLineEntity->m_dbId = ArxWrapper::PostToNameObjectsDict(m_RouteLineEntity->m_pDbEntry,LineEntity::LINE_ENTRY_LAYER);
+	lineEntity->m_dbId = ArxWrapper::PostToNameObjectsDict(lineEntity->m_pDbEntry,LineEntity::LINE_ENTRY_LAYER);
 
 	//清空数据库对象指针，由AutoCAD管理
-	m_RouteLineEntity->m_pDbEntry = NULL;
+	lineEntity->m_pDbEntry = NULL;
 
 	//保存数据到管理器
-	m_EntryFile->InsertLine(m_RouteLineEntity);
+	m_EntryFile->InsertLine(lineEntity);
 
-	return true;
+	return lineEntity;
 }
 
 //初始化代表自动路由的基本信息
@@ -351,6 +369,20 @@ bool LineCalRouteDialog::InitializeRouteLineInfo()
 	return true;
 }
 
+bool LineCalRouteDialog::InitializePossibleLines()
+{
+	//Create the first possible route line. 
+	m_CurrentPointVertices = new AcGePoint3dArray();
+
+	//Start with the start point user select
+	m_CurrentPointVertices->append(m_startPoint);
+
+	//Start with the first possible line
+	m_lPossibleRoutes.insert(std::pair<AcGePoint3dArray*,CAL_STATUS>(m_CurrentPointVertices,INIT));
+
+	return true;
+}
+
 bool LineCalRouteDialog::InitializeStartEndPoints( const AcGePoint3d& startPoint, const AcGePoint3d& endPoint )
 {
 	acutPrintf(L"\n在3D模型中划出这条管线，进行比较计算");
@@ -371,10 +403,10 @@ bool LineCalRouteDialog::SaveRouteLinePoint( const AcGePoint3d& newPoint )
 {
 	acutPrintf(L"\n保存(X:%0.2lf,Y:%0.2lf,Z:%0.2lf)为一个起点", newPoint[X], newPoint[Y], newPoint[Z]);
 
-	if( m_PointVertices == NULL )
-		m_PointVertices = new AcGePoint3dArray();
+	if( m_CurrentPointVertices == NULL )
+		m_CurrentPointVertices = new AcGePoint3dArray();
 
-	m_PointVertices->append( newPoint);
+	m_CurrentPointVertices->append( newPoint);
 
 	return true;
 }
@@ -403,11 +435,67 @@ bool LineCalRouteDialog::AppendStartEndPoints(const AcGePoint3d& startPoint, con
 	newPoints->push_back( point );
 
 	//以此开始和结束点创建新的路由线段
-	m_RouteLineEntity->SetPoints(newPoints);
+	m_CurrentRouteLineEntity->SetPoints(newPoints);
 
 	acutPrintf(L"\n新的路由线段构造完成");
 
 	return true;
+}
+
+/**
+ * Iterator all the possible route lines, and find the unfinished 
+ */
+bool LineCalRouteDialog::GetPossibleStartPoint(AcGePoint3d& startPoint)
+{
+	bool hasStartPoint(false);
+	
+	acutPrintf(L"\n当前可能的路由数为【%d】",m_lPossibleRoutes.size());
+
+	for( LineIter iter = m_lPossibleRoutes.begin(); 
+		iter != m_lPossibleRoutes.end();
+		iter++ )
+	{
+		if( (*iter).second != DONE )
+		{
+			m_CurrentPointVertices = (*iter).first;
+
+			if( m_CurrentPointVertices )
+			{
+				int length = m_CurrentPointVertices->length();
+				startPoint = m_CurrentPointVertices->at(length-1);
+				acutPrintf(L"\n找到一条未完成的可能路由。起始点为x【%0.2lf】y【%0.2lf】z【%0.2lf】",
+					startPoint.x,startPoint.y,startPoint.z);
+
+				hasStartPoint = true;
+				break;
+			}
+		}
+	}
+
+	return hasStartPoint;
+}
+
+bool LineCalRouteDialog::SetCurrentPossibleLineDone()
+{
+	for( LineIter iter = m_lPossibleRoutes.begin(); 
+		iter != m_lPossibleRoutes.end();
+		iter++ )
+	{
+		if( (*iter).second != DONE )
+		{
+			m_CurrentPointVertices = (*iter).first;
+
+			if( (*iter).first == m_CurrentPointVertices )
+			{
+				acutPrintf(L"\n设置当前可能路由的状态为已完成");
+				(*iter).second = DONE;
+
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 /**
@@ -421,17 +509,23 @@ void LineCalRouteDialog::CalculateShortestRoute()
 	acutPrintf(L"\n开始从起点计算路由");
 
 	//从用户选择的其实点开始
-	m_newStartPoint = m_startPoint;
-
-	int count = 0;
-
-	//递归计算
-	while( CalculateShortestRoute( m_newStartPoint, m_endPoint ) == false )
+	while( GetPossibleStartPoint(m_newStartPoint) )
 	{
-		acutPrintf(L"\n发现当前管线与系统中的线段有相侵的现象，继续计算");
+		int count = 0;
 
-		if( count++ >= 50 )
-			break;
+		//递归计算
+		while( CalculateShortestRoute( m_newStartPoint, m_endPoint ) == false )
+		{
+			acutPrintf(L"\n发现当前管线与系统中的线段有相侵的现象，继续计算");
+
+			if( count++ >= 50 )
+				break;
+		}
+
+		SetCurrentPossibleLineDone();
+
+		//One possible line route has been finished
+		SetupLineRouteResult();
 	}
 }
 
@@ -519,6 +613,54 @@ PointEntity* LineCalRouteDialog::GetNearestLineSegement( AcArray<PointEntity*>* 
 	return nearestEntity;
 }
 
+LineCalRouteDialog::PASS_STATUS LineCalRouteDialog::GetPassDirecion( PointEntity *lineSegment)
+{
+	const wstring& throughDirection = lineSegment->m_DbEntityCollection.mCategoryData->mThroughDirection;
+
+	int iPassDirection = PASS_NONE;
+
+	//empty means this line is pipe
+	if( throughDirection.empty() )
+	{
+		iPassDirection = PASS_ALL;
+	}
+	//Not empty means this line is block
+	else	
+	{
+		if( throughDirection.substr(0,1) == L"1" )
+		{
+			iPassDirection |= PASS_LEFT;
+		}
+
+		if( throughDirection.substr(1,1) == L"1" )
+		{
+			iPassDirection |= PASS_RIGHT;
+		}
+
+		if( throughDirection.substr(2,1) == L"1" )
+		{
+			iPassDirection |= PASS_FRONT;
+		}
+
+		if( throughDirection.substr(3,1) == L"1" )
+		{
+			iPassDirection |= PASS_BACK;
+		}
+
+		if( throughDirection.substr(4,1) == L"1" )
+		{
+			iPassDirection |= PASS_UP;
+		}
+
+		if( throughDirection.substr(5,1) == L"1" )
+		{
+			iPassDirection |= PASS_DOWN;
+		}
+	}
+
+	return (PASS_STATUS)iPassDirection;
+}
+
 AcGePoint3d LineCalRouteDialog::GetProjectPoint3d(PointEntity* lineSegment)
 {
 	acutPrintf(L"\n得到管线的垂直于X面的点");
@@ -529,9 +671,71 @@ AcGePoint3d LineCalRouteDialog::GetProjectPoint3d(PointEntity* lineSegment)
 
 	AcGePoint3d resultPnt;
 	m_ProjectPlane.intersectWith(intersectLine, resultPnt);
-
 	acutPrintf(L"\n得到管线的相交点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】", resultPnt[X], resultPnt[Y], resultPnt[Z]);
 
+	double heightOffset(0.0), stepOffset(0.0);
+	GetHeightAndStep( lineSegment, heightOffset, stepOffset);
+	acutPrintf(L"\n得到上下的位移【高度:%0.2lf, 步长:%0.2lf】", heightOffset, stepOffset);
+
+	//得到穿越的方向
+	PASS_STATUS passStatus = GetPassDirecion(lineSegment);
+
+	//保存离X轴较近的点
+	bool branched = false;
+	AcGePoint3d nextPoint;
+	do
+	{
+		AcGePoint3d projectPoint;
+		//Check the up through status
+		if( passStatus & PASS_UP )
+		{
+			projectPoint = AcGePoint3d(resultPnt.x,resultPnt.y - stepOffset,resultPnt.z + heightOffset);
+
+			//checked then remove the up status
+			passStatus = (PASS_STATUS)(passStatus - PASS_UP);
+		}
+		else if( passStatus & PASS_DOWN )
+		{
+			projectPoint = AcGePoint3d(resultPnt.x,resultPnt.y - stepOffset,resultPnt.z - heightOffset);
+
+			//checked then remove the down status
+			passStatus = (PASS_STATUS)(passStatus - PASS_DOWN);
+		} 
+		else 
+		{
+			break;
+		}
+			
+		m_CurrentPointVertices->append( projectPoint );
+		acutPrintf(L"\n存储下方的点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】为一个起点", projectPoint[X], projectPoint[Y], projectPoint[Z]);
+
+		projectPoint.y = resultPnt.y + stepOffset;
+		acutPrintf(L"\n返回上方的点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】为新的计算起点", projectPoint[X], projectPoint[Y], projectPoint[Z]);
+
+		if( !branched )
+		{
+			acutPrintf(L"\n这是在当前相侵点的第一个分支，下面会继续沿着这个路由计算下去");
+
+			nextPoint = projectPoint;
+			branched = true;
+		}
+		else
+		{
+			acutPrintf(L"\n已经存在在当前相侵点的一个分支了，先保存下来，以后再计算");
+
+			AcGePoint3dArray* clonePoint3dArray = new AcGePoint3dArray(*m_CurrentPointVertices);
+			clonePoint3dArray->append(projectPoint);
+
+			m_lPossibleRoutes.insert(std::pair<AcGePoint3dArray*,CAL_STATUS>(clonePoint3dArray,INIT));
+		}
+	}
+	while(true);
+
+	return nextPoint;
+}
+
+void LineCalRouteDialog::GetHeightAndStep(PointEntity* lineSegment, double& height, double& step)
+{
 	double wallSize = 0.0;
 	acdbDisToF(lineSegment->m_DbEntityCollection.mCategoryData->mWallSize.c_str(), -1, &wallSize);
 	wallSize /= 1000;
@@ -539,49 +743,37 @@ AcGePoint3d LineCalRouteDialog::GetProjectPoint3d(PointEntity* lineSegment)
 	double safeSize = 0.0;
 	acdbDisToF(lineSegment->m_DbEntityCollection.mCategoryData->mSafeSize.c_str(), -1, &safeSize);
 	safeSize /= 1000;
-
-	double yOffset = 0.0;
-	double zOffset = 0.0;
+	
+	double temp = 0.0;
 
 	if( lineSegment->m_DbEntityCollection.mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
 		//圆体的话，取半径为Y,Z轴的偏离
-		acdbDisToF(lineSegment->m_DbEntityCollection.mCategoryData->mSize.mRadius.c_str(), -1, &yOffset);
-		yOffset /= 1000;
-		yOffset += wallSize;
-		yOffset += safeSize;
+		acdbDisToF(lineSegment->m_DbEntityCollection.mCategoryData->mSize.mRadius.c_str(), -1, &temp);
+		temp /= 1000;
+		temp += wallSize;
+		temp += safeSize;
 
-		zOffset = yOffset;
+		height = step = temp;
 	}
 	else
 	{
 		//柱体的话，取宽度为Y轴的偏离
-		acdbDisToF(lineSegment->m_DbEntityCollection.mCategoryData->mSize.mWidth.c_str(), -1, &yOffset);
-		yOffset /= 2000;
-		yOffset += wallSize;
-		yOffset += safeSize;
+		acdbDisToF(lineSegment->m_DbEntityCollection.mCategoryData->mSize.mWidth.c_str(), -1, &temp);
+		temp /= 2000;
+		temp += wallSize;
+		temp += safeSize;
+
+		step = temp;
 
 		//取高度的一半为Z轴的偏离
-		acdbDisToF(lineSegment->m_DbEntityCollection.mCategoryData->mSize.mHeight.c_str(), -1, &zOffset);
-		zOffset /= 2000;
-		zOffset += wallSize;
-		zOffset += safeSize;
+		acdbDisToF(lineSegment->m_DbEntityCollection.mCategoryData->mSize.mHeight.c_str(), -1, &temp);
+		temp /= 2000;
+		temp += wallSize;
+		temp += safeSize;
+
+		height = temp;
 	}
-
-	AcGePoint3d projectPoint;
-	projectPoint.x = resultPnt.x;
-	projectPoint.y = resultPnt.y - yOffset;
-	projectPoint.z = resultPnt.z + zOffset;
-
-	//保存离X轴较近的点
-	acutPrintf(L"\n存储下方的点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】为一个起点", projectPoint[X], projectPoint[Y], projectPoint[Z]);
-	m_PointVertices->append( projectPoint );
-
-	projectPoint.y = resultPnt.y + yOffset;
-
-	acutPrintf(L"\n返回上方的点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】为新的计算起点", projectPoint[X], projectPoint[Y], projectPoint[Z]);
-
-	return projectPoint;
 }
 
 //判断一条折线段与其他管线的相侵情况
@@ -589,7 +781,7 @@ void LineCalRouteDialog::CheckIntersect(AcArray<PointEntity*>* intersectEntities
 {
 	acutPrintf(L"\n进行相侵判断.");
 
-	PointList* pointList = m_RouteLineEntity->m_PointList;
+	PointList* pointList = m_CurrentRouteLineEntity->m_PointList;
 	if( pointList == NULL 
 		|| pointList->size() < 2 )
 	{
@@ -696,27 +888,58 @@ bool LineCalRouteDialog::CreateRouteSegment( const AcGePoint3d& start, const AcG
 	return true;
 }
 
-void LineCalRouteDialog::SetupRouteResult()
+void LineCalRouteDialog::SetupLineRouteResult()
 {
-	m_PointVertices->append( m_endPoint);
-	acutPrintf(L"\n整理最终的路由结果，有线段【%d】条",m_PointVertices->length()-1);
+	if( !m_CurrentPointVertices )
+		return;
 
-	PointList* newPoints = new PointList();
+	m_CurrentPointVertices->append( m_endPoint );
+	m_CurrentPointVertices = NULL;
+}
 
-	CString temp;
-	for( int i = 0; i < m_PointVertices->length(); i++ )
+void LineCalRouteDialog::SetupFinalResult()
+{
+	acutPrintf(L"\n整理最终路由结果，有可能路由线路【%d】条",m_lPossibleRoutes.size());
+
+	acutPrintf(L"\n清除临时计算结果");
+	m_CurrentRouteLineEntity->SetPoints(NULL);
+
+	for( LineIter iter = m_lPossibleRoutes.begin(); 
+		iter != m_lPossibleRoutes.end();
+		iter++ )
 	{
-		PointEntity* point = new PointEntity();
-		point->m_PointNO = i;
+		if( (*iter).second == DONE )
+		{
+			m_CurrentPointVertices = (*iter).first;
+			acutPrintf(L"\n绘制当前路由结果，有线段【%d】条",m_CurrentPointVertices->length() - 1);
+
+			PointList* newPoints = new PointList();
+
+			CString temp;
+			for( int i = 0; i < m_CurrentPointVertices->length(); i++ )
+			{
+				PointEntity* point = new PointEntity();
+				point->m_PointNO = i;
 		
-		point->m_Point[X] = m_PointVertices->at(i).x;
-		point->m_Point[Y] = m_PointVertices->at(i).y;
-		point->m_Point[Z] = m_PointVertices->at(i).z;
+				point->m_Point[X] = m_CurrentPointVertices->at(i).x;
+				point->m_Point[Y] = m_CurrentPointVertices->at(i).y;
+				point->m_Point[Z] = m_CurrentPointVertices->at(i).z;
 
-		newPoints->push_back( point );
+				newPoints->push_back( point );
+			}
+
+			m_CurrentRouteLineEntity = CreateNewLineEntity();
+			if( m_CurrentRouteLineEntity )
+			{
+				m_CurrentRouteLineEntity->SetPoints( newPoints );
+			}
+
+			//Save to possible line list, use to delete all the entities
+			m_AllPossibleLineEntities.push_back( m_CurrentRouteLineEntity );
+
+			m_CurrentPointVertices = NULL;
+		}
 	}
-
-	m_RouteLineEntity->SetPoints( newPoints );
 }
 
 void LineCalRouteDialog::Reset()
@@ -764,27 +987,47 @@ void LineCalRouteDialog::Reset()
 
 void LineCalRouteDialog::CutBack()
 {
-	//删除前一条计算路由时的管线实体
-	if( m_RouteLineEntity )
+	typedef list<LineEntity*>::iterator DbLineIter;
+
+	for( DbLineIter iter = m_AllPossibleLineEntities.begin(); 
+		iter != m_AllPossibleLineEntities.end();
+		iter++ )
 	{
-		//从数据库删除管线本身
-		ArxWrapper::DeleteFromNameObjectsDict(m_RouteLineEntity->m_dbId,LineEntity::LINE_ENTRY_LAYER);
+		LineEntity* lineEntity = *iter;
 
-		//从数据库删除管线所有的线段
-		m_RouteLineEntity->EraseDbObjects();
+		//删除前一条计算路由时的管线实体
+		if( lineEntity )
+		{
+			//从数据库删除管线本身
+			ArxWrapper::DeleteFromNameObjectsDict(lineEntity->m_dbId,LineEntity::LINE_ENTRY_LAYER);
 
-		//删除所有的内存节点
-		m_RouteLineEntity->SetPoints(NULL);
+			//从数据库删除管线所有的线段
+			lineEntity->EraseDbObjects();
 
-		//删除线段集合
-		m_EntryFile->DeleteLine(m_RouteLineEntity->GetLineID());
+			//删除所有的内存节点
+			lineEntity->SetPoints(NULL);
 
-		//删除折线点集合
-		m_PointVertices->removeAll();
+			//删除线段集合
+			m_EntryFile->DeleteLine(lineEntity->GetLineID());
 
-		delete m_RouteLineEntity;
-		m_RouteLineEntity = NULL;
+			delete lineEntity;
+			lineEntity = NULL;
+		}
 	}
+
+	//删除路由管线集合
+	m_AllPossibleLineEntities.clear();
+
+	for( LineIter iter = m_lPossibleRoutes.begin();
+		iter != m_lPossibleRoutes.end();
+		iter++ )
+	{
+		if( (*iter).first )
+			delete (*iter).first;
+	}
+
+	//删除折线点集合
+	m_lPossibleRoutes.clear();
 }
 
 // LineCalRouteDialog message handlers
