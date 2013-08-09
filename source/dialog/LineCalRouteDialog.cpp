@@ -222,7 +222,7 @@ void LineCalRouteDialog::GetStartEndPoint()
 
 	//当前系统运算按照从下往上计算
 	//既下方为起始点，上方为截止点
-	if( m_startPoint.y > m_endPoint.z )
+	if( m_startPoint.y > m_endPoint.y )
 	{
 		AcGePoint3d swap(m_endPoint);
 
@@ -682,7 +682,8 @@ AcGePoint3d LineCalRouteDialog::GetProjectPoint3d(PointEntity* lineSegment)
 
 	//保存离X轴较近的点
 	bool branched = false;
-	AcGePoint3d nextPoint;
+	AcGePoint3d curInterPoint, nextPoint;
+
 	do
 	{
 		AcGePoint3d projectPoint;
@@ -706,15 +707,15 @@ AcGePoint3d LineCalRouteDialog::GetProjectPoint3d(PointEntity* lineSegment)
 			break;
 		}
 			
-		m_CurrentPointVertices->append( projectPoint );
-		acutPrintf(L"\n存储下方的点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】为一个起点", projectPoint[X], projectPoint[Y], projectPoint[Z]);
-
-		projectPoint.y = resultPnt.y + stepOffset;
-		acutPrintf(L"\n返回上方的点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】为新的计算起点", projectPoint[X], projectPoint[Y], projectPoint[Z]);
-
 		if( !branched )
 		{
 			acutPrintf(L"\n这是在当前相侵点的第一个分支，下面会继续沿着这个路由计算下去");
+					
+			curInterPoint = projectPoint;
+			acutPrintf(L"\n存储下方的点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】为一个起点", projectPoint[X], projectPoint[Y], projectPoint[Z]);
+
+			projectPoint.y = resultPnt.y + stepOffset;
+			acutPrintf(L"\n返回上方的点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】为新的计算起点", projectPoint[X], projectPoint[Y], projectPoint[Z]);
 
 			nextPoint = projectPoint;
 			branched = true;
@@ -724,12 +725,20 @@ AcGePoint3d LineCalRouteDialog::GetProjectPoint3d(PointEntity* lineSegment)
 			acutPrintf(L"\n已经存在在当前相侵点的一个分支了，先保存下来，以后再计算");
 
 			AcGePoint3dArray* clonePoint3dArray = new AcGePoint3dArray(*m_CurrentPointVertices);
+
+			clonePoint3dArray->append(projectPoint);
+			projectPoint.y = resultPnt.y + stepOffset;
 			clonePoint3dArray->append(projectPoint);
 
 			m_lPossibleRoutes.insert(std::pair<AcGePoint3dArray*,CAL_STATUS>(clonePoint3dArray,INIT));
 		}
 	}
 	while(true);
+
+	if( branched )
+	{
+		m_CurrentPointVertices->append( curInterPoint );
+	}
 
 	return nextPoint;
 }

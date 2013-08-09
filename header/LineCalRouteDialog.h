@@ -31,11 +31,11 @@ public:
 	enum PASS_STATUS
 		{	PASS_NONE = 0x0,
 			PASS_UP = 0x1, 
-			PASS_DOWN = ( 0x1 < 1 ),
-			PASS_LEFT = (0x1 < 2), 
-			PASS_RIGHT = (0x1 < 3), 
-			PASS_FRONT = (0x1 < 4), 
-			PASS_BACK = (0x1 < 5),
+			PASS_DOWN = ( 0x1 << 1 ),
+			PASS_LEFT = (0x1 << 2), 
+			PASS_RIGHT = (0x1 << 3), 
+			PASS_FRONT = (0x1 << 4), 
+			PASS_BACK = (0x1 << 5),
 			PASS_ALL = 0X3F };
 
 	// Status for one possible route line
