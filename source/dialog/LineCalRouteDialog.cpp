@@ -47,6 +47,7 @@ using namespace com::guch::assistant::data;
 using namespace com::guch::assistant::Intersect;
 
 typedef map<AcGePoint3dArray*, LineCalRouteDialog::CAL_STATUS>::iterator LineIter;
+typedef map<LineEntity*, LineCalRouteDialog::CAL_STATUS>::iterator LineEntityIter;
 
 CString LineCalRouteDialog::m_lineCategory = L"自动路由管线";
 CString LineCalRouteDialog::m_CutLayerName = L"";
@@ -63,6 +64,9 @@ list<LineEntity*> LineCalRouteDialog::m_AllPossibleLineEntities = list<LineEntit
 map<AcGePoint3dArray*, LineCalRouteDialog::CAL_STATUS> LineCalRouteDialog::m_lPossibleRoutes
 	= map<AcGePoint3dArray*, LineCalRouteDialog::CAL_STATUS>();
 
+map<LineEntity*, LineCalRouteDialog::CAL_STATUS> LineCalRouteDialog::m_lPossibleLineEntities
+	= map<LineEntity*, LineCalRouteDialog::CAL_STATUS>();
+
 LineEntityFile* LineCalRouteDialog::m_EntryFile = NULL;
 
 // LineCalRouteDialog dialog
@@ -72,7 +76,8 @@ IMPLEMENT_DYNAMIC(LineCalRouteDialog, CAcUiDialog)
 LineCalRouteDialog::LineCalRouteDialog(CWnd* pParent /*=NULL*/)
 : CAcUiDialog(LineCalRouteDialog::IDD, pParent),
 	m_startPoint(),
-	m_endPoint()
+	m_endPoint(),
+	m_DrawRealTime(true)
 {
 	//得到当前管理的文档
 	m_fileName = curDoc()->fileName();
@@ -239,6 +244,11 @@ void LineCalRouteDialog::OnBnClickedOk()
 	//得到起始、截止点
 	GetStartEndPoint();
 
+	if( m_DrawRealTime )
+	{
+		CAcUiDialog::OnOK();
+	}
+
 	//首先恢复视图
 	CutBack();
 
@@ -252,7 +262,10 @@ void LineCalRouteDialog::OnBnClickedOk()
 	SetupFinalResult();
 
 	//关闭对话框
-	CAcUiDialog::OnOK();
+	if( !m_DrawRealTime )
+	{
+		CAcUiDialog::OnOK();
+	}
 }
 
 bool LineCalRouteDialog::SetupRouteLineEnv()
@@ -260,6 +273,7 @@ bool LineCalRouteDialog::SetupRouteLineEnv()
 	//创建图层的名称
 	m_CutLayerName.Format(L"从(X:%0.2lf,Y:%0.2lf,Z:%0.2lf)到(X:%0.2lf,Y:%0.2lf,Z:%0.2lf)的最短路由",m_startPoint[X],m_startPoint[Y],m_startPoint[Z],m_endPoint[X],m_endPoint[Y],m_endPoint[Z]);
 	acutPrintf(L"\n要创建的图层名称为【%s】",m_CutLayerName.GetBuffer());
+	
 	m_CutLayerName.Format(L"最短路由");
 
 	//创建起始、终止点与X轴垂直的平面
@@ -269,8 +283,10 @@ bool LineCalRouteDialog::SetupRouteLineEnv()
 	InitializeRouteLine();
 
 	//Initialize the possible route lines;
-	//That is to say, use the start point user selected to set up the first new possible route.
 	InitializePossibleLines();
+
+	//Use the start point user selected to set up the first new possible route.
+	AppendInterSegment(m_startPoint);
 
 	return true;
 }
@@ -295,7 +311,7 @@ bool LineCalRouteDialog::InitializeRouteLine()
 
 	//创建临时路由管线，用于当前的计算
 	acutPrintf(L"\n创建临时路由管线");
-	m_CurrentRouteLineEntity = CreateNewLineEntity();
+	m_CompareLineSegmentEntity = CreateNewLineEntity();
 
 	return true;
 }
@@ -306,7 +322,7 @@ LineEntity* LineCalRouteDialog::CreateNewLineEntity()
 	wstring pipeName(m_CutLayerName.GetBuffer());
 	acutPrintf(L"\n新的路由所在图层的名字为【%s】", pipeName.c_str());
 
-	LineEntity* lineEntity = new LineEntity(pipeName,GlobalData::CONFIG_LINE_KIND, m_lineInfo ,NULL);
+	LineEntity* lineEntity = new LineEntity(pipeName,GlobalData::CONFIG_LINE_KIND, m_lineInfo , (new PointList()));
 
 	//特殊管线，需要标示
 	lineEntity->m_bSpecialLine = true;
@@ -371,27 +387,35 @@ bool LineCalRouteDialog::InitializeRouteLineInfo()
 
 bool LineCalRouteDialog::InitializePossibleLines()
 {
-	//Create the first possible route line. 
-	m_CurrentPointVertices = new AcGePoint3dArray();
+	if( m_DrawRealTime )
+	{
+		//Create the first possible rout line entity
+		m_CurrentRouteLineEntity = CreateNewLineEntity();
 
-	//Start with the start point user select
-	m_CurrentPointVertices->append(m_startPoint);
+		//Start with the first possible line
+		m_lPossibleLineEntities.insert(std::pair<LineEntity*,CAL_STATUS>(m_CurrentRouteLineEntity,INIT));
+	}
+	else
+	{
+		//Create the first possible route line. 
+		m_CurrentPointVertices = new AcGePoint3dArray();
 
-	//Start with the first possible line
-	m_lPossibleRoutes.insert(std::pair<AcGePoint3dArray*,CAL_STATUS>(m_CurrentPointVertices,INIT));
+		//Start with the first possible line
+		m_lPossibleRoutes.insert(std::pair<AcGePoint3dArray*,CAL_STATUS>(m_CurrentPointVertices,INIT));
+	}
 
 	return true;
 }
 
-bool LineCalRouteDialog::InitializeStartEndPoints( const AcGePoint3d& startPoint, const AcGePoint3d& endPoint )
+bool LineCalRouteDialog::InitializeCompareSegmentEntity( const AcGePoint3d& startPoint, const AcGePoint3d& endPoint )
 {
 	acutPrintf(L"\n在3D模型中划出这条管线，进行比较计算");
 
 	//以用户选择的开始、结束点初始化这条管线
-	AppendStartEndPoints( startPoint, endPoint);
+	CreateCompareLineSegement( startPoint, endPoint);
 
 	//默认用户选择的开始点可以保存下来了
-	SaveRouteLinePoint( startPoint );
+	//SaveRouteLinePoint( startPoint );
 
 	//没有计算过的线段
 	m_CheckedEntities.clear();
@@ -403,15 +427,12 @@ bool LineCalRouteDialog::SaveRouteLinePoint( const AcGePoint3d& newPoint )
 {
 	acutPrintf(L"\n保存(X:%0.2lf,Y:%0.2lf,Z:%0.2lf)为一个起点", newPoint[X], newPoint[Y], newPoint[Z]);
 
-	if( m_CurrentPointVertices == NULL )
-		m_CurrentPointVertices = new AcGePoint3dArray();
-
-	m_CurrentPointVertices->append( newPoint);
+	AppendInterSegment( newPoint);
 
 	return true;
 }
 
-bool LineCalRouteDialog::AppendStartEndPoints(const AcGePoint3d& startPoint, const AcGePoint3d& endPoint)
+bool LineCalRouteDialog::CreateCompareLineSegement(const AcGePoint3d& startPoint, const AcGePoint3d& endPoint)
 {
 	PointEntity* point = NULL;
 
@@ -435,7 +456,7 @@ bool LineCalRouteDialog::AppendStartEndPoints(const AcGePoint3d& startPoint, con
 	newPoints->push_back( point );
 
 	//以此开始和结束点创建新的路由线段
-	m_CurrentRouteLineEntity->SetPoints(newPoints);
+	m_CompareLineSegmentEntity->SetPoints(newPoints);
 
 	acutPrintf(L"\n新的路由线段构造完成");
 
@@ -448,28 +469,62 @@ bool LineCalRouteDialog::AppendStartEndPoints(const AcGePoint3d& startPoint, con
 bool LineCalRouteDialog::GetPossibleStartPoint(AcGePoint3d& startPoint)
 {
 	bool hasStartPoint(false);
-	
-	acutPrintf(L"\n当前可能的路由数为【%d】",m_lPossibleRoutes.size());
 
-	for( LineIter iter = m_lPossibleRoutes.begin(); 
-		iter != m_lPossibleRoutes.end();
-		iter++ )
+	if( m_DrawRealTime )
 	{
-		if( (*iter).second != DONE )
+		acutPrintf(L"\n当前可能的路由数为【%d】",m_lPossibleLineEntities.size());
+
+		for( LineEntityIter iter = m_lPossibleLineEntities.begin(); 
+			iter != m_lPossibleLineEntities.end();
+			iter++ )
 		{
-			m_CurrentPointVertices = (*iter).first;
-
-			if( m_CurrentPointVertices )
+			if( (*iter).second != DONE )
 			{
-				int length = m_CurrentPointVertices->length();
-				startPoint = m_CurrentPointVertices->at(length-1);
-				acutPrintf(L"\n找到一条未完成的可能路由。起始点为x【%0.2lf】y【%0.2lf】z【%0.2lf】",
-					startPoint.x,startPoint.y,startPoint.z);
+				m_CurrentRouteLineEntity = (*iter).first;
 
-				hasStartPoint = true;
-				break;
+				if( m_CurrentRouteLineEntity )
+				{
+					int length = m_CurrentRouteLineEntity->m_PointList->size();
+					ads_point& curStartPoint = m_CurrentRouteLineEntity->m_PointList->at(length-1)->m_Point;
+
+					startPoint.x = curStartPoint[X];
+					startPoint.y = curStartPoint[Y];
+					startPoint.z = curStartPoint[Z];
+
+					hasStartPoint = true;
+					break;
+				}
 			}
 		}
+	}
+	else
+	{
+		acutPrintf(L"\n当前可能的路由数为【%d】",m_lPossibleRoutes.size());
+
+		for( LineIter iter = m_lPossibleRoutes.begin(); 
+			iter != m_lPossibleRoutes.end();
+			iter++ )
+		{
+			if( (*iter).second != DONE )
+			{
+				m_CurrentPointVertices = (*iter).first;
+
+				if( m_CurrentPointVertices )
+				{
+					int length = m_CurrentPointVertices->length();
+					startPoint = m_CurrentPointVertices->at(length-1);
+
+					hasStartPoint = true;
+					break;
+				}
+			}
+		}
+	}
+
+	if( hasStartPoint )
+	{
+		acutPrintf(L"\n找到一条未完成的可能路由。起始点为x【%0.2lf】y【%0.2lf】z【%0.2lf】",
+						startPoint.x,startPoint.y,startPoint.z);
 	}
 
 	return hasStartPoint;
@@ -477,20 +532,41 @@ bool LineCalRouteDialog::GetPossibleStartPoint(AcGePoint3d& startPoint)
 
 bool LineCalRouteDialog::SetCurrentPossibleLineDone()
 {
-	for( LineIter iter = m_lPossibleRoutes.begin(); 
-		iter != m_lPossibleRoutes.end();
-		iter++ )
+	if( m_DrawRealTime )
 	{
-		if( (*iter).second != DONE )
+		for( LineEntityIter iter = m_lPossibleLineEntities.begin(); 
+			iter != m_lPossibleLineEntities.end();
+			iter++ )
 		{
-			m_CurrentPointVertices = (*iter).first;
-
-			if( (*iter).first == m_CurrentPointVertices )
+			if( (*iter).second != DONE )
 			{
-				acutPrintf(L"\n设置当前可能路由的状态为已完成");
-				(*iter).second = DONE;
+				if( m_CurrentRouteLineEntity == (*iter).first )
+				{
+					acutPrintf(L"\n设置当前可能路由的状态为已完成");
+					(*iter).second = DONE;
 
-				return true;
+					return true;
+				}
+			}
+		}
+	}
+	else
+	{
+		for( LineIter iter = m_lPossibleRoutes.begin(); 
+			iter != m_lPossibleRoutes.end();
+			iter++ )
+		{
+			if( (*iter).second != DONE )
+			{
+				m_CurrentPointVertices = (*iter).first;
+
+				if( (*iter).first == m_CurrentPointVertices )
+				{
+					acutPrintf(L"\n设置当前可能路由的状态为已完成");
+					(*iter).second = DONE;
+
+					return true;
+				}
 			}
 		}
 	}
@@ -522,6 +598,7 @@ void LineCalRouteDialog::CalculateShortestRoute()
 				break;
 		}
 
+		//current line is done
 		SetCurrentPossibleLineDone();
 
 		//One possible line route has been finished
@@ -534,7 +611,7 @@ bool LineCalRouteDialog::CalculateShortestRoute( const AcGePoint3d& start, const
 	acutPrintf(L"\n现在计算(X:%0.2lf,Y:%0.2lf,Z:%0.2lf)到(X:%0.2lf,Y:%0.2lf,Z:%0.2lf)的最短路由", start[X], start[Y], start[Z], end[X], end[Y], end[Z]);
 
 	//以开始点和截止点创建默认宽度的管线
-	InitializeStartEndPoints(start, end);
+	InitializeCompareSegmentEntity(start, end);
 
 	//相侵的管线
 	AcArray<PointEntity*>* intersectEntities = new AcArray<PointEntity*>();
@@ -706,7 +783,7 @@ AcGePoint3d LineCalRouteDialog::GetProjectPoint3d(PointEntity* lineSegment)
 		{
 			break;
 		}
-			
+
 		if( !branched )
 		{
 			acutPrintf(L"\n这是在当前相侵点的第一个分支，下面会继续沿着这个路由计算下去");
@@ -724,23 +801,69 @@ AcGePoint3d LineCalRouteDialog::GetProjectPoint3d(PointEntity* lineSegment)
 		{
 			acutPrintf(L"\n已经存在在当前相侵点的一个分支了，先保存下来，以后再计算");
 
-			AcGePoint3dArray* clonePoint3dArray = new AcGePoint3dArray(*m_CurrentPointVertices);
+			if( m_DrawRealTime )
+			{
+				LineEntity* cloneLineEntity = CreateNewLineEntity();
 
-			clonePoint3dArray->append(projectPoint);
-			projectPoint.y = resultPnt.y + stepOffset;
-			clonePoint3dArray->append(projectPoint);
+				//start with current point
+				pPointEntry currentPoint = (*m_CurrentRouteLineEntity->m_PointList)[(m_CurrentRouteLineEntity->m_PointList->size() - 1)];
+				cloneLineEntity->InsertPoint(currentPoint,true);
 
-			m_lPossibleRoutes.insert(std::pair<AcGePoint3dArray*,CAL_STATUS>(clonePoint3dArray,INIT));
+				//inser the inter point
+				cloneLineEntity->InsertPoint(&projectPoint,true);
+
+				//next start point
+				projectPoint.y = resultPnt.y + stepOffset;
+				cloneLineEntity->InsertPoint(&projectPoint,true);
+
+				m_lPossibleLineEntities.insert(std::pair<LineEntity*,CAL_STATUS>(cloneLineEntity,INIT));
+			}
+			else
+			{
+				AcGePoint3dArray* clonePoint3dArray = new AcGePoint3dArray(*m_CurrentPointVertices);
+
+				clonePoint3dArray->append(projectPoint);
+
+				//next start point
+				projectPoint.y = resultPnt.y + stepOffset;
+				clonePoint3dArray->append(projectPoint);
+
+				m_lPossibleRoutes.insert(std::pair<AcGePoint3dArray*,CAL_STATUS>(clonePoint3dArray,INIT));
+			}
 		}
 	}
 	while(true);
 
 	if( branched )
 	{
-		m_CurrentPointVertices->append( curInterPoint );
+		//Append the first inter segment
+		AppendInterSegment( curInterPoint );
+
+		//Append the first inter segment
+		AppendInterSegment( nextPoint );
 	}
 
 	return nextPoint;
+}
+
+//Create a new line segment, for this point is a new route point
+void LineCalRouteDialog::AppendInterSegment(const AcGePoint3d& newPoint)
+{
+	//Draw realtime means draw the possible line during the process of calculation
+	if( m_DrawRealTime )
+	{
+		PointEntity* point = new PointEntity();
+
+		point->m_Point[X] = newPoint.x;
+		point->m_Point[Y] = newPoint.y;
+		point->m_Point[Z] = newPoint.z;
+
+		m_CurrentRouteLineEntity->InsertPoint(point, true);
+	}
+	else
+	{
+		m_CurrentPointVertices->append( newPoint );
+	}
 }
 
 void LineCalRouteDialog::GetHeightAndStep(PointEntity* lineSegment, double& height, double& step)
@@ -790,11 +913,11 @@ void LineCalRouteDialog::CheckIntersect(AcArray<PointEntity*>* intersectEntities
 {
 	acutPrintf(L"\n进行相侵判断.");
 
-	PointList* pointList = m_CurrentRouteLineEntity->m_PointList;
+	PointList* pointList = m_CompareLineSegmentEntity->m_PointList;
 	if( pointList == NULL 
 		|| pointList->size() < 2 )
 	{
-		acutPrintf(L"\n当前管线没有折线段，可以不进行检查");
+		acutPrintf(L"\n临时比较管线中没有折线段，可以不进行检查");
 		return;
 	}
 
@@ -803,6 +926,7 @@ void LineCalRouteDialog::CheckIntersect(AcArray<PointEntity*>* intersectEntities
 	wstring& lineName = checkPoint->m_DbEntityCollection.mLayerName;
 	Adesk::Int32& checkLineID = checkPoint->m_DbEntityCollection.mLineID;
 	Adesk::Int32& checkSeqNO = checkPoint->m_DbEntityCollection.mSequenceNO;
+	wstring& layerName = wstring(m_CutLayerName.GetBuffer());
 
 #ifdef DEBUG
 	acutPrintf(L"\n对【%s】的第【%d】条进行相侵判断.",lineName.c_str(), checkSeqNO);
@@ -813,6 +937,12 @@ void LineCalRouteDialog::CheckIntersect(AcArray<PointEntity*>* intersectEntities
 			line != lineList->end();
 			line++ )
 	{
+		if( (*line)->m_LineName == layerName )
+		{
+			acutPrintf(L"\n此管线为自动路由临时线段，不参与比较");
+			continue;
+		}
+
 		PointList* pointList = (*line)->m_PointList;
 		if( pointList == NULL 
 			|| pointList->size() == 0 )
@@ -899,54 +1029,61 @@ bool LineCalRouteDialog::CreateRouteSegment( const AcGePoint3d& start, const AcG
 
 void LineCalRouteDialog::SetupLineRouteResult()
 {
-	if( !m_CurrentPointVertices )
-		return;
+	//设置最后一段管线
+	AppendInterSegment( m_endPoint );
 
-	m_CurrentPointVertices->append( m_endPoint );
 	m_CurrentPointVertices = NULL;
+	m_CurrentRouteLineEntity = NULL;
+
+	//清除比较的那条最终线段
+	m_CompareLineSegmentEntity->SetPoints(NULL);
 }
 
 void LineCalRouteDialog::SetupFinalResult()
 {
-	acutPrintf(L"\n整理最终路由结果，有可能路由线路【%d】条",m_lPossibleRoutes.size());
-
-	acutPrintf(L"\n清除临时计算结果");
-	m_CurrentRouteLineEntity->SetPoints(NULL);
-
-	for( LineIter iter = m_lPossibleRoutes.begin(); 
-		iter != m_lPossibleRoutes.end();
-		iter++ )
+	if( m_DrawRealTime )
 	{
-		if( (*iter).second == DONE )
+		acutPrintf(L"\n整理最终路由结果，有可能路由线路【%d】条",m_lPossibleLineEntities.size());
+	}
+	else
+	{
+		acutPrintf(L"\n整理最终路由结果，有可能路由线路【%d】条",m_lPossibleRoutes.size());
+
+		for( LineIter iter = m_lPossibleRoutes.begin(); 
+			iter != m_lPossibleRoutes.end();
+			iter++ )
 		{
-			m_CurrentPointVertices = (*iter).first;
-			acutPrintf(L"\n绘制当前路由结果，有线段【%d】条",m_CurrentPointVertices->length() - 1);
-
-			PointList* newPoints = new PointList();
-
-			CString temp;
-			for( int i = 0; i < m_CurrentPointVertices->length(); i++ )
+			if( (*iter).second == DONE )
 			{
-				PointEntity* point = new PointEntity();
-				point->m_PointNO = i;
+				m_CurrentPointVertices = (*iter).first;
+				acutPrintf(L"\n绘制当前路由结果，有线段【%d】条",m_CurrentPointVertices->length() - 1);
+
+				PointList* newPoints = new PointList();
+
+				CString temp;
+				for( int i = 0; i < m_CurrentPointVertices->length(); i++ )
+				{
+					PointEntity* point = new PointEntity();
+					point->m_PointNO = i;
 		
-				point->m_Point[X] = m_CurrentPointVertices->at(i).x;
-				point->m_Point[Y] = m_CurrentPointVertices->at(i).y;
-				point->m_Point[Z] = m_CurrentPointVertices->at(i).z;
+					point->m_Point[X] = m_CurrentPointVertices->at(i).x;
+					point->m_Point[Y] = m_CurrentPointVertices->at(i).y;
+					point->m_Point[Z] = m_CurrentPointVertices->at(i).z;
 
-				newPoints->push_back( point );
+					newPoints->push_back( point );
+				}
+
+				m_CurrentRouteLineEntity = CreateNewLineEntity();
+				if( m_CurrentRouteLineEntity )
+				{
+					m_CurrentRouteLineEntity->SetPoints( newPoints );
+				}
+
+				//Save to possible line list, use to delete all the entities
+				m_AllPossibleLineEntities.push_back( m_CurrentRouteLineEntity );
+
+				m_CurrentPointVertices = NULL;
 			}
-
-			m_CurrentRouteLineEntity = CreateNewLineEntity();
-			if( m_CurrentRouteLineEntity )
-			{
-				m_CurrentRouteLineEntity->SetPoints( newPoints );
-			}
-
-			//Save to possible line list, use to delete all the entities
-			m_AllPossibleLineEntities.push_back( m_CurrentRouteLineEntity );
-
-			m_CurrentPointVertices = NULL;
 		}
 	}
 }

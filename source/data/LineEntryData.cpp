@@ -191,17 +191,56 @@ ContstPointIter LineEntity::FindConstPoint( const UINT& PointNO ) const
 	return m_PointList->end();
 }
 
-int LineEntity::InsertPoint( const PointEntity& newPoint )
+int LineEntity::InsertPoint( AcGePoint3d* newPoint, bool createDBEntity )
 {
-	pPointEntry point = new PointEntity(newPoint);
+	if( !newPoint )
+		return -1;
 
-	point->m_PointNO = m_CurrentPointNO;
+	PointEntity* point = new PointEntity();
 
-	m_PointList->push_back(point);
+	point->m_Point[X] = newPoint->x;
+	point->m_Point[Y] = newPoint->y;
+	point->m_Point[Z] = newPoint->z;
 
+	return InsertPoint(point, createDBEntity);
+}
+
+int LineEntity::InsertPoint( PointEntity* newPoint )
+{
+	if( !newPoint )
+		return -1;
+
+	//point NO is started from 0
+	newPoint->m_PointNO = m_CurrentPointNO;
+
+	//save to current list
+	m_PointList->push_back(newPoint);
+
+	//next point number
 	m_CurrentPointNO++;
 
+	//current amount of the ponint list
 	return (int)m_PointList->size();
+}
+
+int LineEntity::InsertPoint( PointEntity* newPoint, bool createDBEntity)
+{
+	//save point
+	int iPointAmount = InsertPoint( newPoint );
+
+	//draw the DB entity
+	if( createDBEntity )
+	{
+		//only have start point cannot draw a line
+		if( iPointAmount > 1 )
+		{
+			//get start and end point
+			pPointEntry pStartPoint = m_PointList->at(iPointAmount - 2);
+			newPoint->CreateLineFrom( (void*)this, pStartPoint->m_Point );
+		}
+	}
+
+	return iPointAmount-1;
 }
 
 void LineEntity::UpdatePoint( const PointEntity& updatePoint )

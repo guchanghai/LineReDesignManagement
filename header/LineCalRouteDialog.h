@@ -91,11 +91,11 @@ private:
 
 	bool InitializePossibleLines();
 
-	bool InitializeStartEndPoints( const AcGePoint3d& startPoint, const AcGePoint3d& endPoint );
+	bool InitializeCompareSegmentEntity( const AcGePoint3d& startPoint, const AcGePoint3d& endPoint );
 
 	void InitializeProjectPlace();
 
-	bool AppendStartEndPoints(const AcGePoint3d& startPoint, const AcGePoint3d& endPoint);
+	bool CreateCompareLineSegement(const AcGePoint3d& startPoint, const AcGePoint3d& endPoint);
 
 	bool SaveRouteLinePoint( const AcGePoint3d& newPoint );
 
@@ -116,6 +116,8 @@ private:
 	bool SetCurrentPossibleLineDone();
 
 	LineEntity* CreateNewLineEntity();
+
+	void AppendInterSegment(const AcGePoint3d& newPoint);
 
 protected:
 
@@ -165,8 +167,14 @@ protected:
 	//管线实体，代表当前进行的管线
 	LineEntity* m_CurrentRouteLineEntity;
 
+	//管线实体，代表当前管线的起始点与最终点的之间的连接管线
+	LineEntity* m_CompareLineSegmentEntity;
+
 	//所有可能的路线,每条路线都保存各个线段的坐标
 	static map<AcGePoint3dArray*, CAL_STATUS> m_lPossibleRoutes;
+
+	//所有可能的路线,每条路线都保存各个线段的坐标
+	static map<LineEntity*, CAL_STATUS> m_lPossibleLineEntities;
 	
 	//当前进行计算的路线
 	AcGePoint3dArray* m_CurrentPointVertices;
@@ -176,4 +184,7 @@ protected:
 
 	//越过的线段不在重复计算
 	set<LinePointID> m_CheckedEntities;
+
+	//Draw DB entity in realtime
+	bool m_DrawRealTime;
 };

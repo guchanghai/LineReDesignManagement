@@ -167,7 +167,9 @@ public:
 	void SetName( const wstring& rNewName ) { m_LineName = rNewName; }
 	const wstring& GetName() const { return m_LineName; }
 
-	int InsertPoint( const PointEntity& newPoint );
+	int InsertPoint( AcGePoint3d* newPoint, bool createDBEntity);
+	int InsertPoint( PointEntity* newPoint);
+	int InsertPoint( PointEntity* newPoint, bool createDBEntity);
 	void UpdatePoint( const PointEntity& updatePoint );
 	void DeletePoint( const UINT& PointNO );
 
