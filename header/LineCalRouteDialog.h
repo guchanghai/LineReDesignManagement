@@ -105,6 +105,8 @@ private:
 
 	AcGePoint3d GetProjectPoint3d(PointEntity* lineSegment);
 
+	AcGePoint3d GetIntersectPoint3d(PointEntity* lineSegment);
+
 	void SetupLineRouteResult();
 
 	void SetupFinalResult();
