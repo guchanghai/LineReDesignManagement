@@ -77,7 +77,11 @@ LineCalRouteDialog::LineCalRouteDialog(CWnd* pParent /*=NULL*/)
 : CAcUiDialog(LineCalRouteDialog::IDD, pParent),
 	m_startPoint(),
 	m_endPoint(),
-	m_DrawRealTime(true)
+	m_DrawRealTime(false),
+	m_CurrentRouteLineEntity(NULL),
+	m_CompareLineSegmentEntity(NULL),
+	m_CurrentPointVertices(NULL),
+	m_ShortestPointVertices(NULL)
 {
 	//得到当前管理的文档
 	m_fileName = curDoc()->fileName();
@@ -317,7 +321,7 @@ LineEntity* LineCalRouteDialog::CreateNewLineEntity()
 	LineEntity* lineEntity = new LineEntity(pipeName,GlobalData::CONFIG_LINE_KIND, m_lineInfo , (new PointList()));
 
 	//特殊管线，需要标示
-	lineEntity->m_bSpecialLine = true;
+	lineEntity->m_LinePriority = GlobalData::LINE_FIRST;
 
 	//生成该项的ID
 	lineEntity->m_LineID = (UINT)GetTickCount();
@@ -476,7 +480,7 @@ bool LineCalRouteDialog::GetPossibleStartPoint(AcGePoint3d& startPoint)
 
 				if( m_CurrentRouteLineEntity )
 				{
-					int length = m_CurrentRouteLineEntity->m_PointList->size();
+					int length = static_cast<int>(m_CurrentRouteLineEntity->m_PointList->size());
 					ads_point& curStartPoint = m_CurrentRouteLineEntity->m_PointList->at(length-1)->m_Point;
 
 					startPoint.x = curStartPoint[X];
@@ -1164,45 +1168,107 @@ void LineCalRouteDialog::SetupFinalResult()
 	}
 	else
 	{
-		acutPrintf(L"\n整理最终路由结果，有可能路由线路【%d】条",m_lPossibleRoutes.size());
+		//得到最短线路
+		GetShortestRoute();
 
-		for( LineIter iter = m_lPossibleRoutes.begin(); 
-			iter != m_lPossibleRoutes.end();
-			iter++ )
+		//绘制所有线路，同时最短的线路标记为红色
+		DrawFinalResult();
+	}
+}
+
+void LineCalRouteDialog::DrawFinalResult()
+{
+	acutPrintf(L"\n整理最终路由结果，路由的线路有【%d】条",m_lPossibleRoutes.size());
+
+	for( LineIter iter = m_lPossibleRoutes.begin(); 
+		iter != m_lPossibleRoutes.end();
+		iter++ )
+	{
+		if( (*iter).second == DONE )
 		{
-			if( (*iter).second == DONE )
+			m_CurrentPointVertices = (*iter).first;
+			acutPrintf(L"\n绘制路由，其中有线段【%d】条",m_CurrentPointVertices->length() - 1);
+
+			PointList* newPoints = new PointList();
+
+			for( int i = 0; i < m_CurrentPointVertices->length(); i++ )
 			{
-				m_CurrentPointVertices = (*iter).first;
-				acutPrintf(L"\n绘制当前路由结果，有线段【%d】条",m_CurrentPointVertices->length() - 1);
-
-				PointList* newPoints = new PointList();
-
-				CString temp;
-				for( int i = 0; i < m_CurrentPointVertices->length(); i++ )
-				{
-					PointEntity* point = new PointEntity();
-					point->m_PointNO = i;
+				PointEntity* point = new PointEntity();
+				point->m_PointNO = i;
 		
-					point->m_Point[X] = m_CurrentPointVertices->at(i).x;
-					point->m_Point[Y] = m_CurrentPointVertices->at(i).y;
-					point->m_Point[Z] = m_CurrentPointVertices->at(i).z;
+				point->m_Point[X] = m_CurrentPointVertices->at(i).x;
+				point->m_Point[Y] = m_CurrentPointVertices->at(i).y;
+				point->m_Point[Z] = m_CurrentPointVertices->at(i).z;
 
-					newPoints->push_back( point );
-				}
+				newPoints->push_back( point );
+			}
 
-				m_CurrentRouteLineEntity = CreateNewLineEntity();
-				if( m_CurrentRouteLineEntity )
+			m_CurrentRouteLineEntity = CreateNewLineEntity();
+			if( m_CurrentRouteLineEntity )
+			{
+				if( m_CurrentPointVertices == this->m_ShortestPointVertices )
 				{
-					m_CurrentRouteLineEntity->SetPoints( newPoints );
+					acutPrintf(L"\n当前管线为最短线路，标记为红色");
+					m_CurrentRouteLineEntity->m_LinePriority = GlobalData::LINE_SECOND;
 				}
 
-				//Save to possible line list, use to delete all the entities
-				m_AllPossibleLineEntities.push_back( m_CurrentRouteLineEntity );
+				m_CurrentRouteLineEntity->SetPoints( newPoints );
+			}
 
-				m_CurrentPointVertices = NULL;
+			//Save to possible line list, use to delete all the entities
+			m_AllPossibleLineEntities.push_back( m_CurrentRouteLineEntity );
+
+			m_CurrentPointVertices = NULL;
+		}
+	}
+}
+
+double LineCalRouteDialog::GetShortestRoute()
+{
+	double shortestLength = 0x3FFFFFFF;
+
+	acutPrintf(L"\n在【%d】条可能线路中寻找最短的路由",m_lPossibleRoutes.size());
+
+	for( LineIter iter = m_lPossibleRoutes.begin(); 
+		iter != m_lPossibleRoutes.end();
+		iter++ )
+	{
+		double oneLineLength = 0.0;
+
+		if( (*iter).second == DONE )
+		{
+			m_CurrentPointVertices = (*iter).first;
+				
+			acutPrintf(L"\n计算一条新的线路长度，有线段【%d】条",m_CurrentPointVertices->length() - 1);
+
+			AcGePoint3d* pLastPoint = NULL;
+			for( int i = 0; i < m_CurrentPointVertices->length(); i++ )
+			{
+				if( pLastPoint == NULL )
+				{
+					pLastPoint = &m_CurrentPointVertices->at(i);
+					continue;
+				}
+
+				double segmentLength = pLastPoint->distanceTo(m_CurrentPointVertices->at(i));
+				acutPrintf(L"\n第【%d】条线段长度为【%0.2lf】",i, segmentLength);
+
+				oneLineLength += segmentLength;
+			}
+
+			acutPrintf(L"\n当前线路的长度为【%0.2lf】，临时最短的线路长度为【%0.2lf】",oneLineLength, shortestLength);
+
+			if( oneLineLength < shortestLength )
+			{
+				acutPrintf(L"\n当前线路更短一些");
+				m_ShortestPointVertices = m_CurrentPointVertices;
+				shortestLength = oneLineLength;
 			}
 		}
 	}
+
+	acutPrintf(L"\n最短距离为【%0.2lf】",shortestLength);
+	return shortestLength;
 }
 
 void LineCalRouteDialog::Reset()

@@ -26,10 +26,12 @@
 #include <adui.h>
 #include <acui.h>
 
+#include <GlobalDataConfig.h>
 #include <LineCategoryItemData.h>
 
 using namespace std;
 using namespace com::guch::assistant::config;
+using namespace com::guch::assistant::data;
 
 namespace com
 {
@@ -42,6 +44,8 @@ namespace assistant
 
 namespace data
 {
+
+class LineEntity;
 
 class PointDBEntityCollection
 {
@@ -72,7 +76,7 @@ public:
 	void SetLineWarning( bool warning = true );
 
 	//database object collection
-	bool DrawEntityCollection(bool showSafeSize);
+	bool DrawEntityCollection(GlobalData::LineProirity proirity);
 	void DropEntityCollection();
 
 	//the layer to insert
@@ -224,8 +228,8 @@ public:
 	//保存其ID
 	AcDbObjectId m_dbId;
 
-	//是否特殊标示
-	bool m_bSpecialLine;
+	//管线显示级别
+	GlobalData::LineProirity m_LinePriority;
 };
 
 /**

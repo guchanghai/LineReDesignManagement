@@ -83,6 +83,10 @@ protected:
 
 	static PASS_STATUS GetPassDirecion( PointEntity *lineSegment);
 
+	double GetShortestRoute();
+
+	void DrawFinalResult();
+
 private:
 
 	bool InitializeRouteLine();
@@ -180,6 +184,9 @@ protected:
 	
 	//当前进行计算的路线
 	AcGePoint3dArray* m_CurrentPointVertices;
+
+	//最短的路线
+	AcGePoint3dArray* m_ShortestPointVertices;
 
 	//起始、终止点与X轴垂直的平面
 	AcGePlane m_ProjectPlane;

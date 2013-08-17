@@ -55,7 +55,7 @@ LineEntity::LineEntity()
 	m_CurrentPointNO(0),
 	m_PrePointList(NULL),
 	m_PointList(new PointList()),
-	m_bSpecialLine( false )
+	m_LinePriority( GlobalData::LINE_NORMAL )
 {}
 
 LineEntity::LineEntity(const wstring& rLineName, const wstring& rLineKind,
@@ -67,7 +67,7 @@ LineEntity::LineEntity(const wstring& rLineName, const wstring& rLineKind,
 	m_PointList(pointList),
 	m_CurrentPointNO(0),
 	m_PrePointList(NULL),
-	m_bSpecialLine( false )
+	m_LinePriority( GlobalData::LINE_NORMAL )
 {
 	//创建数据库代理对象
 	m_pDbEntry = new LineDBEntity( this );
@@ -131,7 +131,7 @@ LineEntity::LineEntity( wstring& data)
 	//创建数据库代理对象
 	m_pDbEntry = new LineDBEntity( this );
 
-	m_bSpecialLine = false;
+	m_LinePriority = GlobalData::LINE_NORMAL;
 }
 
 LineEntity::~LineEntity()

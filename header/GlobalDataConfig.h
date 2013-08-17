@@ -1,3 +1,5 @@
+#pragma once
+
 #include "stdafx.h"
 #include <string>
 
@@ -96,6 +98,13 @@ public:
 	**/
 	static const double TRANS_SAFELINE_COLOR;
 	
+	/**
+	* 管线的绘制级别
+	**/
+	enum LineProirity {
+		LINE_NORMAL = 0, 
+		LINE_FIRST,
+		LINE_SECOND };
 };
 
 

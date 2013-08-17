@@ -152,13 +152,13 @@ void PointEntity::CreateLineFrom(const void* lineEntity, const ads_point& start 
 	m_DbEntityCollection.mEndPoint.set(m_Point[X], m_Point[Y], m_Point[Z]);
 
 	//绘制折线段所有的数据库实体
-	m_DbEntityCollection.DrawEntityCollection(pLineEntity->m_bSpecialLine);
+	m_DbEntityCollection.DrawEntityCollection(pLineEntity->m_LinePriority);
 }
 
 /**
  * 根据起始点队列（向量列表），并放置在特定的层上
  **/
-bool PointDBEntityCollection::DrawEntityCollection(bool showSafeSize ) 
+bool PointDBEntityCollection::DrawEntityCollection(GlobalData::LineProirity proirity) 
 {
 #ifdef DEBUG
 	acutPrintf(L"\n绘制柱体实例，加入到图层空间");
@@ -178,7 +178,7 @@ bool PointDBEntityCollection::DrawEntityCollection(bool showSafeSize )
 
 		//创建管线实体
 		LMAWallLineDbObject* lmaWallLineObj = new LMAWallLineDbObject( this );
-		if( showSafeSize )
+		if( proirity == GlobalData::LINE_FIRST )
 		{
 			lmaWallLineObj->setColorIndex(GlobalData::INTERSET_WALLLINE_COLOR );
 		}
@@ -191,9 +191,13 @@ bool PointDBEntityCollection::DrawEntityCollection(bool showSafeSize )
 	LMASafeLineDbObject* lmaSafeLineObj = new LMASafeLineDbObject( this );
 
 	//若是特殊管线，如自动路由管线，则显示为黄色
-	if( showSafeSize )
+	if( proirity == GlobalData::LINE_FIRST )
 	{
 		lmaSafeLineObj->setColorIndex(GlobalData::INTERSET_WALLLINE_COLOR );
+	}
+	else if(  proirity == GlobalData::LINE_SECOND )
+	{
+		lmaSafeLineObj->setColorIndex(GlobalData::SAFELINE_COLOR );
 	}
 	else
 	{
