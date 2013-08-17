@@ -1,0 +1,226 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{eb5ee98c-792c-4408-94ec-56ebc525d09d}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90</Extensions>
+    </Filter>
+    <Filter Include="Source Files\application">
+      <UniqueIdentifier>{cefcc7fa-d88f-4a27-b4dd-2f84833c6b6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\arx">
+      <UniqueIdentifier>{c62b64fa-1af1-4f23-9c8c-77b86b748f93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\command">
+      <UniqueIdentifier>{175c1a31-fb91-45bb-9305-994de65bcf2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\controls">
+      <UniqueIdentifier>{0c6b4553-b7ff-4cdc-adea-175a3026bc57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\data">
+      <UniqueIdentifier>{86c4d25c-7070-41b7-9f29-f54e67b4974d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\dialog">
+      <UniqueIdentifier>{c10cebc0-ad1e-4382-bb5e-365f3351218b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\exception">
+      <UniqueIdentifier>{78ee77cd-559e-4fb0-84a0-b062d3eb0b73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\menu">
+      <UniqueIdentifier>{a23c1268-ec3d-4f04-b29d-7107dc079199}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\utils">
+      <UniqueIdentifier>{59ef15f6-a6f0-4ec5-a740-b5a3befee14d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Intersect">
+      <UniqueIdentifier>{3e55ac54-124a-4441-bd9d-a55e8b602b73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{d12419e9-8c7f-4928-94f6-5f1ff6978a15}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;fi;fd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{16525f0b-2b2f-438a-a77c-4ba5582eb409}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\application\LineManageAssitant.cpp">
+      <Filter>Source Files\application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\application\StdAfx.cpp">
+      <Filter>Source Files\application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\ARX\ArxWrapper.cpp">
+      <Filter>Source Files\arx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\arx\LMALineDbObject.cpp">
+      <Filter>Source Files\arx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\arx\LMASafeLineDbObject.cpp">
+      <Filter>Source Files\arx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\arx\LMAWallLineDbObject.cpp">
+      <Filter>Source Files\arx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\command\CommandManager.cpp">
+      <Filter>Source Files\command</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\controls\ListCtrlEx.cpp">
+      <Filter>Source Files\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\controls\MsgHook.cpp">
+      <Filter>Source Files\controls</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\data\GlobalDataConfig.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\data\LineCategoryItemData.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\data\LineConfigDataManager.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\data\LineEntryData.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\data\LineEntryFileData.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\data\LineEntryPointData.cpp">
+      <Filter>Source Files\data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\dialog\EntryManageDialog.cpp">
+      <Filter>Source Files\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\dialog\LineCalRouteDialog.cpp">
+      <Filter>Source Files\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\dialog\LineCutPosDialog.cpp">
+      <Filter>Source Files\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\dialog\LineShadowCutDilaog.cpp">
+      <Filter>Source Files\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\dialog\LMACopyRight.cpp">
+      <Filter>Source Files\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\exception\LMAException.cpp">
+      <Filter>Source Files\exception</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\menu\MenuLMAMain.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\menu\MenuManager.cpp">
+      <Filter>Source Files\menu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\utils\LMAUtils.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\intersect\LineIntersectManage.cpp">
+      <Filter>Source Files\Intersect</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\header\ArxCustomObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\ArxWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\AsdkAcUiDialogSample.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadApplication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadDocument.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadMenuBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadMenuGroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadMenuGroups.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadModelSpace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadPopupMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CAcadPopupMenus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\CommandManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\EntryManageDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\GlobalDataConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LineCalRouteDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LineCategoryItemData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LineCutPosDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LineEntryData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LineIntersectManage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LineManageAssitant.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LineShadowCutDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\ListCtrlEx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LMACopyRight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LMAException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\LMAUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\MenuLMAMain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\MenuManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\MsgHook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\header\StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\resource\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\resource\LineManageAssistant.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\resource\toolbar_lma.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

@@ -43,6 +43,12 @@ namespace data
 const wstring LineEntity::LINE_ENTRY_LAYER = L"管线实体字典";
 const wstring LineEntity::LINE_DATA_BEGIN = L"实体数据：";
 
+
+LineAroundPlane::LineAroundPlane()
+	:bInitialized(false)
+{
+}
+
 /**
  * 管线实体
  */

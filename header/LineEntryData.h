@@ -45,7 +45,19 @@ namespace assistant
 namespace data
 {
 
-class LineEntity;
+struct LineAroundPlane
+{
+	bool bInitialized;
+
+	AcGePlane mLeftPlane;
+	AcGePlane mRightPlane;
+	AcGePlane mTopPlane;
+	AcGePlane mBottomPlane;
+	AcGePlane mFrontPlane;
+	AcGePlane mBackPlane;
+
+	LineAroundPlane();
+};
 
 class PointDBEntityCollection
 {
@@ -78,6 +90,8 @@ public:
 	//database object collection
 	bool DrawEntityCollection(GlobalData::LineProirity proirity);
 	void DropEntityCollection();
+
+	AcGePlane& GetAroundPlane(int direction);
 
 	//the layer to insert
 	wstring mLayerName;
@@ -112,8 +126,13 @@ public:
 	//the text mark
 	AcDbObjectId m_MarkEntityId;
 
+	//the around panel
+	LineAroundPlane m_lineAroundPlane;
+
 private:
 
+	//Calculate the around panel
+	void CalculatePanel();
 };
 
 /**

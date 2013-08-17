@@ -315,6 +315,93 @@ void PointDBEntityCollection::SetLineWarning( bool warning )
 	}
 }
 
+AcGePlane& PointDBEntityCollection::GetAroundPlane(int direction)
+{
+	if( !m_lineAroundPlane.bInitialized )
+	{
+		CalculatePanel();
+	}
+
+	switch(direction)
+	{
+	case 1:
+		return m_lineAroundPlane.mFrontPlane;
+	case 2:
+		return m_lineAroundPlane.mBackPlane;
+	case 3:
+		return m_lineAroundPlane.mRightPlane;
+	case 4:
+		return m_lineAroundPlane.mLeftPlane;
+	case 5:
+		return m_lineAroundPlane.mTopPlane;
+	case 6:
+		return m_lineAroundPlane.mBottomPlane;
+	default:
+		return m_lineAroundPlane.mFrontPlane;
+	}
+}
+
+void PointDBEntityCollection::CalculatePanel()
+{
+	double xOffset = 0;
+	double radius = 0.0, height = 0.0, width = 0.0,
+		wallSize = 0.0, safeSize = 0.0;
+
+	acdbDisToF(mCategoryData->mSize.mRadius.c_str(), -1, &radius);
+	acdbDisToF(mCategoryData->mSize.mHeight.c_str(), -1, &height);
+	acdbDisToF(mCategoryData->mSize.mWidth.c_str(), -1, &width);
+	acdbDisToF(mCategoryData->mWallSize.c_str(), -1, &wallSize);
+	acdbDisToF(mCategoryData->mSafeSize.c_str(), -1, &safeSize);
+
+	if( mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
+	{
+		//绘制圆柱体
+		xOffset = radius + wallSize + safeSize;
+	}
+	else
+	{
+		//绘制圆柱体
+		xOffset = width/2 + wallSize + safeSize;
+	}
+
+	AcGeMatrix3d rotateMatrix;
+	double angle;
+
+	//得到与该线段和Z轴的坐在平面垂直的向量
+	AcGeVector3d line3dVector(mEndPoint.x - mStartPoint.x, mEndPoint.y - mStartPoint.y, mEndPoint.z - mStartPoint.z);
+	AcGeVector3d rotateVctor = line3dVector.crossProduct(AcGeVector3d::kZAxis);
+
+	//得到上诉垂直向量与X轴的夹角
+	angle = rotateVctor.angleTo(AcGeVector3d::kXAxis); // 线段位于第二，三象限时，垂直向量与X轴的夹角与该线段在第一，四象限时的夹角相等，估需区分
+	if( mStartPoint.x < mEndPoint.x )
+		angle = -angle;
+
+	//进行旋转，放置柱体倾斜
+	rotateMatrix = AcGeMatrix3d::rotation( angle, AcGeVector3d::kZAxis, AcGePoint3d::kOrigin);
+	this->m_lineAroundPlane.mFrontPlane.transformBy(rotateMatrix);
+
+	//得到柱体进行旋转的角度
+	angle = -line3dVector.angleTo(AcGeVector3d::kZAxis);
+
+	//进行旋转
+	rotateMatrix = AcGeMatrix3d::rotation( angle, rotateVctor, AcGePoint3d::kOrigin);
+	this->m_lineAroundPlane.mFrontPlane.transformBy(rotateMatrix);
+
+	//得到线段的中心点
+	AcGePoint3d center( mStartPoint.x + mEndPoint.x, mStartPoint.y + mEndPoint.y, mStartPoint.z + mEndPoint.z); 
+	center /= 2;
+
+	//进行偏移
+	AcGeMatrix3d moveMatrix;
+	moveMatrix.setToTranslation(AcGeVector3d(center.x,center.y,center.z));
+
+	//最终成型
+	this->m_lineAroundPlane.mFrontPlane.transformBy(moveMatrix);
+
+	//Set initialized status
+	this->m_lineAroundPlane.bInitialized = true;
+}
+
 } // end of data
 
 } // end of assistant

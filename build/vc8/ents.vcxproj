@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3D066D62-188E-4665-891A-41B9F2199D1F}</ProjectGuid>
+    <RootNamespace>Ents</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\..\..\..\ObjectARX\system\include\inc_2008\inc-win32\rxsdk_Releasecfg.props" />
+    <Import Project="..\..\..\..\..\..\..\ObjectARX\system\include\inc_2008\inc-win32\arx.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\..\..\..\ObjectARX\system\include\inc_2008\inc-win32\rxsdk_Debugcfg.props" />
+    <Import Project="..\..\..\..\..\..\..\ObjectARX\system\include\inc_2008\inc-win32\arx.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\..\..\..\ObjectARX\system\include\inc_2008\inc-win32\rxsdk_Releasecfg.props" />
+    <Import Project="..\..\..\..\..\..\..\ObjectARX\system\include\inc_2008\inc-win32\arx.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\..\..\..\..\..\ObjectARX\system\include\inc_2008\inc-win32\rxsdk_Debugcfg.props" />
+    <Import Project="..\..\..\..\..\..\..\ObjectARX\system\include\inc_2008\inc-win32\arx.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\ObjectARX\system\output\2008\bin\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\ObjectARX\system\output\2008\bin\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\ObjectARX\system\output\2008\bin\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\ObjectARX\system\output\2008\bin\$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\ObjectARX\versions\ObjectARX 2008\utils\HlrApi\inc;..\..\header;C:\ObjectARX\system\include\inc_2008\inc-win32;..\..\resource;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>AUTOCAD2008;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <TreatWarningAsError>false</TreatWarningAsError>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>AsdkHlrApi17.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName)-2008.arx</OutputFile>
+      <AdditionalLibraryDirectories>C:\ObjectARX\system\library\lib-2008\lib-win32;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib;C:\ObjectARX\versions\ObjectARX 2008\win32\utils\HlrApi\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>C:\ObjectARX\system\include\inc_2008\inc-win32\AcRxDefault.def</ModuleDefinitionFile>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy /Y  $(OutDir)$(ProjectName)-2008.arx C:\Users\chgu\Work\管线系统\ARX\LineManageAssitant\release\2008\管线改移辅助设计系统.arx</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>C:\ObjectARX\versions\ObjectARX 2008\utils\HlrApi\inc;..\..\header;C:\ObjectARX\system\include\inc_2008\inc-win32;..\..\resource;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>AUTOCAD2008;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <TreatWarningAsError>false</TreatWarningAsError>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>AsdkHlrApi17.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName)-2008.arx</OutputFile>
+      <AdditionalLibraryDirectories>C:\ObjectARX\system\library\lib-2008\lib-win32;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib;C:\ObjectARX\versions\ObjectARX 2008\win32\utils\HlrApi\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>C:\ObjectARX\system\include\inc_2008\inc-win32\AcRxDefault.def</ModuleDefinitionFile>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy /Y  $(OutDir)$(ProjectName)-2008.arx C:\Users\chgu\Work\管线系统\ARX\LineManageAssitant\release\2008\管线改移辅助设计系统.arx</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\ObjectARX\system\include\inc_2008\inc-win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ACRXAPP;RADPACK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Link>
+      <AdditionalLibraryDirectories>C:\ObjectARX\system\library\lib-2008\lib-win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>C:\ObjectARX\system\include\inc_2008\inc-win32\AcRxDefault.def</ModuleDefinitionFile>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>C:\ObjectARX\system\include\inc_2008\inc-win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ACRXAPP;RADPACK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>C:\ObjectARX\system\library\lib-2008\lib-win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>C:\ObjectARX\system\include\inc_2008\inc-win32\AcRxDefault.def</ModuleDefinitionFile>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\application\LineManageAssitant.cpp" />
+    <ClCompile Include="..\..\source\application\StdAfx.cpp" />
+    <ClCompile Include="..\..\source\ARX\ArxWrapper.cpp" />
+    <ClCompile Include="..\..\source\arx\LMALineDbObject.cpp" />
+    <ClCompile Include="..\..\source\arx\LMASafeLineDbObject.cpp" />
+    <ClCompile Include="..\..\source\arx\LMAWallLineDbObject.cpp" />
+    <ClCompile Include="..\..\source\command\CommandManager.cpp" />
+    <ClCompile Include="..\..\source\controls\ListCtrlEx.cpp" />
+    <ClCompile Include="..\..\source\controls\MsgHook.cpp" />
+    <ClCompile Include="..\..\source\data\GlobalDataConfig.cpp" />
+    <ClCompile Include="..\..\source\data\LineCategoryItemData.cpp" />
+    <ClCompile Include="..\..\source\data\LineConfigDataManager.cpp" />
+    <ClCompile Include="..\..\source\data\LineEntryData.cpp" />
+    <ClCompile Include="..\..\source\data\LineEntryFileData.cpp" />
+    <ClCompile Include="..\..\source\data\LineEntryPointData.cpp" />
+    <ClCompile Include="..\..\source\dialog\EntryManageDialog.cpp" />
+    <ClCompile Include="..\..\source\dialog\LineCalRouteDialog.cpp" />
+    <ClCompile Include="..\..\source\dialog\LineCutPosDialog.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
+      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\source\dialog\LineShadowCutDilaog.cpp" />
+    <ClCompile Include="..\..\source\dialog\LMACopyRight.cpp" />
+    <ClCompile Include="..\..\source\exception\LMAException.cpp" />
+    <ClCompile Include="..\..\source\menu\MenuLMAMain.cpp" />
+    <ClCompile Include="..\..\source\menu\MenuManager.cpp" />
+    <ClCompile Include="..\..\source\utils\LMAUtils.cpp" />
+    <ClCompile Include="..\..\source\intersect\LineIntersectManage.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\header\ArxCustomObject.h" />
+    <ClInclude Include="..\..\header\ArxWrapper.h" />
+    <ClInclude Include="..\..\header\AsdkAcUiDialogSample.h" />
+    <ClInclude Include="..\..\header\CAcadApplication.h" />
+    <ClInclude Include="..\..\header\CAcadDocument.h" />
+    <ClInclude Include="..\..\header\CAcadMenuBar.h" />
+    <ClInclude Include="..\..\header\CAcadMenuGroup.h" />
+    <ClInclude Include="..\..\header\CAcadMenuGroups.h" />
+    <ClInclude Include="..\..\header\CAcadModelSpace.h" />
+    <ClInclude Include="..\..\header\CAcadPopupMenu.h" />
+    <ClInclude Include="..\..\header\CAcadPopupMenus.h" />
+    <ClInclude Include="..\..\header\CommandManager.h" />
+    <ClInclude Include="..\..\header\EntryManageDialog.h" />
+    <ClInclude Include="..\..\header\GlobalDataConfig.h" />
+    <ClInclude Include="..\..\header\LineCalRouteDialog.h" />
+    <ClInclude Include="..\..\header\LineCategoryItemData.h" />
+    <ClInclude Include="..\..\header\LineCutPosDialog.h" />
+    <ClInclude Include="..\..\header\LineEntryData.h" />
+    <ClInclude Include="..\..\header\LineIntersectManage.h" />
+    <ClInclude Include="..\..\header\LineManageAssitant.h" />
+    <ClInclude Include="..\..\header\LineShadowCutDialog.h" />
+    <ClInclude Include="..\..\header\ListCtrlEx.h" />
+    <ClInclude Include="..\..\header\LMACopyRight.h" />
+    <ClInclude Include="..\..\header\LMAException.h" />
+    <ClInclude Include="..\..\header\LMAUtils.h" />
+    <ClInclude Include="..\..\header\MenuLMAMain.h" />
+    <ClInclude Include="..\..\header\MenuManager.h" />
+    <ClInclude Include="..\..\header\MsgHook.h" />
+    <ClInclude Include="..\..\header\StdAfx.h" />
+    <ClInclude Include="..\..\resource\resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\resource\LineManageAssistant.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\resource\toolbar_lma.bmp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
