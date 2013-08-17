@@ -19,10 +19,10 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\2008\$(ConfigurationName)"
-			IntermediateDirectory="..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\2008\$(ConfigurationName)"
+			OutputDirectory="C:\ObjectARX\system\output\2008\bin\$(ConfigurationName)"
+			IntermediateDirectory="C:\ObjectARX\system\output\2008\bin\$(ConfigurationName)"
 			ConfigurationType="2"
-			InheritedPropertySheets="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\rxsdk_Debugcfg.vsprops;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\arx.vsprops"
+			InheritedPropertySheets="C:\ObjectARX\system\include\inc_2008\inc-win32\rxsdk_Debugcfg.vsprops;C:\ObjectARX\system\include\inc_2008\inc-win32\arx.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -42,7 +42,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;C:\ObjectARX 2008\utils\HlrApi\inc&quot;;..\..\header;&quot;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32&quot;;..\..\resource;&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\ObjectARX\versions\ObjectARX 2008\utils\HlrApi\inc&quot;;..\..\header;&quot;C:\ObjectARX\system\include\inc_2008\inc-win32&quot;;..\..\resource;&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include&quot;"
 				PreprocessorDefinitions="AUTOCAD2008"
 				UsePrecompiledHeader="0"
 				WarnAsError="false"
@@ -61,8 +61,8 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="AsdkHlrApi17.lib"
 				OutputFile="$(OutDir)\$(ProjectName)-2008.arx"
-				AdditionalLibraryDirectories="&quot;..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2008\lib-win32&quot;;&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib&quot;;&quot;C:\ObjectARX 2008\win32\utils\HlrApi\lib&quot;"
-				ModuleDefinitionFile="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\AcRxDefault.def"
+				AdditionalLibraryDirectories="&quot;C:\ObjectARX\system\library\lib-2008\lib-win32&quot;;&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib&quot;;&quot;C:\ObjectARX\versions\ObjectARX 2008\win32\utils\HlrApi\lib&quot;"
+				ModuleDefinitionFile="C:\ObjectARX\system\include\inc_2008\inc-win32\AcRxDefault.def"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -87,15 +87,15 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy /Y  $(OutDir)\$(ProjectName)-2008.arx ..\..\release\2008\管线改移辅助设计系统.arx"
+				CommandLine="copy /Y  $(OutDir)\$(ProjectName)-2008.arx C:\Users\chgu\Work\管线系统\ARX\LineManageAssitant\release\2008\管线改移辅助设计系统.arx"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\2008\$(ConfigurationName)"
-			IntermediateDirectory="..\..\..\AutoCAD\ARX\LineManageAssitant\main\binary\2008\$(ConfigurationName)"
+			OutputDirectory="C:\ObjectARX\system\output\2008\bin\$(ConfigurationName)"
+			IntermediateDirectory="C:\ObjectARX\system\output\2008\bin\$(ConfigurationName)"
 			ConfigurationType="2"
-			InheritedPropertySheets="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\rxsdk_Releasecfg.vsprops;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\arx.vsprops"
+			InheritedPropertySheets="C:\ObjectARX\system\include\inc_2008\inc-win32\rxsdk_Releasecfg.vsprops;C:\ObjectARX\system\include\inc_2008\inc-win32\arx.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -115,7 +115,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;C:\ObjectARX 2008\utils\HlrApi\inc&quot;;..\..\header;&quot;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32&quot;;..\..\resource;&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\ObjectARX\versions\ObjectARX 2008\utils\HlrApi\inc&quot;;..\..\header;&quot;C:\ObjectARX\system\include\inc_2008\inc-win32&quot;;..\..\resource;&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Include&quot;"
 				PreprocessorDefinitions="AUTOCAD2008"
 				UsePrecompiledHeader="0"
 				WarnAsError="false"
@@ -133,8 +133,8 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="AsdkHlrApi17.lib"
 				OutputFile="$(OutDir)\$(ProjectName)-2008.arx"
-				AdditionalLibraryDirectories="&quot;..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2008\lib-win32&quot;;&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib&quot;;&quot;C:\ObjectARX 2008\win32\utils\HlrApi\lib&quot;"
-				ModuleDefinitionFile="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\AcRxDefault.def"
+				AdditionalLibraryDirectories="&quot;C:\ObjectARX\system\library\lib-2008\lib-win32&quot;;&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Lib&quot;;&quot;C:\ObjectARX\versions\ObjectARX 2008\win32\utils\HlrApi\lib&quot;"
+				ModuleDefinitionFile="C:\ObjectARX\system\include\inc_2008\inc-win32\AcRxDefault.def"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -159,13 +159,13 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy /Y  $(OutDir)\$(ProjectName)-2008.arx ..\..\release\2008\管线改移辅助设计系统.arx"
+				CommandLine="copy /Y  $(OutDir)\$(ProjectName)-2008.arx C:\Users\chgu\Work\管线系统\ARX\LineManageAssitant\release\2008\管线改移辅助设计系统.arx"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
 			ConfigurationType="2"
-			InheritedPropertySheets="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\rxsdk_Debugcfg.vsprops;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\arx.vsprops"
+			InheritedPropertySheets="C:\ObjectARX\system\include\inc_2008\inc-win32\rxsdk_Debugcfg.vsprops;C:\ObjectARX\system\include\inc_2008\inc-win32\arx.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -185,7 +185,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32"
+				AdditionalIncludeDirectories="C:\ObjectARX\system\include\inc_2008\inc-win32"
 				PreprocessorDefinitions=";ACRXAPP;RADPACK;"
 				UsePrecompiledHeader="0"
 			/>
@@ -201,8 +201,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2008\lib-win32"
-				ModuleDefinitionFile="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\AcRxDefault.def"
+				AdditionalLibraryDirectories="C:\ObjectARX\system\library\lib-2008\lib-win32"
+				ModuleDefinitionFile="C:\ObjectARX\system\include\inc_2008\inc-win32\AcRxDefault.def"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -233,7 +233,7 @@
 		<Configuration
 			Name="Release|x64"
 			ConfigurationType="2"
-			InheritedPropertySheets="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\rxsdk_Releasecfg.vsprops;..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\arx.vsprops"
+			InheritedPropertySheets="C:\ObjectARX\system\include\inc_2008\inc-win32\rxsdk_Releasecfg.vsprops;C:\ObjectARX\system\include\inc_2008\inc-win32\arx.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -253,7 +253,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32"
+				AdditionalIncludeDirectories="C:\ObjectARX\system\include\inc_2008\inc-win32"
 				PreprocessorDefinitions="ACRXAPP;RADPACK;"
 				UsePrecompiledHeader="0"
 			/>
@@ -268,8 +268,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="..\..\..\AutoCAD\ARX\LineManageAssitant\main\library\lib-2008\lib-win32"
-				ModuleDefinitionFile="..\..\..\AutoCAD\ARX\LineManageAssitant\main\include\inc_2008\inc-win32\AcRxDefault.def"
+				AdditionalLibraryDirectories="C:\ObjectARX\system\library\lib-2008\lib-win32"
+				ModuleDefinitionFile="C:\ObjectARX\system\include\inc_2008\inc-win32\AcRxDefault.def"
 				TargetMachine="17"
 			/>
 			<Tool
