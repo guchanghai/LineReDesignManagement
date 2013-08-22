@@ -111,6 +111,8 @@ private:
 
 	AcGePoint3d GetIntersectPoint3d(PointEntity* lineSegment);
 
+	AcGePoint3d GetIntersectArountLinePoint3d(PointEntity* lineSegment, const AcGePoint3d& throughStart, const AcGePoint3d& throughEnd);
+
 	AcGePoint3d GetIntersectPoint3d(PointEntity* lineSegment, const AcGePoint3d& throughStart, const AcGePoint3d& throughEnd);
 
 	void SetupLineRouteResult();

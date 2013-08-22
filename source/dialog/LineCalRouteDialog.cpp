@@ -624,8 +624,9 @@ bool LineCalRouteDialog::CalculateShortestRoute( const AcGePoint3d& start, const
 		//得到新起点
 		//AcGePoint3d newPoint = GetProjectPoint3d(nearestLine);
 		//AcGePoint3d newPoint = GetIntersectPoint3d(nearestLine);
-		AcGePoint3d newPoint = GetIntersectPoint3d(nearestLine, start, end);
-		
+		//AcGePoint3d newPoint = GetIntersectPoint3d(nearestLine, start, end);
+		AcGePoint3d newPoint = GetIntersectArountLinePoint3d(nearestLine, start, end);
+
 		//得到老起点与新起点之间的线段，加入到图层中；返回false继续
 		m_newStartPoint = newPoint;
 
@@ -776,6 +777,135 @@ AcGePoint3d LineCalRouteDialog::GetIntersectPoint3d(PointEntity* lineSegment)
 		else if( passStatus & PASS_DOWN )
 		{
 			secondPoint = AcGePoint3d(firstPoint.x,firstPoint.y,firstPoint.z - heightOffset);
+
+			//checked then remove the down status
+			passStatus = (PASS_STATUS)(passStatus - PASS_DOWN);
+		} 
+		else 
+		{
+			break;
+		}
+
+		if( !branched )
+		{
+			acutPrintf(L"\n这是在当前相侵点的第一个分支，下面会继续沿着这个路由计算下去");
+			//Append the first inter segment
+
+			branchFirstPoint = firstPoint;
+			acutPrintf(L"\n存储的相切点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】为一个起点", firstPoint[X], firstPoint[Y], firstPoint[Z]);
+
+			//Append the first inter segment
+			branchSecondPoint = secondPoint;
+			acutPrintf(L"\n返回竖起的点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】为折线点", secondPoint[X], secondPoint[Y], secondPoint[Z]);
+
+			secondPoint.y = branchSecondPoint.y + 2 * stepOffset;
+			acutPrintf(L"\n绕过柱体的点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】为新的计算起点", secondPoint[X], secondPoint[Y], secondPoint[Z]);
+
+			//Append the first inter segment
+			nextStartPoint = secondPoint;
+			branched = true;
+		}
+		else
+		{
+			acutPrintf(L"\n已经存在在当前相侵点的一个分支了，先保存下来，以后再计算");
+
+			if( m_DrawRealTime )
+			{
+				LineEntity* cloneLineEntity = CreateNewLineEntity();
+
+				//start with current point
+				pPointEntry currentPoint = (*m_CurrentRouteLineEntity->m_PointList)[(m_CurrentRouteLineEntity->m_PointList->size() - 1)];
+				//cloneLineEntity->InsertPoint(currentPoint,true);
+
+				//inser the inter point
+				cloneLineEntity->InsertPoint(&firstPoint,true);
+
+				//inser the second point
+				cloneLineEntity->InsertPoint(&secondPoint,true);
+
+				//next start point
+				secondPoint.y = secondPoint.y + 2 * stepOffset;
+				cloneLineEntity->InsertPoint(&secondPoint,true);
+
+				m_lPossibleLineEntities.insert(std::pair<LineEntity*,CAL_STATUS>(cloneLineEntity,INIT));
+			}
+			else
+			{
+				AcGePoint3dArray* clonePoint3dArray = new AcGePoint3dArray(*m_CurrentPointVertices);
+
+				clonePoint3dArray->append(firstPoint);
+
+				clonePoint3dArray->append(secondPoint);
+
+				//next start point
+				secondPoint.y = secondPoint.y + 2 * stepOffset;
+				clonePoint3dArray->append(secondPoint);
+
+				m_lPossibleRoutes.insert(std::pair<AcGePoint3dArray*,CAL_STATUS>(clonePoint3dArray,INIT));
+			}
+		}
+	}
+	while(true);
+
+	if( branched )
+	{
+		AppendInterSegment( branchFirstPoint );
+
+		//Append the first inter segment
+		AppendInterSegment( branchSecondPoint );
+
+		//Append the new startsegment
+		AppendInterSegment( nextStartPoint );
+	}
+
+	return nextStartPoint;
+}
+
+AcGePoint3d LineCalRouteDialog::GetIntersectArountLinePoint3d(PointEntity* lineSegment, const AcGePoint3d& throughStart, const AcGePoint3d& throughEnd)
+{
+	acutPrintf(L"\n得到管线的垂直于X面的点");
+
+	AcGePoint3d start = lineSegment->m_DbEntityCollection.mStartPoint;
+	AcGePoint3d end = lineSegment->m_DbEntityCollection.mEndPoint;
+
+	AcGePoint3d resultPnt;
+	AcGeLine3d intersectLine( start, end ); 
+	m_ProjectPlane.intersectWith(intersectLine, resultPnt);
+	acutPrintf(L"\n得到管线的相交点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】", resultPnt[X], resultPnt[Y], resultPnt[Z]);
+
+	AcGePoint3d frontPlanePnt;
+	AcGeLine3d throughLine( throughStart, throughEnd ); 
+	lineSegment->m_DbEntityCollection.GetAroundPlane(1).intersectWith(throughLine, frontPlanePnt);
+	acutPrintf(L"\n得到前阻隔面的相交点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】", frontPlanePnt[X], frontPlanePnt[Y], frontPlanePnt[Z]);
+
+	double heightOffset(0.0), stepOffset(0.0);
+	GetHeightAndStep( lineSegment, heightOffset, stepOffset);
+	acutPrintf(L"\n得到上下的位移【高度:%0.2lf, 步长:%0.2lf】", heightOffset, stepOffset);
+
+	//得到穿越的方向
+	PASS_STATUS passStatus = GetPassDirecion(lineSegment);
+
+	//保存离X轴较近的点
+	bool branched = false;
+		
+	AcGePoint3d branchFirstPoint, branchSecondPoint, nextStartPoint;
+
+	AcGePoint3d firstPoint, secondPoint;
+	firstPoint = AcGePoint3d(resultPnt.x,resultPnt.y - stepOffset,frontPlanePnt.z);
+
+	do
+	{
+		//Check the up through status
+		if( passStatus & PASS_UP )
+		{
+			secondPoint = AcGePoint3d(firstPoint.x,firstPoint.y,resultPnt.z + heightOffset);
+
+			//checked then remove the up status
+			passStatus = (PASS_STATUS)(passStatus - PASS_UP);
+		}
+		else if( passStatus & PASS_DOWN )
+		{
+			secondPoint = AcGePoint3d(firstPoint.x,firstPoint.y,resultPnt.z - heightOffset);
 
 			//checked then remove the down status
 			passStatus = (PASS_STATUS)(passStatus - PASS_DOWN);

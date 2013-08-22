@@ -317,7 +317,7 @@ void PointDBEntityCollection::SetLineWarning( bool warning )
 
 AcGePlane& PointDBEntityCollection::GetAroundPlane(int direction)
 {
-	if( !m_lineAroundPlane.bInitialized )
+	if( !m_LineAroundEntity.bInitialized )
 	{
 		CalculatePanel();
 	}
@@ -325,25 +325,25 @@ AcGePlane& PointDBEntityCollection::GetAroundPlane(int direction)
 	switch(direction)
 	{
 	case 1:
-		return m_lineAroundPlane.mFrontPlane;
+		return m_LineAroundEntity.mFrontPlane;
 	case 2:
-		return m_lineAroundPlane.mBackPlane;
+		return m_LineAroundEntity.mBackPlane;
 	case 3:
-		return m_lineAroundPlane.mRightPlane;
+		return m_LineAroundEntity.mRightPlane;
 	case 4:
-		return m_lineAroundPlane.mLeftPlane;
+		return m_LineAroundEntity.mLeftPlane;
 	case 5:
-		return m_lineAroundPlane.mTopPlane;
+		return m_LineAroundEntity.mTopPlane;
 	case 6:
-		return m_lineAroundPlane.mBottomPlane;
+		return m_LineAroundEntity.mBottomPlane;
 	default:
-		return m_lineAroundPlane.mFrontPlane;
+		return m_LineAroundEntity.mFrontPlane;
 	}
 }
 
 void PointDBEntityCollection::CalculatePanel()
 {
-	double xOffset = 0;
+	double xOffset = 0, yOffset = 0, zOffset = 0;
 	double radius = 0.0, height = 0.0, width = 0.0,
 		wallSize = 0.0, safeSize = 0.0;
 
@@ -365,18 +365,51 @@ void PointDBEntityCollection::CalculatePanel()
 	//绘制圆柱体
 	if( mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
-		xOffset = radius + wallSize + safeSize;
+		yOffset = xOffset = radius + wallSize + safeSize;
 	}
 	else //绘制圆柱体
 	{
 		xOffset = width/2 + wallSize + safeSize;
+		yOffset = height/2 + wallSize + safeSize;
 	}
+
+	//长度为柱体的高度
+	zOffset = this->mStartPoint.distanceTo(this->mEndPoint);
+
+	//得到8个顶点
+	AcGePoint3d topLeftFront(-xOffset,-yOffset,0),
+		topRightFront(-xOffset,-yOffset,zOffset),
+		bottomLeftFront(xOffset,-yOffset,0),
+		bottomRightFront(xOffset,-yOffset,zOffset),
+		topLeftBack(-xOffset,yOffset,0),
+		topRightBack(-xOffset,yOffset,zOffset),
+		bottomLeftBack(xOffset,yOffset,0),
+		bottomRightBack(xOffset,yOffset,zOffset);
+
+	//计算12条棱
+	//Line Horinzional
+	m_LineAroundEntity.mLineFrontTop = AcGeLineSeg3d(topLeftFront,topRightFront);
+	m_LineAroundEntity.mLineFrontBottom = AcGeLineSeg3d(bottomLeftFront,bottomRightFront);
+	m_LineAroundEntity.mLineBackTop = AcGeLineSeg3d(topLeftBack,topRightBack);
+	m_LineAroundEntity.mLineBackBottom = AcGeLineSeg3d(topLeftFront,topRightFront);
+
+	//Line Vertical
+	m_LineAroundEntity.mLineLeftFront = AcGeLineSeg3d(topLeftFront,bottomLeftFront);
+	m_LineAroundEntity.mLineRightFront = AcGeLineSeg3d(topRightFront,bottomRightFront);
+	m_LineAroundEntity.mLineLeftBack = AcGeLineSeg3d(topLeftBack,bottomLeftBack);
+	m_LineAroundEntity.mLineRightBack = AcGeLineSeg3d(topRightBack,bottomRightBack);
+
+	//Line Depth
+	m_LineAroundEntity.mLineLeftTop = AcGeLineSeg3d(topLeftFront,topLeftBack);
+	m_LineAroundEntity.mLineLeftBottom = AcGeLineSeg3d(bottomLeftFront,bottomLeftBack);
+	m_LineAroundEntity.mLineRightTop = AcGeLineSeg3d(topRightFront,topRightBack);
+	m_LineAroundEntity.mLineRightBottom = AcGeLineSeg3d(bottomRightFront,bottomRightBack);
 
 	AcGePoint3d frontPlanePointStart(xOffset, 0, 10);
 	AcGePoint3d frontPlanePointEnd(xOffset, 0, 0);
 	AcGePoint3d frontPlanePointEndCopy(xOffset, 10, 0);
 
-	m_lineAroundPlane.mFrontPlane = AcGePlane( frontPlanePointStart, frontPlanePointEnd, frontPlanePointEndCopy);
+	m_LineAroundEntity.mFrontPlane = AcGePlane( frontPlanePointStart, frontPlanePointEnd, frontPlanePointEndCopy);
 
 	AcGeMatrix3d rotateMatrix;
 	double angle;
@@ -392,14 +425,14 @@ void PointDBEntityCollection::CalculatePanel()
 
 	//进行旋转，放置柱体倾斜
 	rotateMatrix = AcGeMatrix3d::rotation( angle, AcGeVector3d::kZAxis, AcGePoint3d::kOrigin);
-	this->m_lineAroundPlane.mFrontPlane.transformBy(rotateMatrix);
+	TransformBy(rotateMatrix);
 
 	//得到柱体进行旋转的角度
 	angle = -line3dVector.angleTo(AcGeVector3d::kZAxis);
 
 	//进行旋转
 	rotateMatrix = AcGeMatrix3d::rotation( angle, rotateVctor, AcGePoint3d::kOrigin);
-	this->m_lineAroundPlane.mFrontPlane.transformBy(rotateMatrix);
+	TransformBy(rotateMatrix);
 
 	//得到线段的中心点
 	AcGePoint3d center( mStartPoint.x + mEndPoint.x, mStartPoint.y + mEndPoint.y, mStartPoint.z + mEndPoint.z); 
@@ -410,10 +443,33 @@ void PointDBEntityCollection::CalculatePanel()
 	moveMatrix.setToTranslation(AcGeVector3d(center.x,center.y,center.z));
 
 	//最终成型
-	this->m_lineAroundPlane.mFrontPlane.transformBy(moveMatrix);
+	TransformBy(moveMatrix);
 
 	//Set initialized status
-	this->m_lineAroundPlane.bInitialized = true;
+	this->m_LineAroundEntity.bInitialized = true;
+}
+
+void PointDBEntityCollection::TransformBy( const AcGeMatrix3d& matrix )
+{
+	//Line Horinzional
+	m_LineAroundEntity.mLineFrontTop.transformBy(matrix);
+	m_LineAroundEntity.mLineFrontBottom.transformBy(matrix);
+	m_LineAroundEntity.mLineBackTop.transformBy(matrix);
+	m_LineAroundEntity.mLineBackBottom.transformBy(matrix);
+
+	//Line Vertical
+	m_LineAroundEntity.mLineLeftFront.transformBy(matrix);
+	m_LineAroundEntity.mLineRightFront.transformBy(matrix);
+	m_LineAroundEntity.mLineLeftBack.transformBy(matrix);
+	m_LineAroundEntity.mLineRightBack.transformBy(matrix);
+
+	//Line Depth
+	m_LineAroundEntity.mLineLeftTop.transformBy(matrix);
+	m_LineAroundEntity.mLineLeftBottom.transformBy(matrix);
+	m_LineAroundEntity.mLineRightTop.transformBy(matrix);
+	m_LineAroundEntity.mLineRightBottom.transformBy(matrix);
+
+	m_LineAroundEntity.mFrontPlane.transformBy(matrix);
 }
 
 } // end of data

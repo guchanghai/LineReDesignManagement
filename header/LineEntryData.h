@@ -45,7 +45,7 @@ namespace assistant
 namespace data
 {
 
-struct LineAroundPlane
+struct LineAroundEntity
 {
 	bool bInitialized;
 
@@ -56,7 +56,22 @@ struct LineAroundPlane
 	AcGePlane mFrontPlane;
 	AcGePlane mBackPlane;
 
-	LineAroundPlane();
+	AcGeLineSeg3d mLineLeftFront;
+	AcGeLineSeg3d mLineRightFront;
+	AcGeLineSeg3d mLineLeftBack;
+	AcGeLineSeg3d mLineRightBack;
+
+	AcGeLineSeg3d mLineFrontTop;
+	AcGeLineSeg3d mLineFrontBottom;
+	AcGeLineSeg3d mLineBackTop;
+	AcGeLineSeg3d mLineBackBottom;
+	
+	AcGeLineSeg3d mLineLeftTop;
+	AcGeLineSeg3d mLineLeftBottom;
+	AcGeLineSeg3d mLineRightTop;
+	AcGeLineSeg3d mLineRightBottom;
+
+	LineAroundEntity();
 };
 
 class PointDBEntityCollection
@@ -87,10 +102,13 @@ public:
 
 	void SetLineWarning( bool warning = true );
 
+	void TransformBy( const AcGeMatrix3d& matrix );
+
 	//database object collection
 	bool DrawEntityCollection(GlobalData::LineProirity proirity);
 	void DropEntityCollection();
 
+	//Get the plane at position
 	AcGePlane& GetAroundPlane(int direction);
 
 	//the layer to insert
@@ -127,7 +145,7 @@ public:
 	AcDbObjectId m_MarkEntityId;
 
 	//the around panel
-	LineAroundPlane m_lineAroundPlane;
+	LineAroundEntity m_LineAroundEntity;
 
 private:
 
