@@ -866,11 +866,16 @@ AcGePoint3d LineCalRouteDialog::GetIntersectPoint3d(PointEntity* lineSegment, co
 
 	AcGePoint3d start = lineSegment->m_DbEntityCollection.mStartPoint;
 	AcGePoint3d end = lineSegment->m_DbEntityCollection.mEndPoint;
-	AcGeLine3d intersectLine( start, end ); 
 
 	AcGePoint3d resultPnt;
+	AcGeLine3d intersectLine( start, end ); 
 	m_ProjectPlane.intersectWith(intersectLine, resultPnt);
 	acutPrintf(L"\n得到管线的相交点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】", resultPnt[X], resultPnt[Y], resultPnt[Z]);
+
+	AcGePoint3d frontPlanePnt;
+	AcGeLine3d throughLine( throughStart, throughEnd ); 
+	lineSegment->m_DbEntityCollection.GetAroundPlane(1).intersectWith(throughLine, frontPlanePnt);
+	acutPrintf(L"\n得到前阻隔面的相交点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】", frontPlanePnt[X], frontPlanePnt[Y], frontPlanePnt[Z]);
 
 	double heightOffset(0.0), stepOffset(0.0);
 	GetHeightAndStep( lineSegment, heightOffset, stepOffset);
@@ -885,21 +890,21 @@ AcGePoint3d LineCalRouteDialog::GetIntersectPoint3d(PointEntity* lineSegment, co
 	AcGePoint3d branchFirstPoint, branchSecondPoint, nextStartPoint;
 
 	AcGePoint3d firstPoint, secondPoint;
-	firstPoint = AcGePoint3d(resultPnt.x,resultPnt.y - stepOffset,resultPnt.z);
+	firstPoint = AcGePoint3d(resultPnt.x,resultPnt.y - stepOffset,frontPlanePnt.z);
 
 	do
 	{
 		//Check the up through status
 		if( passStatus & PASS_UP )
 		{
-			secondPoint = AcGePoint3d(firstPoint.x,firstPoint.y,firstPoint.z + heightOffset);
+			secondPoint = AcGePoint3d(firstPoint.x,firstPoint.y,resultPnt.z + heightOffset);
 
 			//checked then remove the up status
 			passStatus = (PASS_STATUS)(passStatus - PASS_UP);
 		}
 		else if( passStatus & PASS_DOWN )
 		{
-			secondPoint = AcGePoint3d(firstPoint.x,firstPoint.y,firstPoint.z - heightOffset);
+			secondPoint = AcGePoint3d(firstPoint.x,firstPoint.y,resultPnt.z - heightOffset);
 
 			//checked then remove the down status
 			passStatus = (PASS_STATUS)(passStatus - PASS_DOWN);

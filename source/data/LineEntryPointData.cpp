@@ -348,21 +348,35 @@ void PointDBEntityCollection::CalculatePanel()
 		wallSize = 0.0, safeSize = 0.0;
 
 	acdbDisToF(mCategoryData->mSize.mRadius.c_str(), -1, &radius);
-	acdbDisToF(mCategoryData->mSize.mHeight.c_str(), -1, &height);
-	acdbDisToF(mCategoryData->mSize.mWidth.c_str(), -1, &width);
-	acdbDisToF(mCategoryData->mWallSize.c_str(), -1, &wallSize);
-	acdbDisToF(mCategoryData->mSafeSize.c_str(), -1, &safeSize);
+	radius /= 1000;
 
+	acdbDisToF(mCategoryData->mSize.mHeight.c_str(), -1, &height);
+	height /= 1000;
+
+	acdbDisToF(mCategoryData->mSize.mWidth.c_str(), -1, &width);
+	width /= 1000;
+
+	acdbDisToF(mCategoryData->mWallSize.c_str(), -1, &wallSize);
+	wallSize /= 1000;
+
+	acdbDisToF(mCategoryData->mSafeSize.c_str(), -1, &safeSize);
+	safeSize /= 1000;
+
+	//绘制圆柱体
 	if( mCategoryData->mShape == GlobalData::LINE_SHAPE_CIRCLE )
 	{
-		//绘制圆柱体
 		xOffset = radius + wallSize + safeSize;
 	}
-	else
+	else //绘制圆柱体
 	{
-		//绘制圆柱体
 		xOffset = width/2 + wallSize + safeSize;
 	}
+
+	AcGePoint3d frontPlanePointStart(xOffset, 0, 10);
+	AcGePoint3d frontPlanePointEnd(xOffset, 0, 0);
+	AcGePoint3d frontPlanePointEndCopy(xOffset, 10, 0);
+
+	m_lineAroundPlane.mFrontPlane = AcGePlane( frontPlanePointStart, frontPlanePointEnd, frontPlanePointEndCopy);
 
 	AcGeMatrix3d rotateMatrix;
 	double angle;
