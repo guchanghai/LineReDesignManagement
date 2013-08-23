@@ -107,13 +107,17 @@ private:
 
 	PointEntity* GetNearestLineSegement( AcArray<PointEntity*>* intersectEntities );
 
+	//计算中心线与自动路由切面的交点而得到上下切点，然后直接斜线相连
 	AcGePoint3d GetProjectPoint3d(PointEntity* lineSegment);
 
+	//计算中心线与自动路由切面的交点而得到上下切点，然后先直线相连，然后转动偏离
 	AcGePoint3d GetIntersectPoint3d(PointEntity* lineSegment);
 
-	AcGePoint3d GetIntersectArountLinePoint3d(PointEntity* lineSegment, const AcGePoint3d& throughStart, const AcGePoint3d& throughEnd);
-
+	//计算自动路由线路与前置的交点，然后先直线相连，然后转动偏离
 	AcGePoint3d GetIntersectPoint3d(PointEntity* lineSegment, const AcGePoint3d& throughStart, const AcGePoint3d& throughEnd);
+
+	//计算与12条棱的相切情况，然后先直线相连，然后转动偏离
+	AcGePoint3d GetIntersectArountLinePoint3d(PointEntity* lineSegment, const AcGePoint3d& throughStart, const AcGePoint3d& throughEnd);
 
 	void SetupLineRouteResult();
 

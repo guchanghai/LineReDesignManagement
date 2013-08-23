@@ -319,7 +319,7 @@ AcGePlane& PointDBEntityCollection::GetAroundPlane(int direction)
 {
 	if( !m_LineAroundEntity.bInitialized )
 	{
-		CalculatePanel();
+		CalculateAround();
 	}
 
 	switch(direction)
@@ -341,7 +341,7 @@ AcGePlane& PointDBEntityCollection::GetAroundPlane(int direction)
 	}
 }
 
-void PointDBEntityCollection::CalculatePanel()
+void PointDBEntityCollection::CalculateAround()
 {
 	double xOffset = 0, yOffset = 0, zOffset = 0;
 	double radius = 0.0, height = 0.0, width = 0.0,
@@ -470,6 +470,106 @@ void PointDBEntityCollection::TransformBy( const AcGeMatrix3d& matrix )
 	m_LineAroundEntity.mLineRightBottom.transformBy(matrix);
 
 	m_LineAroundEntity.mFrontPlane.transformBy(matrix);
+}
+
+AcGePoint3dArray PointDBEntityCollection::GetIntersect( const AcGePlane& intersectPlane )
+{
+	AcGePoint3dArray intersectPoints;
+
+	//initialized
+	GetAroundPlane(1);
+
+	//Line Horinzional
+	GetIntersectPoint(m_LineAroundEntity.mLineFrontTop, intersectPoints);
+	GetIntersectPoint(m_LineAroundEntity.mLineFrontBottom, intersectPoints);
+	GetIntersectPoint(m_LineAroundEntity.mLineBackTop, intersectPoints);
+	GetIntersectPoint(m_LineAroundEntity.mLineBackBottom, intersectPoints);
+
+	GetIntersectPoint(m_LineAroundEntity.mLineLeftFront, intersectPoints);
+	GetIntersectPoint(m_LineAroundEntity.mLineRightFront, intersectPoints);
+	GetIntersectPoint(m_LineAroundEntity.mLineLeftBack, intersectPoints);
+	GetIntersectPoint(m_LineAroundEntity.mLineRightBack, intersectPoints);
+
+	GetIntersectPoint(m_LineAroundEntity.mLineLeftTop, intersectPoints);
+	GetIntersectPoint(m_LineAroundEntity.mLineLeftBottom, intersectPoints);
+	GetIntersectPoint(m_LineAroundEntity.mLineRightTop, intersectPoints);
+	GetIntersectPoint(m_LineAroundEntity.mLineRightBottom, intersectPoints);
+
+	int intersectSize = intersectPoints.length();
+
+	if( intersectSize != 4 )
+	{
+		acutPrintf(L"\n线切点点不是4条，与理论相悖！请重新检查代码或算法。。.");
+	}
+
+	double top(0.0), bottom(0.0), front(0.0), back(0.0);
+
+	for( int i =0; i < intersectSize; i++)
+	{
+		const AcGePoint3d& point = intersectPoints.at(i);
+
+		if( i == 0 )
+		{
+			top = bottom = point.z;
+			front = back = point.y;
+		}
+		else
+		{
+			if( point.z > top )
+				top = point.z;
+
+			if( point.z < bottom )
+				bottom = point.z;
+
+			if( point.y < front )
+				front = point.y;
+
+			if( point.y > back )
+				back = point.y;
+		}
+	}
+
+	AcGePoint3d topFront, topBack, bottomFront, bottomeBack;
+
+	if( GetPoint( intersectPoints, top, front, topFront) 
+		&& GetPoint( intersectPoints, bottom, front, bottomFront) 
+		&& GetPoint( intersectPoints, top, back, topBack) 
+		&& GetPoint( intersectPoints, bottom, back, bottomeBack) )
+	{
+		intersectPoints.append(topFront);
+		intersectPoints.append(topBack);
+		intersectPoints.append(bottomFront);
+		intersectPoints.append(bottomeBack);
+	}
+
+	return intersectPoints;
+}
+
+bool AcGePoint3d& GetPoint( AcGePoint3dArray& resultArray, double& y, double& z, AcGePoint3d& result )
+{
+	for( int i =0; i < resultArray.length(); i++)
+	{
+		const AcGePoint3d& point = intersectPoints.at(i);
+
+		if( abs( y - point.y ) < 0.001 && abs(z - point.z) < 0.001 )
+		{
+			result.x = point.x;
+			result.y = point.y;
+			result.z = point.z;
+			return true;
+		}
+	}
+
+	return false
+}
+
+static void AcGePoint3dArray::GetIntersectPoint( const AcGePlane& plane, const AcGeLineSeg3d& lineSegEntity, AcGePoint3dArray& resultArray )
+{
+	AcGePoint3d resultPnt;
+	if( plane.intersectWith( lineSegEntity, resultPnt))
+	{
+		resultArray.append(resultPnt);
+	}
 }
 
 } // end of data

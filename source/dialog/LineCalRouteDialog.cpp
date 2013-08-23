@@ -863,7 +863,7 @@ AcGePoint3d LineCalRouteDialog::GetIntersectPoint3d(PointEntity* lineSegment)
 
 AcGePoint3d LineCalRouteDialog::GetIntersectArountLinePoint3d(PointEntity* lineSegment, const AcGePoint3d& throughStart, const AcGePoint3d& throughEnd)
 {
-	acutPrintf(L"\n得到管线的垂直于X面的点");
+	acutPrintf(L"\n计算与12条棱的相切情况，然后先直线相连，然后转动偏离");
 
 	AcGePoint3d start = lineSegment->m_DbEntityCollection.mStartPoint;
 	AcGePoint3d end = lineSegment->m_DbEntityCollection.mEndPoint;
@@ -871,6 +871,10 @@ AcGePoint3d LineCalRouteDialog::GetIntersectArountLinePoint3d(PointEntity* lineS
 	AcGePoint3d resultPnt;
 	AcGeLine3d intersectLine( start, end ); 
 	m_ProjectPlane.intersectWith(intersectLine, resultPnt);
+
+	//得到四个相切的点
+	AcGePoint3dArray resultArray = lineSegment->m_DbEntityCollection.GetIntersect(m_ProjectPlane);
+
 	acutPrintf(L"\n得到管线的相交点【X:%0.2lf,Y:%0.2lf,Z:%0.2lf】", resultPnt[X], resultPnt[Y], resultPnt[Z]);
 
 	AcGePoint3d frontPlanePnt;
@@ -992,7 +996,7 @@ AcGePoint3d LineCalRouteDialog::GetIntersectArountLinePoint3d(PointEntity* lineS
 
 AcGePoint3d LineCalRouteDialog::GetIntersectPoint3d(PointEntity* lineSegment, const AcGePoint3d& throughStart, const AcGePoint3d& throughEnd)
 {
-	acutPrintf(L"\n得到管线的垂直于X面的点");
+	acutPrintf(L"\n计算自动路由线路与前置的交点，然后先直线相连，然后转动偏离");
 
 	AcGePoint3d start = lineSegment->m_DbEntityCollection.mStartPoint;
 	AcGePoint3d end = lineSegment->m_DbEntityCollection.mEndPoint;

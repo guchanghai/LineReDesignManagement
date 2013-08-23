@@ -104,6 +104,10 @@ public:
 
 	void TransformBy( const AcGeMatrix3d& matrix );
 
+	AcGePoint3dArray GetIntersect( const AcGePlane& intersectPlane );
+	static void GetIntersectPoint( const AcGePlane&, const AcGeLineSeg3d&, AcGePoint3dArray& );
+	static bool GetPoint( AcGePoint3dArray& resultArray, double& y, double& z, AcGePoint3d& result );
+
 	//database object collection
 	bool DrawEntityCollection(GlobalData::LineProirity proirity);
 	void DropEntityCollection();
@@ -150,7 +154,7 @@ public:
 private:
 
 	//Calculate the around panel
-	void CalculatePanel();
+	void CalculateAround();
 };
 
 /**
